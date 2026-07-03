@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+
+# Env / secrets (this project follows the HomeLab 1Password convention — never commit real values)
+.env
+.env.*
+!.env.example
+.env.secrets
+
+# Build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Editor / OS
+.DS_Store
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Docker / runtime data
+*.local
+data/
+uploads/
+tmp/
+
+# Local overrides
+docker-compose.override.yml
