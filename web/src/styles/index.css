@@ -1,0 +1,175 @@
+/* ============================================================
+   Zoomez web — global entry.
+   Fonts + design-system tokens first, then base + primitives.
+   Token files are the exact exports from the Zoomez design system.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+@import './colors.css';
+@import './typography.css';
+@import './spacing.css';
+@import './effects.css';
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--text-body);
+  /* Neutral stage behind the phone frame — teal-cast, never gray. */
+  background: #DDE6E0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font-family: inherit; }
+::selection { background: var(--seaglass-200); }
+
+/* ---------- App stage (centers the device on desktop, full-bleed on mobile) ---------- */
+.z-stage {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+@media (max-width: 480px) {
+  .z-stage { padding: 0; align-items: stretch; }
+}
+
+/* ---------- iPhone frame (402 × 874 logical) ---------- */
+.z-phone {
+  position: relative;
+  width: 402px;
+  height: 874px;
+  background: var(--surface-page);
+  border-radius: 54px;
+  box-shadow: var(--shadow-float);
+  border: 10px solid #0C1F1E;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.z-phone__notch {
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 128px; height: 30px;
+  background: #0C1F1E;
+  border-radius: 999px;
+  z-index: 50;
+}
+.z-phone__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.z-phone__scroll::-webkit-scrollbar { width: 0; height: 0; }
+@media (max-width: 480px) {
+  .z-phone {
+    width: 100vw; height: 100dvh;
+    border-radius: 0; border: 0; box-shadow: none;
+  }
+  .z-phone__notch { display: none; }
+}
+
+/* ---------- Eyebrow label ---------- */
+.z-eyebrow {
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ---------- Card ---------- */
+.z-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---------- Button (mirrors the design-system Button: SIZES + VARIANTS) ---------- */
+.z-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-inline);
+  font-family: var(--font-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.z-btn:active { transform: var(--press-scale); }
+.z-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.z-btn:focus-visible { outline: none; box-shadow: var(--focus-shadow); }
+
+.z-btn--sm { padding: 8px 18px; font-size: 14px; }
+.z-btn--md { padding: 12px 24px; font-size: 16px; }
+.z-btn--lg { padding: 16px 30px; font-size: 17px; }
+
+.z-btn--primary { background: var(--accent-primary); color: var(--text-on-accent); }
+.z-btn--primary:hover:not(:disabled) {
+  background: var(--accent-primary-hover);
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-float);
+}
+.z-btn--gold { background: var(--accent-gold); color: var(--lagoon-900); }
+.z-btn--gold:hover:not(:disabled) {
+  background: var(--biscuit-700); color: var(--foam-50);
+  transform: var(--hover-lift); box-shadow: var(--shadow-float);
+}
+.z-btn--secondary {
+  background: transparent; color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+.z-btn--secondary:hover:not(:disabled) { background: var(--surface-tint); }
+.z-btn--ghost { background: transparent; color: var(--accent-primary); }
+.z-btn--ghost:hover:not(:disabled) { background: var(--surface-tint); }
+
+/* ---------- Tab bar ---------- */
+.z-tabbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 8px 26px;
+  background: var(--surface-card);
+  border-top: 1px solid var(--border-subtle);
+}
+.z-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border: 0; background: none; cursor: pointer;
+  font-size: 10.5px;
+  color: var(--stone-400);
+  font-weight: var(--weight-medium);
+  position: relative;
+  padding: 2px 6px;
+}
+.z-tab[data-active='true'] { color: var(--lagoon-700); font-weight: var(--weight-semibold); }
+.z-tab__badge {
+  position: absolute;
+  top: -4px; right: 2px;
+  min-width: 16px; height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--coral-500);
+  color: var(--foam-50);
+  font-size: 9px; font-weight: var(--weight-bold);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---------- Small helpers ---------- */
+.z-row-btwn { display: flex; align-items: center; justify-content: space-between; }
+.z-divider { height: 1px; background: var(--border-subtle); }

@@ -1,0 +1,32 @@
+/* ============================================================
+   Zoomez — Radii, shadows, motion
+   Playful-luxe: generous rounding, soft teal-cast shadows,
+   gentle spring-out easing.
+   ============================================================ */
+:root {
+  /* Radii */
+  --radius-sm:   8px;    /* inputs, tags */
+  --radius-md:   14px;   /* small cards, popovers */
+  --radius-lg:   20px;   /* cards */
+  --radius-xl:   28px;   /* feature panels, imagery */
+  --radius-pill: 999px;  /* buttons, badges */
+
+  /* Shadows — teal-cast, never gray */
+  --shadow-card:  0 1px 2px rgba(12, 43, 42, 0.05), 0 8px 24px rgba(12, 43, 42, 0.07);
+  --shadow-float: 0 4px 12px rgba(12, 43, 42, 0.10), 0 20px 48px rgba(12, 43, 42, 0.14);
+  --shadow-inset: inset 0 1px 2px rgba(12, 43, 42, 0.06);
+
+  /* Motion */
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1); /* @kind other */
+  --dur-fast:   150ms; /* @kind other */
+  --dur-base:   250ms; /* @kind other */
+  --dur-slow:   450ms; /* @kind other */
+
+  /* Interaction states */
+  --hover-lift: translateY(-2px); /* @kind other */
+  --press-scale: scale(0.98); /* @kind other */
+
+  /* Focus */
+  --focus-shadow: 0 0 0 3px rgba(62, 124, 166, 0.35);
+}

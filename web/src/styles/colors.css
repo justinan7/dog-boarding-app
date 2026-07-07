@@ -1,0 +1,68 @@
+/* ============================================================
+   Zoomez — Color tokens
+   Cool coastal blues/greens, warm foam surfaces, golden accent.
+   Base ramps first, semantic aliases below.
+   ============================================================ */
+:root {
+  /* --- Lagoon (primary deep teal-green) --- */
+  --lagoon-900: #0C2B2A;
+  --lagoon-700: #14403D;
+  --lagoon-500: #1F5C56;
+  --lagoon-300: #6FA49B;
+
+  /* --- Seaglass & Foam (surfaces) --- */
+  --seaglass-200: #CFE4DA;
+  --seaglass-100: #E6F0EA;
+  --foam-50:      #F7F5EE;
+  --white:        #FFFFFF;
+
+  /* --- Tide (ocean blue) --- */
+  --tide-700: #2B5D7E;
+  --tide-500: #3E7CA6;
+  --tide-300: #9CC2D8;
+
+  /* --- Biscuit (golden-hour accent) --- */
+  --biscuit-700: #A87430;
+  --biscuit-500: #C99348;
+  --biscuit-300: #E3C289;
+  --biscuit-200: #F0E2C6;
+
+  /* --- Coral (playful pop — use sparingly) --- */
+  --coral-500: #DF7757;
+  --coral-200: #F6DBD1;
+
+  /* --- Ink & Stone (neutrals, green-cast) --- */
+  --ink-900:  #172120;
+  --ink-700:  #2E3B38;
+  --stone-600: #5C6B67;
+  --stone-400: #93A19C;
+  --stone-200: #D9DFDB;
+  --stone-100: #EBEEEA;
+
+  /* --- Status --- */
+  --green-success: #2E7D5B;
+  --amber-warning: #B97F24;
+  --red-error:     #B54334;
+  --blue-info:     var(--tide-500);
+
+  /* ============ Semantic aliases ============ */
+  --surface-page:    var(--foam-50);
+  --surface-card:    var(--white);
+  --surface-tint:    var(--seaglass-100);
+  --surface-inverse: var(--lagoon-900);
+
+  --text-heading: var(--lagoon-900);
+  --text-body:    var(--ink-700);
+  --text-muted:   var(--stone-600);
+  --text-inverse: var(--foam-50);
+  --text-on-accent: var(--foam-50);
+
+  --accent-primary:       var(--lagoon-700);
+  --accent-primary-hover: var(--lagoon-500);
+  --accent-gold:          var(--biscuit-500);
+  --accent-pop:           var(--coral-500);
+
+  --border-subtle: #E4E1D6;
+  --border-strong: var(--stone-200);
+  --focus-ring:    var(--tide-500);
+}

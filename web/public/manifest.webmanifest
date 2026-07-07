@@ -1,0 +1,10 @@
+{
+  "name": "Zoomez",
+  "short_name": "Zoomez",
+  "description": "Five-star stays for four-legged guests — Zoomez dog boarding.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F5EE",
+  "theme_color": "#14403D",
+  "icons": []
+}

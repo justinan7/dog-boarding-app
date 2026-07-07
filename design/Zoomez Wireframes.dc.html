@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&amp;family=Caveat:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:'Patrick Hand',system-ui,sans-serif;color:#2b2b2b}
+a{color:#2b2b2b}a:hover{color:#d9480f}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:600 12px ui-monospace,Menlo,monospace;padding:3px 8px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 16px/1.2 'Patrick Hand',sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:34px 28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:8px;scroll-margin-top:16px}
+.dv-oid{font:600 11px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.1);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 13px/1.3 'Patrick Hand',sans-serif;color:rgba(0,0,0,.6);max-width:270px}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:26px 0 0;font:14px/1.5 'Caveat',cursive;color:rgba(0,0,0,.55)}
+.grp{flex-basis:100%;font:400 17px 'Caveat',cursive;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid #2b2b2b;padding:16px 0 3px;color:#2b2b2b}
+.cap{max-width:256px;font:500 14px/1.25 'Caveat',cursive;color:#d9480f}
+.ph{width:256px;min-height:540px;box-sizing:border-box;border:2.5px solid #2b2b2b;border-radius:30px;background:#fff;padding:10px 11px 9px;display:flex;flex-direction:column;gap:7px;font-size:12.5px;line-height:1.3}
+.notch{width:80px;height:9px;border:1.8px solid #2b2b2b;border-radius:6px;margin:0 auto 2px;flex:none}
+.bar{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;gap:6px}
+.sec{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:#777;margin-top:2px}
+.card{border:1.8px solid #2b2b2b;padding:7px 8px;display:flex;flex-direction:column;gap:4px;background:#fff}
+.sk{border-radius:255px 15px 225px 15px/15px 225px 15px 255px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.col{display:flex;flex-direction:column;gap:4px}
+.btn{border:2px solid #2b2b2b;border-radius:225px 15px 255px 15px/15px 255px 15px 225px;padding:3px 10px;text-align:center;font-weight:700;background:#fff}
+.pri{background:#2b2b2b;color:#fff}
+.accbtn{background:#d9480f;border-color:#d9480f;color:#fff}
+.acc{color:#d9480f;font-weight:700}
+.pill{border:1.6px solid #2b2b2b;border-radius:20px;padding:0 8px;font-size:11px;display:inline-block}
+.pillacc{border-color:#d9480f;color:#d9480f}
+.imgx{background:linear-gradient(to top right,transparent 49.4%,#aaa 49.4% 50.6%,transparent 50.6%),linear-gradient(to bottom right,transparent 49.4%,#aaa 49.4% 50.6%,transparent 50.6%),#f4f2ec;border:1.8px solid #2b2b2b}
+.tabs{display:flex;justify-content:space-between;border-top:2px solid #2b2b2b;padding:6px 2px 0;margin-top:auto;font-size:10.5px;text-align:center}
+.tabs b{border-bottom:2.5px solid #2b2b2b}
+.bdg{background:#d9480f;color:#fff;border-radius:10px;font-size:9.5px;padding:0 5px;font-weight:700}
+.cb{display:inline-block;width:13px;height:13px;border:1.8px solid #2b2b2b;border-radius:3px;text-align:center;line-height:12px;font-size:10px;flex:none;background:#fff}
+.line{border-top:1.5px dashed #bbb;margin:2px 0}
+.mut{color:#888}
+.meter{height:10px;border:1.8px solid #2b2b2b;border-radius:6px;overflow:hidden;background:#fff}
+.fill{height:100%;background:repeating-linear-gradient(45deg,#2b2b2b 0 4px,#fff 4px 7px)}
+.inp{border:1.8px solid #2b2b2b;border-radius:6px;padding:3px 7px;color:#999;background:#fbfaf7}
+.bub{border:1.8px solid #2b2b2b;border-radius:12px 12px 12px 3px;padding:4px 8px;max-width:78%;align-self:flex-start;background:#fbfaf7}
+.bubme{border-radius:12px 12px 3px 12px;align-self:flex-end;background:#e9e6de}
+.rad{display:inline-block;width:12px;height:12px;border:1.8px solid #2b2b2b;border-radius:50%;vertical-align:-2px;flex:none}
+.radon{background:radial-gradient(circle,#2b2b2b 0 3.5px,#fff 4px)}
+.seg{display:flex;border:2px solid #2b2b2b;border-radius:8px;overflow:hidden;font-weight:700;text-align:center}
+.seg span{flex:1;padding:2px 0}
+.seg .on{background:#2b2b2b;color:#fff}
+.dothr{display:flex;gap:4px;justify-content:center}
+.dothr i{width:6px;height:6px;border-radius:50%;background:#ccc}
+.dothr i.on{background:#2b2b2b}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Checklist <a class="dv-oid" href="#1p">1p</a> revised — staff can add ad-hoc tasks. (<a class="dv-oid" href="#1y">1y</a> locked in over <a class="dv-oid" href="#1x">1x</a>.)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Per-dog checklist + "add task" quick sheet</div>
+<div style="display:flex;gap:10px;align-items:center">
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Bella · Golden <span class="pill" style="display:flex;align-items:center;gap:4px"><span class="imgx" style="width:14px;height:14px;border-radius:50%;display:inline-block"></span>Jack ▾</span></div>
+<div class="row" style="justify-content:flex-start;gap:6px"><div class="imgx" style="width:26px;height:26px;border-radius:50%;flex:none"></div><span class="mut" style="font-size:11px;flex:1">Jul 3 – 7 · Owner: Sarah M · <span class="acc">Arthritis — give w/ food</span></span></div>
+<div class="row"><span class="sec">Today — Sat Jul 5</span><span class="btn" style="padding:0 9px;font-size:11.5px">+ Add task</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span><span class="mut" style="flex:1">6:00 AM Breakfast 1 cup · done 6:04 by you</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span><span class="mut" style="flex:1">8:00 AM Rimadyl 75 mg · done 8:07 by you</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb"></span><span style="flex:1"><b>12:00 PM Lunch 1/2 cup</b> · <span class="mut">due in 2h 11m</span></span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb"></span><span style="flex:1">2:00 PM Ear drops both ears</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb"></span><span style="flex:1">3:30 PM Recheck hot spot on paw <span class="pill" style="font-size:9px">added by you</span></span></div>
+<div class="row" style="justify-content:flex-start"><span class="acc" style="width:13px">!</span><span class="mut" style="flex:1">8:00 PM Rimadyl · routes to evening staff</span></div>
+<div style="flex:1"></div>
+<div class="mut" style="font-size:10.5px;text-align:center">tap a pending item → completion sheet (as <a class="dv-oid" href="#1p">1p</a>)</div>
+<div class="tabs"><span>Today</span><span>Shifts</span><b>Dogs</b><span>Msgs</span><span>Me</span></div></div>
+<b style="font-size:20px">→</b>
+<div class="ph" style="background:#e9e6de"><div class="notch"></div>
+<div style="opacity:.35" class="col"><div class="bar">&lt; Bella · Golden</div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span><span class="mut">6:00 AM Breakfast 1 cup</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span><span class="mut">8:00 AM Rimadyl 75 mg</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb"></span><span>12:00 PM Lunch 1/2 cup</span></div></div>
+<div style="flex:1"></div>
+<div class="card sk" style="border-width:2.5px;margin:0 -4px;background:#fff;gap:6px">
+<div class="sec">Add task — Bella</div>
+<div class="row" style="justify-content:flex-start;gap:4px;flex-wrap:wrap"><span class="pill" style="background:#2b2b2b;color:#fff">One-time</span><span class="pill">Daily this stay</span></div>
+<div class="inp">Recheck hot spot on paw</div>
+<div class="row"><span>When</span><span class="inp">3:30 PM today ▾</span></div>
+<div class="row" style="justify-content:flex-start;gap:4px;flex-wrap:wrap"><span class="mut" style="font-size:11px">quick:</span><span class="pill">Med</span><span class="pill">Feed</span><span class="pill">Walk</span><span class="pill">Check</span></div>
+<div class="row"><span class="mut" style="font-size:11px">Alert on-shift staff at time</span><span class="cb">✓</span></div>
+<div class="btn pri">Add to checklist</div>
+<div class="mut" style="font-size:10px;text-align:center">logged as "added by Jack 11:42a" — visible to mgmt</div></div></div></div>
+<div class="cap">ad-hoc tasks slot into the same timed rail and fire the same alerts; "added by" keeps the audit trail honest. One-time vs daily-for-this-stay covers most real cases</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "go hi-fi on the customer view" · "tweak the add-task sheet" · "wireframe the login / invite flow"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Revisions: <a class="dv-oid" href="#1g">1g</a>+<a class="dv-oid" href="#1f">1f</a> report-card hybrid, dog avatars on every pet mention, and the account chip / role switcher on top of your picks (<a class="dv-oid" href="#1a">1a</a> <a class="dv-oid" href="#1c">1c</a> <a class="dv-oid" href="#1l">1l</a> <a class="dv-oid" href="#1n">1n</a> <a class="dv-oid" href="#1p">1p</a> <a class="dv-oid" href="#1v">1v</a> <a class="dv-oid" href="#1w">1w</a> <a class="dv-oid" href="#1y">1y</a>)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Report card — postcard (<a class="dv-oid" href="#1g">1g</a>) that opens into story mode (<a class="dv-oid" href="#1f">1f</a>)</div>
+<div style="display:flex;gap:10px;align-items:center">
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Fri Jul 4 <span class="mut" style="font-weight:400">Day 1 of 2</span></div>
+<div class="row" style="justify-content:flex-start;gap:6px"><div class="imgx" style="width:22px;height:22px;border-radius:50%"></div><b>Biscuit's day</b></div>
+<div class="card sk" style="gap:5px"><div class="sec">From Brette at Zoomez</div>
+<div style="font-size:13.5px;line-height:1.4">"Biscuit made a friend today — he and Bella napped in the sunny spot!"</div>
+<div style="text-align:right;font-family:'Caveat',cursive;font-size:15px">— Brette</div></div>
+<div class="row" style="gap:6px"><div class="imgx" style="flex:1;height:64px"></div><div class="imgx" style="flex:1;height:64px"></div></div>
+<div class="row" style="gap:6px"><div class="imgx" style="flex:1;height:64px"></div><div class="imgx" style="flex:1;height:64px;position:relative"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;background:rgba(255,255,255,.6)">+2</span></div></div>
+<div class="acc" style="font-family:'Caveat',cursive;font-size:13px;text-align:center">tap any photo → fullscreen story</div>
+<div class="row"><span class="pill">Playful</span><span class="pill">Ate it all</span><span class="pill">Pee ×3</span></div>
+<div class="row mut"><span>Care log: 4 of 4 done ✓</span><span>details &gt;</span></div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">♡ Heart</span><span class="btn" style="flex:1">Reply</span></div></div>
+<b style="font-size:20px">→</b>
+<div class="ph" style="padding:0;overflow:hidden;gap:0"><div class="imgx" style="flex:1;border:none;border-radius:27px;display:flex;flex-direction:column;padding:10px 11px;gap:6px">
+<div class="row" style="gap:3px"><span style="flex:1;height:4px;background:#2b2b2b;border-radius:2px"></span><span style="flex:1;height:4px;background:#2b2b2b;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span></div>
+<div class="row"><b style="background:#fff;padding:1px 8px;border:1.8px solid #2b2b2b;border-radius:12px">2 / 6</b><span style="background:#fff;border:1.8px solid #2b2b2b;border-radius:12px;padding:1px 7px">✕ back to card</span></div>
+<div style="flex:1"></div>
+<div class="row" style="justify-content:flex-start;gap:4px"><span class="pill" style="background:#fff">Playful</span><span class="pill" style="background:#fff">Zoomies</span></div>
+<div style="background:#fff;border:1.8px solid #2b2b2b;border-radius:10px;padding:4px 8px;font-size:11.5px">yard play with Luna, 10:15 AM</div>
+<div class="row"><span class="btn" style="padding:1px 10px">♡</span><b style="flex:1;text-align:center;font-size:11px">tap sides to flip · swipe down to close</b><span class="btn" style="padding:1px 10px">Save</span></div>
+</div></div></div>
+<div class="cap">best of both: the note + grid is the landing (warm, scannable), the story viewer is the payoff when they dive into photos — per-photo captions come from the care log</div>
+</div>
+
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Staff Today (<a class="dv-oid" href="#1l">1l</a>) + dog avatars + account chip</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar"><span class="pill">ON SHIFT 7a–3p</span><span class="pill" style="display:flex;align-items:center;gap:4px"><span class="imgx" style="width:14px;height:14px;border-radius:50%;display:inline-block"></span>Jack ▾</span><span class="pill pillacc">SOS</span></div>
+<div class="sec">Next up</div>
+<div class="card sk" style="border-width:2.2px"><div class="row" style="justify-content:flex-start;gap:6px"><div class="imgx" style="width:30px;height:30px;border-radius:50%;flex:none"></div>
+<div class="col" style="gap:0;flex:1"><b>8:00 AM · Rimadyl 75 mg</b><span class="mut">Bella — Golden Retriever</span></div><span class="acc">due 4m</span></div>
+<div class="row" style="gap:8px"><span class="btn pri" style="flex:1">Do it</span><span class="btn" style="flex:1">Snooze</span></div></div>
+<div class="row"><span class="sec">Here now (5 dogs)</span><span class="mut" style="font-size:11px">see all</span></div>
+<div class="row"><span class="row" style="gap:6px;justify-content:flex-start"><span class="imgx" style="width:20px;height:20px;border-radius:50%"></span>Biscuit · Beagle</span><span class="bdg">2 due</span></div>
+<div class="row"><span class="row" style="gap:6px;justify-content:flex-start"><span class="imgx" style="width:20px;height:20px;border-radius:50%"></span>Bella · Golden</span><span class="bdg">1 due</span></div>
+<div class="row"><span class="row" style="gap:6px;justify-content:flex-start"><span class="imgx" style="width:20px;height:20px;border-radius:50%"></span>Cooper · Lab mix</span><span class="mut">done ✓</span></div>
+<div class="row"><span class="row" style="gap:6px;justify-content:flex-start"><span class="imgx" style="width:20px;height:20px;border-radius:50%"></span>Luna · Poodle</span><span class="mut">done ✓</span></div>
+<div class="row"><span class="row" style="gap:6px;justify-content:flex-start"><span class="imgx" style="width:20px;height:20px;border-radius:50%"></span>Max · Boxer</span><span class="acc">! med</span></div>
+<div class="sec">Today's progress</div>
+<div class="meter"><div class="fill" style="width:64%"></div></div>
+<div class="row mut" style="font-size:11px"><span>Tasks 9/14</span><span>Photos 3 · Cards 1</span></div>
+<div class="tabs"><b>Today</b><span>Shifts</span><span>Dogs</span><span>Msgs <span class="bdg">2</span></span><span>Me</span></div></div>
+<div class="cap">every pet mention gets a face — photo avatars beat names when you've got 6 look-alike labs. Account chip top-center opens the view switcher (<a class="dv-oid" href="#2d">2d</a>)</div>
+</div>
+
+<div class="dv-opt" id="2c">
+<div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Mgmt dashboard (<a class="dv-oid" href="#1v">1v</a>) + avatars + account chip</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Zoomez <span class="pill">6/8</span><span class="pill" style="display:flex;align-items:center;gap:4px"><span class="imgx" style="width:14px;height:14px;border-radius:50%;display:inline-block"></span>Corry ▾</span></div>
+<div class="row" style="gap:5px"><span class="pill pillacc">2 bookings</span><span class="pill pillacc">1 claim</span><span class="pill pillacc">2 msgs</span></div>
+<div class="sec acc">Overdue (1)</div>
+<div class="card sk" style="border-color:#d9480f"><div class="row" style="justify-content:flex-start;gap:6px"><div class="imgx" style="width:26px;height:26px;border-radius:50%;flex:none"></div><b style="flex:1">2:00 PM · Bella · Insulin 4u</b><span class="acc">+38m</span></div>
+<div class="mut">assigned: Jack — not done</div>
+<div class="row" style="gap:6px"><span class="btn" style="flex:1;padding:1px">Ping Jack</span><span class="btn" style="flex:1;padding:1px">Reassign</span></div></div>
+<div class="sec">Live board</div>
+<div class="row"><span class="row" style="gap:5px;justify-content:flex-start"><span class="imgx" style="width:17px;height:17px;border-radius:50%"></span>4:00 PM Biscuit · Rimadyl</span><span class="mut">Jack</span></div>
+<div class="row"><span class="row" style="gap:5px;justify-content:flex-start"><span class="imgx" style="width:17px;height:17px;border-radius:50%"></span>4:00 PM Cooper · dinner 1.5c</span><span class="mut">Jack</span></div>
+<div class="row"><span class="row" style="gap:5px;justify-content:flex-start"><span class="imgx" style="width:17px;height:17px;border-radius:50%"></span>6:30 PM Bella · dinner + insulin</span><span class="mut">Jack</span></div>
+<div class="sec">In-house</div>
+<div class="row" style="justify-content:flex-start;gap:4px;flex-wrap:wrap"><span class="pill" style="display:flex;align-items:center;gap:3px"><span class="imgx" style="width:12px;height:12px;border-radius:50%;display:inline-block"></span>Biscuit</span><span class="pill" style="display:flex;align-items:center;gap:3px"><span class="imgx" style="width:12px;height:12px;border-radius:50%;display:inline-block"></span>Bella</span><span class="pill pillacc" style="display:flex;align-items:center;gap:3px"><span class="imgx" style="width:12px;height:12px;border-radius:50%;display:inline-block"></span>Cooper ?</span><span class="pill" style="display:flex;align-items:center;gap:3px"><span class="imgx" style="width:12px;height:12px;border-radius:50%;display:inline-block"></span>Luna</span></div>
+<div class="tabs"><b>Dash</b><span>Cal</span><span>Inbox <span class="bdg">3</span></span><span>Photos</span><span>More</span></div></div>
+<div class="cap">same live-ops-first layout, now with faces on every dog row and the Corry ▾ chip for switching views</div>
+</div>
+
+<div class="dv-opt" id="2d">
+<div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Account chip → view switcher (staff/mgmt)</div>
+<div class="ph" style="background:#e9e6de"><div class="notch"></div>
+<div class="bar" style="opacity:.35"><span class="pill">ON SHIFT 7a–3p</span><span class="pill">Jack ▾</span><span class="pill pillacc">SOS</span></div>
+<div style="opacity:.35" class="col"><div class="card"><div class="row"><b>8:00 AM · Rimadyl</b><span>due 4m</span></div></div>
+<div class="row"><span>Biscuit · Beagle</span><span>2 due</span></div>
+<div class="row"><span>Bella · Golden</span><span>1 due</span></div></div>
+<div style="flex:1"></div>
+<div class="card sk" style="border-width:2.5px;margin:0 -4px;background:#fff;gap:6px">
+<div class="row" style="justify-content:flex-start;gap:8px"><div class="imgx" style="width:34px;height:34px;border-radius:50%;flex:none"></div>
+<div class="col" style="gap:0"><b>Jack Torres</b><span class="mut" style="font-size:11px">jack@zoomez.app</span></div></div>
+<div class="line"></div>
+<div class="sec">View as</div>
+<div class="row" style="justify-content:flex-start;gap:8px"><span class="rad radon"></span> <b>Staff</b> <span class="mut">— today, shifts, checklists</span></div>
+<div class="row" style="justify-content:flex-start;gap:8px"><span class="rad"></span> Manager <span class="pill" style="font-size:9.5px">requires PIN</span></div>
+<div class="line"></div>
+<div class="row mut"><span>Profile &amp; settings</span><span>&gt;</span></div>
+<div class="row mut"><span>Sign out</span><span></span></div></div></div>
+<div class="cap">one login, roles as views: chip → sheet. Manager view is lockable behind a PIN so a shared phone can't wander into approvals. Customers get the same chip but it's just profile / payments / sign out</div>
+</div>
+
+<div class="dv-opt" id="2e">
+<div class="dv-olabel"><a class="dv-oid" href="#2e">2e</a>Customer home (<a class="dv-oid" href="#1a">1a</a>) + account chip + avatar</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Zoomez <span style="display:flex;gap:5px;align-items:center"><span>bell <span class="bdg">2</span></span><span class="pill" style="display:flex;align-items:center;gap:4px"><span class="imgx" style="width:14px;height:14px;border-radius:50%;display:inline-block"></span>Sarah ▾</span></span></div>
+<div>Hi Sarah — Biscuit's stay is coming up.</div>
+<div class="card sk"><div class="sec">Upcoming stay</div>
+<div class="row" style="justify-content:flex-start;gap:6px"><div class="imgx" style="width:26px;height:26px;border-radius:50%;flex:none"></div><b style="flex:1">Biscuit</b><span class="pill">APPROVED</span></div>
+<div>Beagle · Jul 4 – 6 · 2 nights</div>
+<div class="mut">Drop-off Fri ~9:00 AM</div></div>
+<div class="sec acc">Action needed (2)</div>
+<div class="card"><div class="row"><span><span class="acc">!</span> Pay deposit $40</span><span class="btn" style="padding:1px 8px">Pay</span></div>
+<div class="line"></div>
+<div class="row"><span><span class="acc">!</span> Sign boarding waiver</span><span class="btn" style="padding:1px 8px">Review</span></div></div>
+<div class="sec">Latest report card</div>
+<div class="card"><div class="row"><div class="imgx" style="width:52px;height:44px"></div>
+<div class="col" style="flex:1"><span class="mut">Yesterday 4 PM</span><span>"Biscuit had a great day!"</span></div><span>&gt;</span></div></div>
+<div class="btn pri sk">+ Book another stay</div>
+<div class="tabs"><b>Home</b><span>Book</span><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">customer version of the chip: no role switch, just profile / payments / notifications. Biscuit gets his avatar on the stay card too</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "apply avatars to all remaining picked screens" · "make <a class="dv-oid" href="#2a">2a</a> the report card and go hi-fi on the customer view" · "riff on the switcher in <a class="dv-oid" href="#2d">2d</a>"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Zoomez — first wireframe pass: all three views, key screens. Variants on the differentiators, a couple of wild cards.</span></div>
+<div class="dv-opts">
+
+<div class="grp">Customer — dog owner</div>
+
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Home — stacked cards (brief layout)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Zoomez <span>bell <span class="bdg">2</span></span></div>
+<div>Hi Sarah — Biscuit's stay is coming up.</div>
+<div class="card sk"><div class="sec">Upcoming stay</div>
+<div class="row"><b>Biscuit</b> <span class="pill">APPROVED</span></div>
+<div>Beagle · Jul 4 – 6 · 2 nights</div>
+<div class="mut">Drop-off Fri ~9:00 AM</div></div>
+<div class="sec acc">Action needed (2)</div>
+<div class="card"><div class="row"><span><span class="acc">!</span> Pay deposit $40</span><span class="btn" style="padding:1px 8px">Pay</span></div>
+<div class="line"></div>
+<div class="row"><span><span class="acc">!</span> Sign boarding waiver</span><span class="btn" style="padding:1px 8px">Review</span></div></div>
+<div class="sec">Latest report card</div>
+<div class="card"><div class="row"><div class="imgx" style="width:52px;height:44px"></div>
+<div class="col" style="flex:1"><span class="mut">Yesterday 4 PM</span><span>"Biscuit had a great day!"</span></div><span>&gt;</span></div></div>
+<div class="btn pri sk">+ Book another stay</div>
+<div class="tabs"><b>Home</b><span>Book</span><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">answers "is my dog OK + what do I owe" in one column of cards</div>
+</div>
+
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Home — activity feed variant</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Zoomez <span>bell <span class="bdg">2</span></span></div>
+<div class="card sk"><div class="row"><div class="imgx" style="width:38px;height:38px;border-radius:50%"></div>
+<div class="col" style="flex:1"><b>Biscuit — in 2 days</b><span class="mut">Jul 4 – 6 · <span class="pill" style="font-size:10px">APPROVED</span></span></div></div></div>
+<div class="sec">Your feed</div>
+<div class="card"><div class="row"><b>New report card</b><span class="mut">4 PM</span></div>
+<div class="imgx" style="height:56px"></div><div>"Biscuit had a great day!"</div></div>
+<div class="card" style="border-color:#d9480f"><div class="row"><span class="acc">Deposit due — $40</span><span class="btn accbtn" style="padding:1px 8px">Pay</span></div></div>
+<div class="card"><div class="row"><span class="acc">!</span><span style="flex:1">Waiver needs a signature</span><span>&gt;</span></div></div>
+<div class="card"><div class="row"><span>Stay approved by the team</span><span class="mut">Jun 29</span></div></div>
+<div class="tabs"><b>Home</b><span>Book</span><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">everything is one chronological feed — nudges drop in as cards, disappear when done</div>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Book a stay — one-page form (brief layout)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Book a Stay</div>
+<div class="sec">Which dog(s)?</div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span> Biscuit (Beagle) <span class="cb"></span> Bella (Golden)</div>
+<div class="sec">Dates — Jul 2026</div>
+<div class="card" style="gap:2px"><div class="row mut" style="font-size:10px"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+<div class="row" style="font-size:11px"><span class="mut">28</span><span class="mut">29</span><span>1</span><span>2</span><span>3</span><b style="background:#2b2b2b;color:#fff;border-radius:4px;padding:0 3px">4</b><b style="background:#2b2b2b;color:#fff;border-radius:4px;padding:0 3px">5</b></div>
+<div class="row" style="font-size:11px"><b style="background:#2b2b2b;color:#fff;border-radius:4px;padding:0 3px">6</b><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
+<div>Jul 4 → 6 · 2 nights · <span class="acc">OPEN — 3 of 6 spots</span></div></div>
+<div class="row"><span>Drop-off</span><span class="inp">Fri ~9:00 AM ▾</span></div>
+<div class="row"><span>Pick-up</span><span class="inp">Sun ~5:00 PM ▾</span></div>
+<div class="sec">Add-ons</div>
+<div class="row"><span><span class="cb"></span> Bath before pick-up</span><span>+$25</span></div>
+<div class="row"><span><span class="cb"></span> Extra playtime / day</span><span>+$10</span></div>
+<div class="inp">Notes for the team…</div>
+<div class="row"><b>Est. $120</b><span class="mut">+ $40 deposit</span></div>
+<div class="btn pri sk">Request this stay</div>
+<div class="tabs"><span>Home</span><b>Book</b><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">single scroll, submit once — request, not instant booking</div>
+</div>
+
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Book — calendar-first with summary sheet</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; July 2026 &gt;</div>
+<div class="card" style="flex:1;gap:3px"><div class="row mut" style="font-size:10px"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+<div class="row"><span>28</span><span>29</span><span>30</span><span>1</span><span>2</span><span>3</span><b style="background:#2b2b2b;color:#fff;border-radius:4px;padding:0 4px">4</b></div>
+<div class="row"><b style="background:#2b2b2b;color:#fff;border-radius:4px;padding:0 4px">5</b><b style="background:#2b2b2b;color:#fff;border-radius:4px;padding:0 4px">6</b><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div>
+<div class="row"><span class="acc" style="text-decoration:line-through">12</span><span class="acc" style="text-decoration:line-through">13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span></div>
+<div class="mut" style="font-size:10.5px">each day shows capacity: struck-out = FULL, tap for waitlist</div></div>
+<div class="card sk" style="border-width:2.2px;margin:0 -3px"><div class="row"><b>Jul 4 → 6 · 2 nights</b><span class="pill">OPEN 3/6</span></div>
+<div class="row"><span>Biscuit ▾</span><span class="mut">+ add dog</span></div>
+<div class="row"><span class="mut">Est. $120 + $40 dep</span><span class="btn pri" style="padding:2px 12px">Continue</span></div>
+<div class="dothr"><i class="on"></i><i></i><i></i></div></div>
+<div class="tabs"><span>Home</span><b>Book</b><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">dates are the hard part → make them the whole screen; dogs + add-ons follow in a 3-step sheet</div>
+</div>
+
+<div class="dv-opt" id="1e">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Report card — classic scroll</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Biscuit's Report Card</div>
+<div class="mut">Fri Jul 4 — Day 1 of 2</div>
+<div class="imgx" style="height:120px"></div>
+<div class="dothr"><i class="on"></i><i></i><i></i><i></i></div>
+<div class="sec">Today Biscuit was…</div>
+<div class="row" style="justify-content:flex-start;flex-wrap:wrap;gap:4px"><span class="pill">Playful</span><span class="pill">Cuddly</span><span class="pill">Ate it all</span></div>
+<div class="sec">Meals &amp; meds</div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span> 8:00 AM Breakfast — full</div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span> 8:05 AM Rimadyl 75 mg — given</div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span> 5:30 PM Dinner — full</div>
+<div class="sec">A note from Brette</div>
+<div>"Biscuit made a friend today — he and Bella napped in the sunny spot!"</div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">♡ Heart</span><span class="btn" style="flex:1">Reply</span></div>
+<div class="tabs"><b>Home</b><span>Book</span><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">photos on top, proof-of-care below, warm note last — the emotional payoff screen</div>
+</div>
+
+<div class="dv-opt" id="1f">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Report card — story mode (wild card)</div>
+<div class="ph" style="padding:0;overflow:hidden;gap:0"><div class="imgx" style="flex:1;border:none;border-radius:27px;display:flex;flex-direction:column;padding:10px 11px;gap:6px">
+<div class="row" style="gap:3px"><span style="flex:1;height:4px;background:#2b2b2b;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span><span style="flex:1;height:4px;background:#ccc;border-radius:2px"></span></div>
+<div class="row"><b style="background:#fff;padding:1px 8px;border:1.8px solid #2b2b2b;border-radius:12px">Biscuit · Day 1 of 2</b><span style="background:#fff;border:1.8px solid #2b2b2b;border-radius:12px;padding:1px 7px">✕</span></div>
+<div style="flex:1"></div>
+<div class="row" style="justify-content:flex-start;gap:4px"><span class="pill" style="background:#fff">Playful</span><span class="pill" style="background:#fff">Ate it all</span></div>
+<div style="background:#fff;border:1.8px solid #2b2b2b;border-radius:10px;padding:5px 8px">"Made a friend — napped in the sunny spot!" — Brette</div>
+<div class="row"><span class="btn" style="padding:1px 10px">♡</span><b style="text-align:center;flex:1">↑ swipe up: meals &amp; meds log</b><span class="btn" style="padding:1px 10px">Reply</span></div>
+</div></div>
+<div class="cap">full-bleed photos, tap through like stories; care log lives under a swipe-up. Wild card — maximizes the photo payoff</div>
+</div>
+
+<div class="dv-opt" id="1g">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>Report card — postcard, note-first</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Fri Jul 4 <span class="mut" style="font-weight:400">Day 1 of 2</span></div>
+<div class="card sk" style="gap:6px"><div class="sec">From Brette at Zoomez</div>
+<div style="font-size:14px;line-height:1.45">"Biscuit made a friend today — he and Bella napped in the sunny spot. Total sweetheart!"</div>
+<div style="text-align:right;font-family:'Caveat',cursive;font-size:16px">— Brette</div></div>
+<div class="row" style="gap:6px"><div class="imgx" style="flex:1;height:70px"></div><div class="imgx" style="flex:1;height:70px"></div></div>
+<div class="row" style="gap:6px"><div class="imgx" style="flex:1;height:70px"></div><div class="imgx" style="flex:1;height:70px"></div></div>
+<div class="row"><span class="pill">Playful</span><span class="pill">Ate it all</span><span class="pill">Pee ×3</span></div>
+<div class="row mut"><span>Care log: 4 of 4 done ✓</span><span>details &gt;</span></div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">♡ Heart</span><span class="btn" style="flex:1">Reply</span></div>
+<div class="tabs"><b>Home</b><span>Book</span><span>Msgs</span><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">the human note leads, photos as a postcard grid; log collapsed to one trust line</div>
+</div>
+
+<div class="dv-opt" id="1h">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>Stay detail — status timeline</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Biscuit · Jul 4 – 6 <span>⋯</span></div>
+<div class="sec">Status</div>
+<div class="col" style="gap:2px">
+<div class="row" style="justify-content:flex-start"><span class="rad radon"></span> Requested <span class="mut">Jun 28</span></div>
+<div class="row" style="justify-content:flex-start"><span class="rad radon"></span> <b>Approved</b> <span class="mut">Jun 29</span> <span class="acc" style="font-family:'Caveat',cursive">← you're here</span></div>
+<div class="row" style="justify-content:flex-start"><span class="rad"></span> <span class="mut">Check-in · Jul 4</span></div>
+<div class="row" style="justify-content:flex-start"><span class="rad"></span> <span class="mut">In stay</span></div>
+<div class="row" style="justify-content:flex-start"><span class="rad"></span> <span class="mut">Checked out · Jul 6</span></div></div>
+<div class="sec">Dogs</div>
+<div>Biscuit (Beagle, 24 lb) · <span class="mut">Rimadyl 75 mg AM ✓ set</span></div>
+<div class="sec">Cost</div>
+<div class="row"><span>Boarding 2 nights</span><span>$110</span></div>
+<div class="row"><span>Bath add-on</span><span>$25</span></div>
+<div class="line"></div>
+<div class="row"><b>Total</b><b>$135</b></div>
+<div class="row"><span>Deposit due now</span><span class="acc">$40 UNPAID</span></div>
+<div class="btn pri sk">Pay $40 deposit</div>
+<div class="row mut"><span>Drop-off Fri ~9 AM</span><span>Pick-up Sun ~5 PM</span></div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">Message team</span><span class="btn" style="flex:1">Cancel</span></div></div>
+<div class="cap">one lifecycle view: where the request stands + what's owed</div>
+</div>
+
+<div class="dv-opt" id="1i">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Messages — team thread</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Zoomez Team <span class="mut" style="font-weight:400">(i)</span></div>
+<div class="mut" style="font-size:11px">Biscuit · Jul 4 – 6 stay</div>
+<div class="mut" style="text-align:center;font-size:10.5px">Jul 4 · 9:12 AM</div>
+<div class="bub bubme">Dropped Biscuit off — his blue blanket is in the bag</div>
+<div class="mut" style="text-align:right;font-size:10px">Read 9:13 AM</div>
+<div class="bub">Got it! Blanket's in his crate. He's already sniffing around. <span class="mut">— Brette</span></div>
+<div class="bub" style="padding:3px"><div class="imgx" style="width:120px;height:80px"></div></div>
+<div class="mut" style="font-size:11px">Team is typing…</div>
+<div style="flex:1"></div>
+<div class="row" style="gap:6px"><span class="btn" style="padding:1px 8px">+</span><span class="inp" style="flex:1">Message…</span><span class="btn pri" style="padding:1px 9px">&gt;</span></div>
+<div class="tabs"><span>Home</span><span>Book</span><b>Msgs</b><span>Pets</span><span>Acct</span></div></div>
+<div class="cap">one team identity — owner never sees staff vs management seams or takeovers</div>
+</div>
+
+<div class="dv-opt" id="1j">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Payment — invoice + upsells</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Payment · Biscuit Jul 4 – 6</div>
+<div class="sec">Invoice #1042</div>
+<div class="row"><span>Boarding 2 nights</span><span>$110</span></div>
+<div class="row"><span>Bath add-on</span><span>$25</span></div>
+<div class="row"><span>Deposit paid</span><span>− $40</span></div>
+<div class="line"></div>
+<div class="row"><b>Balance due</b><b>$95</b></div>
+<div class="sec">Add something nice?</div>
+<div class="card"><div class="row"><span>Extra playtime / day</span><span class="btn" style="padding:0 8px">+ $10</span></div>
+<div class="line"></div>
+<div class="row"><span>Nail trim</span><span class="btn" style="padding:0 8px">+ $15</span></div>
+<div class="line"></div>
+<div class="row"><span>Send-home photo book</span><span class="btn" style="padding:0 8px">+ $20</span></div></div>
+<div class="sec">Pay with</div>
+<div class="row" style="justify-content:flex-start"><span class="rad radon"></span> Visa ····4242</div>
+<div class="row" style="justify-content:flex-start"><span class="rad"></span> <span class="mut">Add new card</span></div>
+<div class="btn pri sk">Pay balance — $95</div>
+<div class="mut" style="text-align:center;font-size:10.5px">Secure · receipt to your email</div></div>
+<div class="cap">upsell taps recalc the total live and quietly create staff tasks</div>
+</div>
+
+<div class="dv-opt" id="1k">
+<div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>Pet profile — vax + waiver readiness</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Biscuit <span class="mut" style="font-weight:400">Edit</span></div>
+<div class="row" style="justify-content:flex-start;gap:8px"><div class="imgx" style="width:48px;height:48px;border-radius:50%"></div>
+<div class="col"><b>Biscuit</b><span class="mut">Beagle · 24 lb · M</span><span class="mut" style="font-size:10.5px">Vet: Elm St Animal Hosp</span></div></div>
+<div class="sec">Feeding &amp; meds</div>
+<div>Breakfast 8:00 AM (1 cup)</div>
+<div>Rimadyl 75 mg — 8:00 AM w/ food</div>
+<div>Dinner 5:30 PM (1 cup)</div>
+<div class="mut">+ Add feeding / med</div>
+<div class="sec">Vaccinations</div>
+<div class="row"><span><span class="cb">✓</span> Rabies</span><span class="mut">exp Mar 2027</span></div>
+<div class="row"><span><span class="cb">✓</span> DHPP</span><span class="mut">exp Jan 2027</span></div>
+<div class="row"><span class="acc">! Bordetella</span><span class="acc">EXPIRED · update</span></div>
+<div class="btn">+ Upload vaccination record</div>
+<div class="sec">Waiver</div>
+<div class="row"><span><span class="cb">✓</span> Boarding waiver</span><span class="mut">signed Jun 28</span></div>
+<div class="tabs"><span>Home</span><span>Book</span><span>Msgs</span><b>Pets</b><span>Acct</span></div></div>
+<div class="cap">booking-readiness lives here — expired vax nudges Home + soft-warns Book</div>
+</div>
+
+<div class="grp">Staff — caregiver</div>
+
+<div class="dv-opt" id="1l">
+<div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>Today — "Next Up" hero (brief layout)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar"><span class="pill">ON SHIFT 7a–3p</span><span class="mut" style="font-weight:400">Sat Jul 5</span><span class="pill pillacc">SOS</span></div>
+<div class="sec">Next up</div>
+<div class="card sk" style="border-width:2.2px"><div class="row"><b>8:00 AM · Rimadyl 75 mg</b><span class="acc">due 4m</span></div>
+<div class="mut">Bella — Golden Retriever</div>
+<div class="row" style="gap:8px"><span class="btn pri" style="flex:1">Do it</span><span class="btn" style="flex:1">Snooze</span></div></div>
+<div class="row"><span class="sec">Here now (5 dogs)</span><span class="mut" style="font-size:11px">see all</span></div>
+<div class="row"><span>Biscuit · Beagle</span><span class="bdg">2 due</span></div>
+<div class="row"><span>Bella · Golden</span><span class="bdg">1 due</span></div>
+<div class="row"><span>Cooper · Lab mix</span><span class="mut">done ✓</span></div>
+<div class="row"><span>Luna · Poodle</span><span class="mut">done ✓</span></div>
+<div class="row"><span>Max · Boxer</span><span class="acc">! med</span></div>
+<div class="sec">Today's progress</div>
+<div class="meter"><div class="fill" style="width:64%"></div></div>
+<div class="row mut" style="font-size:11px"><span>Tasks 9/14</span><span>Photos 3 · Cards 1</span></div>
+<div class="tabs"><b>Today</b><span>Shifts</span><span>Dogs</span><span>Msgs <span class="bdg">2</span></span><span>Me</span></div></div>
+<div class="cap">one glance: am I on shift, who's here, what's due next — hero card is always the single most-imminent task</div>
+</div>
+
+<div class="dv-opt" id="1m">
+<div class="dv-olabel"><a class="dv-oid" href="#1m">1m</a>Today — shift agenda rail variant</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar"><span class="pill">ON SHIFT 7a–3p</span><span class="pill pillacc">SOS</span></div>
+<div class="col" style="gap:0;flex:1">
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">7:00</span><span class="cb">✓</span><span style="text-decoration:line-through" class="mut">Morning yard, all dogs</span></div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">7:30</span><span class="cb">✓</span><span style="text-decoration:line-through" class="mut">Breakfast ×5 · done 7:36</span></div>
+<div style="border-top:2.5px solid #d9480f;position:relative;margin:2px 0"><span style="position:absolute;right:0;top:-9px;font-size:10px" class="acc">now 7:56</span></div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="acc" style="width:38px">8:00</span><span class="cb"></span><b>Rimadyl 75 mg — Bella</b></div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">8:00</span><span class="cb"></span>Insulin 4u — Max</div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">10:00</span><span class="cb"></span>Yard play + photos</div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">12:00</span><span class="cb"></span>Lunch — Biscuit, Bella</div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">2:00</span><span class="cb"></span>Ear drops — Bella</div>
+<div class="row" style="justify-content:flex-start;gap:8px;padding:3px 0"><span class="mut" style="width:38px">2:30</span><span class="cb"></span>Report cards ×3</div></div>
+<div class="row"><span class="btn" style="flex:1">+ Log</span><span class="btn" style="flex:1">+ Photo</span></div>
+<div class="tabs"><b>Today</b><span>Shifts</span><span>Dogs</span><span>Msgs</span><span>Me</span></div></div>
+<div class="cap">whole shift as one time rail with a "now" line — plan ahead, not just react</div>
+</div>
+
+<div class="dv-opt" id="1n">
+<div class="dv-olabel"><a class="dv-oid" href="#1n">1n</a>Shift board — claim cards (brief layout)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Shifts</div>
+<div class="seg"><span class="on">Open</span><span>My schedule</span></div>
+<div class="sec">Sun Jul 6</div>
+<div class="card sk"><div class="row"><b>7:00a – 3:00p</b><span class="pill">OPEN</span></div>
+<div class="mut">Morning care · 6 dogs · 2 meds due</div>
+<div class="btn pri">Claim shift</div></div>
+<div class="sec">Mon Jul 7</div>
+<div class="card sk" style="border-color:#d9480f"><div class="row"><b>3:00p – 9:00p</b><span class="pill pillacc">PENDING — you</span></div>
+<div class="mut">Evening + feed · 5 dogs · <span class="acc">overlaps your 1–3p (i)</span></div>
+<div class="btn">Withdraw claim</div></div>
+<div class="row mut"><span>Tue Jul 8 · 7a–3p</span><span>CLAIMED — Brette</span></div>
+<div class="row"><span class="mut">Wed Jul 9 · 7a–3p</span><span class="btn" style="padding:0 8px">Claim</span></div>
+<div class="tabs"><span>Today</span><b>Shifts</b><span>Dogs</span><span>Msgs</span><span>Me</span></div></div>
+<div class="cap">first-come claim → optimistic lock → "pending approval" state must read clearly</div>
+</div>
+
+<div class="dv-opt" id="1o">
+<div class="dv-olabel"><a class="dv-oid" href="#1o">1o</a>Shift board — week grid variant</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Shifts <span class="mut" style="font-weight:400">Jul 6 – 12</span></div>
+<div class="row" style="gap:4px;flex:1;align-items:stretch">
+<div class="col" style="flex:1;gap:4px"><b style="text-align:center">Su</b><div class="card" style="flex:1;font-size:10px;text-align:center;justify-content:center"><b>7a–3p</b><span class="pill" style="font-size:9px">OPEN</span></div><div class="card mut" style="flex:1;font-size:10px;text-align:center;justify-content:center">3p–9p<br>Brette</div></div>
+<div class="col" style="flex:1;gap:4px"><b style="text-align:center">Mo</b><div class="card mut" style="flex:1;font-size:10px;text-align:center;justify-content:center">7a–3p<br>you ✓</div><div class="card" style="flex:1;font-size:10px;text-align:center;justify-content:center;border-color:#d9480f"><span class="acc">3p–9p<br>pending</span></div></div>
+<div class="col" style="flex:1;gap:4px"><b style="text-align:center">Tu</b><div class="card mut" style="flex:1;font-size:10px;text-align:center;justify-content:center">7a–3p<br>Brette</div><div class="card" style="flex:1;font-size:10px;text-align:center;justify-content:center"><b>3p–9p</b><span class="pill" style="font-size:9px">OPEN</span></div></div>
+<div class="col" style="flex:1;gap:4px"><b style="text-align:center">We</b><div class="card" style="flex:1;font-size:10px;text-align:center;justify-content:center"><b>7a–3p</b><span class="pill" style="font-size:9px">OPEN</span></div><div class="card mut" style="flex:1;font-size:10px;text-align:center;justify-content:center">—</div></div></div>
+<div class="card sk"><div class="row"><b>Sun 7a–3p · 6 dogs</b><span class="mut">pay/shift</span></div><div class="btn pri">Claim this shift</div></div>
+<div class="tabs"><span>Today</span><b>Shifts</b><span>Dogs</span><span>Msgs</span><span>Me</span></div></div>
+<div class="cap">see the whole week's coverage at once; tap an open block → claim sheet</div>
+</div>
+
+<div class="dv-opt" id="1p">
+<div class="dv-olabel"><a class="dv-oid" href="#1p">1p</a>Per-dog checklist + completion sheet</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Bella · Golden <span class="mut" style="font-weight:400">msg owner</span></div>
+<div class="mut" style="font-size:11px">Jul 3 – 7 · Owner: Sarah M · <span class="acc">Arthritis — give w/ food</span></div>
+<div class="sec">Today — Sat Jul 5 (America/Denver)</div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span><span class="mut" style="flex:1">6:00 AM Breakfast 1 cup · done 6:04 by you</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb">✓</span><span class="mut" style="flex:1">8:00 AM Rimadyl 75 mg · done 8:07 by you</span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb"></span><span style="flex:1"><b>12:00 PM Lunch 1/2 cup</b> · <span class="mut">due in 2h 11m</span></span></div>
+<div class="row" style="justify-content:flex-start"><span class="cb"></span><span style="flex:1">2:00 PM Ear drops both ears</span></div>
+<div class="row" style="justify-content:flex-start"><span class="acc" style="width:13px">!</span><span class="mut" style="flex:1">8:00 PM Rimadyl · routes to evening staff</span></div>
+<div style="flex:1"></div>
+<div class="card sk" style="border-width:2.2px;margin:0 -3px"><div class="sec">Complete: Rimadyl 75 mg</div>
+<div class="row"><span>Time</span><span class="inp">8:07 AM · auto-now</span></div>
+<div class="row" style="justify-content:flex-start;gap:10px"><span><span class="rad radon"></span> Given</span><span><span class="rad"></span> Refused</span><span><span class="rad"></span> Skipped</span></div>
+<div class="row" style="gap:6px"><span class="inp" style="flex:1">Note…</span><span class="btn" style="padding:1px 8px">Photo</span></div>
+<div class="btn pri">Confirm &amp; log</div></div></div>
+<div class="cap">the clinical core — every completion is an audited who/when/outcome entry</div>
+</div>
+
+<div class="dv-opt" id="1q">
+<div class="dv-olabel"><a class="dv-oid" href="#1q">1q</a>Checklist — focus mode (wild card)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar"><span class="mut" style="font-weight:400">9 of 14 done</span><span class="pill">2 dogs waiting</span></div>
+<div class="meter"><div class="fill" style="width:64%"></div></div>
+<div style="flex:1"></div>
+<div class="card sk" style="border-width:2.5px;text-align:center;gap:6px;padding:14px 10px">
+<div class="mut">NOW · 12:00 PM</div>
+<div style="font-size:20px;font-weight:700">Lunch 1/2 cup</div>
+<div class="row" style="justify-content:center;gap:8px"><div class="imgx" style="width:34px;height:34px;border-radius:50%"></div><b>Bella</b><span class="mut">· Golden</span></div>
+<div class="acc" style="font-size:11px">Arthritis — give w/ food</div>
+<div class="btn pri" style="font-size:16px;padding:8px">DONE — log it</div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">Snooze</span><span class="btn" style="flex:1">Skip + note</span></div></div>
+<div style="flex:1"></div>
+<div class="row mut"><span>up next: 2:00 PM · Ear drops — Bella</span><span>list ▾</span></div>
+<div class="tabs"><b>Today</b><span>Shifts</span><span>Dogs</span><span>Msgs</span><span>Me</span></div></div>
+<div class="cap">wild card: one giant task at a time — leash in one hand, thumb on the other. Full list one tap away</div>
+</div>
+
+<div class="dv-opt" id="1r">
+<div class="dv-olabel"><a class="dv-oid" href="#1r">1r</a>Report card builder</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Report Card · Biscuit <span class="mut" style="font-weight:400">Sat</span></div>
+<div class="sec">Photos — tap to add, drag to reorder</div>
+<div class="row" style="gap:5px"><div class="imgx" style="flex:1;height:48px"></div><div class="imgx" style="flex:1;height:48px"></div><div class="imgx" style="flex:1;height:48px"></div><div class="card" style="flex:1;height:48px;align-items:center;justify-content:center;padding:0"><b>+</b></div></div>
+<div class="sec">Mood today</div>
+<div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><span><span class="rad"></span> Sleepy</span><span><span class="rad"></span> Calm</span><span><span class="rad radon"></span> Playful</span><span><span class="rad"></span> Anxious</span></div>
+<div class="row"><span class="sec" style="margin:0">Ate?</span><span><span class="rad radon"></span> All <span class="rad"></span> Some <span class="rad"></span> None</span></div>
+<div class="row" style="justify-content:flex-start;gap:4px"><span class="sec" style="margin:0">Play</span><span class="pill">+ Fetch</span><span class="pill">+ Zoomies</span><span class="pill">+ Naps</span></div>
+<div class="sec">Best moment</div>
+<div class="inp" style="min-height:40px">Made a new friend with Luna at the fence — total zoomies!</div>
+<div class="row"><span class="mut" style="font-size:11px">Auto-pulled: Breakfast 6:04a · Walk 10a</span><span class="cb">✓</span></div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">Save draft</span><span class="btn pri" style="flex:1">Send to owner</span></div></div>
+<div class="cap">quick-tap chips + auto-pulled care log → a card in under a minute</div>
+</div>
+
+<div class="dv-opt" id="1s">
+<div class="dv-olabel"><a class="dv-oid" href="#1s">1s</a>Dog roster — sorted by urgency</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Dogs here now (5) <span class="btn" style="padding:0 8px;font-size:11px">+ Photo</span></div>
+<div class="row"><span class="inp" style="flex:1">Search…</span><span class="pill">Urgency ▾</span></div>
+<div class="card" style="border-color:#d9480f"><div class="row"><b>Bella · Golden</b><span class="acc">OVERDUE 3m</span></div>
+<div class="mut">Jul 3 – 7 · Rimadyl 8:00a · feed 5:30p</div></div>
+<div class="card"><div class="row"><b>Biscuit · Beagle</b><span class="bdg">2 due</span></div>
+<div class="mut">Jul 4 – 6 · next: lunch 12:00p · <span class="acc">allergy: chicken</span></div></div>
+<div class="card"><div class="row"><b>Max · Boxer</b><span class="mut">insulin 6:00p</span></div>
+<div class="mut"><span class="acc">! Separate at feeding</span> · Jul 5 – 8</div></div>
+<div class="row mut"><span>Cooper · Lab mix · Jul 5</span><span>all done ✓</span></div>
+<div class="row mut"><span>Luna · Poodle · Jul 2 – 6</span><span>all done ✓</span></div>
+<div style="flex:1"></div>
+<div class="tabs"><span>Today</span><span>Shifts</span><b>Dogs</b><span>Msgs</span><span>Me</span></div></div>
+<div class="cap">pick the next dog to attend to; long-press → photo / message / report card</div>
+</div>
+
+<div class="dv-opt" id="1t">
+<div class="dv-olabel"><a class="dv-oid" href="#1t">1t</a>Incident report — from SOS</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Report Incident <span class="mut" style="font-weight:400">Sat Jul 5</span></div>
+<div class="sec">Type</div>
+<div class="row" style="justify-content:flex-start;gap:4px;flex-wrap:wrap"><span class="pill">Injury</span><span class="pill" style="background:#2b2b2b;color:#fff">Bite</span><span class="pill">Escape</span><span class="pill">Illness</span><span class="pill">Other</span></div>
+<div class="sec">Dog(s) involved</div>
+<div class="row" style="justify-content:flex-start;gap:10px"><span><span class="cb">✓</span> Max</span><span><span class="cb"></span> Bella</span><span class="mut">+ add</span></div>
+<div class="row"><span>When</span><span class="inp">1:42 PM · auto-now</span></div>
+<div class="row" style="justify-content:flex-start;gap:8px"><span class="sec" style="margin:0">Severity</span><span><span class="rad"></span> Minor</span><span><span class="rad radon"></span> Moderate</span><span><span class="rad"></span> Severe</span></div>
+<div class="sec">What happened</div>
+<div class="inp" style="min-height:44px">Max nipped at Cooper during feeding; no broken skin. Separated both.</div>
+<div class="row" style="justify-content:flex-start;gap:5px"><div class="imgx" style="width:44px;height:36px"></div><div class="card" style="width:44px;height:36px;align-items:center;justify-content:center;padding:0"><b>+</b></div></div>
+<div class="row" style="justify-content:flex-start;gap:10px"><span><span class="cb">✓</span> Separated</span><span><span class="cb"></span> First aid</span><span><span class="cb"></span> Vet</span></div>
+<div class="row"><span>Notify owner now</span><span class="cb"></span></div>
+<div class="btn accbtn sk">Submit — alerts management</div></div>
+<div class="cap">structured, fast, autosaved — creates an immutable record + immediate mgmt push</div>
+</div>
+
+<div class="grp">Management — oversight</div>
+
+<div class="dv-opt" id="1u">
+<div class="dv-olabel"><a class="dv-oid" href="#1u">1u</a>Dashboard — decisions-first (brief layout)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Zoomez <span class="pill">6/8 dogs</span><span class="bdg">needs you: 5</span></div>
+<div class="sec">Needs a decision</div>
+<div class="card sk" style="border-width:2.2px"><div class="row"><span>2 booking requests</span><span>Review &gt;</span></div>
+<div class="line"></div>
+<div class="row"><span>1 shift claim</span><span>Review &gt;</span></div>
+<div class="line"></div>
+<div class="row"><span>2 flagged messages</span><span>Open &gt;</span></div></div>
+<div class="row"><span class="sec">In-house now (6)</span><span class="mut" style="font-size:11px">Calendar &gt;</span></div>
+<div class="row"><span>Biscuit · Jul 1–4 · Jack</span><span class="acc">meds!</span></div>
+<div class="row"><span>Bella · Jul 2–6 · Jack</span><span class="mut">ok</span></div>
+<div class="row"><span>Cooper · Jul 3–5</span><span class="acc">UNASSIGNED</span></div>
+<div class="mut" style="font-size:11px">+ 3 more…</div>
+<div class="sec">Today's task load</div>
+<div class="meter"><div class="fill" style="width:63%"></div></div>
+<div class="row mut" style="font-size:11px"><span>7 of 11 done</span><span>next: 4 PM Biscuit Rimadyl</span></div>
+<div class="row" style="gap:5px"><span class="card" style="flex:1;text-align:center;font-size:11px">Occ 74%</span><span class="card" style="flex:1;text-align:center;font-size:11px">Rev $4,180</span><span class="card" style="flex:1;text-align:center;font-size:11px">Owed $560</span></div>
+<div class="tabs"><b>Dash</b><span>Cal</span><span>Inbox <span class="bdg">3</span></span><span>Photos</span><span>More</span></div></div>
+<div class="cap">every red item is one tap from resolution; KPIs tap into Reports</div>
+</div>
+
+<div class="dv-opt" id="1v">
+<div class="dv-olabel"><a class="dv-oid" href="#1v">1v</a>Dashboard — live-ops-first variant</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Zoomez <span class="pill">6/8</span><span class="mut" style="font-weight:400">Wed Jul 3</span></div>
+<div class="row" style="gap:5px"><span class="pill pillacc">2 bookings</span><span class="pill pillacc">1 claim</span><span class="pill pillacc">2 msgs</span></div>
+<div class="sec acc">Overdue (1)</div>
+<div class="card sk" style="border-color:#d9480f"><div class="row"><b>2:00 PM · Bella · Insulin 4u</b><span class="acc">+38m</span></div>
+<div class="mut">assigned: Jack — not done</div>
+<div class="row" style="gap:6px"><span class="btn" style="flex:1;padding:1px">Ping Jack</span><span class="btn" style="flex:1;padding:1px">Reassign</span></div></div>
+<div class="sec">Live board</div>
+<div class="row"><span>4:00 PM Biscuit · Rimadyl 75 mg</span><span class="mut">Jack</span></div>
+<div class="row"><span>4:00 PM Cooper · dinner 1.5c</span><span class="mut">Jack</span></div>
+<div class="row"><span>6:30 PM Bella · dinner + insulin</span><span class="mut">Jack</span></div>
+<div class="row mut"><span>✓ 8:00 AM Biscuit Rimadyl · Jack</span><span>+photo</span></div>
+<div class="row mut"><span>✓ 12:30 PM lunch feed, all</span><span>Jack</span></div>
+<div class="sec">In-house</div>
+<div class="row" style="justify-content:flex-start;gap:4px;flex-wrap:wrap"><span class="pill">Biscuit</span><span class="pill">Bella</span><span class="pill pillacc">Cooper ?</span><span class="pill">Luna</span><span class="pill">Max</span><span class="pill">Rocky</span></div>
+<div class="tabs"><b>Dash</b><span>Cal</span><span>Inbox <span class="bdg">3</span></span><span>Photos</span><span>More</span></div></div>
+<div class="cap">the live task board IS the home — approvals shrink to badges up top. For the hands-on manager</div>
+</div>
+
+<div class="dv-opt" id="1w">
+<div class="dv-olabel"><a class="dv-oid" href="#1w">1w</a>Capacity calendar + booking approvals</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; July 2026 &gt; <span class="mut" style="font-weight:400">cap: 8/night</span></div>
+<div class="card" style="gap:2px"><div class="row mut" style="font-size:10px"><span>Th 3</span><span>Fr 4</span><span>Sa 5</span><span>Su 6</span><span>Mo 7</span><span>Tu 8</span></div>
+<div class="row" style="font-size:12px"><span>6</span><b class="acc">8</b><b class="acc">8</b><span>5</span><span>4</span><span>3</span></div>
+<div class="row" style="font-size:9.5px"><span class="mut">ok</span><span class="acc">FULL</span><span class="acc">FULL</span><span class="mut">ok</span><span class="mut">ok</span><span class="mut">ok</span></div></div>
+<div class="sec">Pending requests (2)</div>
+<div class="card sk"><div class="row"><b>Rocky · Lab (Diaz)</b><span>Jul 4 → 6</span></div>
+<div class="acc" style="font-size:11px">! overlaps FULL nights Jul 4, 5</div>
+<div class="mut" style="font-size:11px">Waiver signed · $50 deposit held · "intact male, crate-trained"</div>
+<div class="row" style="gap:5px"><span class="btn" style="flex:1;padding:1px">Deny</span><span class="btn" style="flex:1;padding:1px">Waitlist</span><span class="btn pri" style="flex:1;padding:1px">Approve</span></div></div>
+<div class="card sk"><div class="row"><b>Luna · Poodle (Kim)</b><span>Jul 9 → 12</span></div>
+<div class="mut" style="font-size:11px">space ok · <span class="acc">waiver NOT signed</span> · no deposit</div>
+<div class="row" style="gap:5px"><span class="btn" style="flex:1;padding:1px">Deny</span><span class="btn" style="flex:1;padding:1px">Req. waiver</span><span class="btn pri" style="flex:1;padding:1px">Approve</span></div></div>
+<div class="row mut" style="font-size:11px"><span>+ Manual booking</span><span>Block dates</span></div>
+<div class="tabs"><span>Dash</span><b>Cal</b><span>Inbox</span><span>Photos</span><span>More</span></div></div>
+<div class="cap">approve without double-booking; FULL-night overlap triggers an overbook-confirm sheet</div>
+</div>
+
+<div class="dv-opt" id="1x">
+<div class="dv-olabel"><a class="dv-oid" href="#1x">1x</a>Inbox oversight — list + takeover (brief layout)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Inbox <span class="pill">Oversight ON</span></div>
+<div class="row" style="justify-content:flex-start;gap:4px"><span class="pill pillacc">Flagged</span><span class="pill">Unanswered</span><span class="pill">Med</span><span class="pill">Billing</span></div>
+<div class="card" style="border-color:#d9480f"><div class="row"><b>Diaz (Rocky) · staff: Jack</b><span class="acc">40m</span></div>
+<div class="mut">"is the deposit refundable if…"</div></div>
+<div class="row mut"><span>Kim (Luna) · Maria · "thank you!!"</span><span>2m</span></div>
+<div class="row"><span><b>Ortiz (Bella)</b> · Jack · <span class="pill pillacc" style="font-size:9px">MED</span></span><span>&gt;</span></div>
+<div class="line"></div>
+<div class="sec">Thread: Diaz ↔ Jack</div>
+<div class="bub" style="max-width:88%">Jack: pickup is anytime before 6 <span class="mut">2:10</span></div>
+<div class="bub bubme" style="max-width:88%">is the deposit refundable if we cancel? <span class="mut">2:12 · typing…</span></div>
+<div class="card" style="border-style:dashed;text-align:center;font-size:11px">You are VIEWING — staff can't see you · logged</div>
+<div class="row" style="gap:8px"><span class="btn" style="flex:1">Join thread</span><span class="btn accbtn" style="flex:1">Take over</span></div>
+<div class="tabs"><span>Dash</span><span>Cal</span><b>Inbox</b><span>Photos</span><span>More</span></div></div>
+<div class="cap">THE differentiator: silent view → join → take over, every state change audit-logged</div>
+</div>
+
+<div class="dv-opt" id="1y">
+<div class="dv-olabel"><a class="dv-oid" href="#1y">1y</a>Inbox oversight — periscope mode (wild card)</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">&lt; Diaz ↔ Jack <span class="mut" style="font-weight:400">(Rocky)</span></div>
+<div class="card" style="border-style:dashed;font-size:10.5px;text-align:center;background:#fbfaf7">watching silently · 2 others flagged · logged 2:14 PM</div>
+<div class="bub bubme">Any update on Rocky today? <span class="mut">2:08</span></div>
+<div class="bub">Jack: pickup is anytime before 6 <span class="mut">2:10 · read</span></div>
+<div class="bub bubme">is the deposit refundable if we cancel? <span class="mut">2:12</span></div>
+<div class="mut" style="font-size:11px">unanswered 40m — SLA breach at 60m</div>
+<div style="flex:1"></div>
+<div class="card sk" style="gap:6px"><div class="mut" style="font-size:11px;text-align:center">reply as Zoomez (mgmt) — Jack gets muted + notified</div>
+<div style="border:2px solid #2b2b2b;border-radius:20px;padding:3px;display:flex;align-items:center;gap:6px"><span style="border:2px solid #d9480f;background:#d9480f;color:#fff;border-radius:16px;padding:2px 12px;font-weight:700">≫</span><span class="mut">slide to take over</span></div>
+<div class="row mut" style="font-size:10.5px"><span>or: nudge Jack to reply</span><span>suggest answer</span></div></div>
+<div class="tabs"><span>Dash</span><span>Cal</span><b>Inbox</b><span>Photos</span><span>More</span></div></div>
+<div class="cap">wild card: takeover is a deliberate slide gesture — hard to hit by accident, dramatic on purpose. Softer paths (nudge / suggest) offered first</div>
+</div>
+
+<div class="dv-opt" id="1z">
+<div class="dv-olabel"><a class="dv-oid" href="#1z">1z</a>Live med/task board</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Task Board <span class="pill">7/11 done</span></div>
+<div class="mut" style="font-size:11px">Wed Jul 3 · routes to on-shift: Jack T. (7a–3p)</div>
+<div class="sec acc">Overdue (1)</div>
+<div class="card sk" style="border-color:#d9480f"><div class="row"><b>2:00 PM · Bella · Insulin 4u</b><span class="acc">+38m</span></div>
+<div class="row" style="gap:5px"><span class="btn" style="flex:1;padding:1px;font-size:11px">Ping Jack</span><span class="btn" style="flex:1;padding:1px;font-size:11px">Reassign</span><span class="btn" style="flex:1;padding:1px;font-size:11px">Mark done*</span></div></div>
+<div class="sec">Upcoming</div>
+<div class="row"><span>4:00 PM Biscuit · Rimadyl w/ food</span></div>
+<div class="row"><span>4:00 PM Cooper · dinner 1.5c kibble</span></div>
+<div class="row"><span>6:30 PM Bella · dinner + insulin 4u</span></div>
+<div class="row"><span>8:00 PM Rocky · walk 15 min</span></div>
+<div class="sec">Done today</div>
+<div class="row mut"><span>✓ 8:00 AM Biscuit Rimadyl · Jack</span><span>+photo</span></div>
+<div class="mut" style="font-size:10.5px;padding-left:14px">"took w/ pb, ate fine"</div>
+<div class="row mut"><span>✓ 8:00 AM Bella Insulin 4u · Jack</span></div>
+<div style="flex:1"></div>
+<div class="mut" style="font-size:10px">* mgmt override is flagged &amp; audit-logged</div>
+<div class="tabs"><span>Dash</span><span>Cal</span><span>Inbox</span><span>Photos</span><b>More</b></div></div>
+<div class="cap">watch every dog's care in real time; escalation drives the dashboard badge</div>
+</div>
+
+<div class="dv-opt" id="1aa">
+<div class="dv-olabel"><a class="dv-oid" href="#1aa">1aa</a>Reports + audit log</div>
+<div class="ph"><div class="notch"></div>
+<div class="bar">Reports <span class="inp" style="font-size:11px;padding:0 6px">July 2026 ▾</span></div>
+<div class="sec">Occupancy</div>
+<div class="row"><span>avg 74%</span><span class="mut">peak Jul 4–5 · 100%</span></div>
+<div class="row" style="align-items:flex-end;gap:2px;height:30px">
+<span style="flex:1;background:#ccc;height:40%"></span><span style="flex:1;background:#ccc;height:55%"></span><span style="flex:1;background:#2b2b2b;height:100%"></span><span style="flex:1;background:#2b2b2b;height:100%"></span><span style="flex:1;background:#ccc;height:62%"></span><span style="flex:1;background:#ccc;height:50%"></span><span style="flex:1;background:#ccc;height:38%"></span><span style="flex:1;background:#ccc;height:45%"></span></div>
+<div class="sec">Revenue (Jul)</div>
+<div class="row"><span>Boarding</span><span>$3,540</span></div>
+<div class="row"><span>Upsells</span><span>$640</span></div>
+<div class="row"><b>Total</b><b>$4,180</b></div>
+<div class="row"><span class="acc">Outstanding $560 · 3 invoices</span><span class="btn" style="padding:0 8px;font-size:11px">chase</span></div>
+<div class="sec">By staff</div>
+<div class="row mut" style="font-size:11px"><span>Jack · 14 shifts · 46 tasks</span><span>98% on-time</span></div>
+<div class="row mut" style="font-size:11px"><span>Maria · 11 shifts · 33 tasks</span><span>100%</span></div>
+<div class="sec">Audit log</div>
+<div class="mut" style="font-size:10.5px">2:48p Corry APPROVED booking Rocky Jul 4–6</div>
+<div class="mut" style="font-size:10.5px">2:41p Brette TOOK OVER thread Diaz ↔ Jack</div>
+<div class="mut" style="font-size:10.5px">2:38p Mom OVERRIDE med done — Bella insulin</div>
+<div class="tabs"><span>Dash</span><span>Cal</span><span>Inbox</span><span>Photos</span><b>More</b></div></div>
+<div class="cap">accountability for a family business — every sensitive action lands here, append-only</div>
+</div>
+</div>
+<p class="dv-next">Try next: "more like <a class="dv-oid" href="#1f">1f</a> for the report card" · "combine <a class="dv-oid" href="#1a">1a</a> hero with <a class="dv-oid" href="#1b">1b</a> feed" · "new directions for booking"</p>
+</section>
+
+</x-dc>
+</body>
+</html>

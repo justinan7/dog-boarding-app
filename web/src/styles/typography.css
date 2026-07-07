@@ -1,0 +1,34 @@
+/* ============================================================
+   Zoomez — Typography tokens
+   Display: Instrument Serif. Body/UI: Figtree.
+   ============================================================ */
+:root {
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Scale */
+  --text-xs:   0.75rem;   /* 12 — legal, captions */
+  --text-sm:   0.875rem;  /* 14 — secondary UI */
+  --text-base: 1rem;      /* 16 — body */
+  --text-lg:   1.125rem;  /* 18 — lead body */
+  --text-xl:   1.375rem;  /* 22 — card titles (display) */
+  --text-2xl:  1.75rem;   /* 28 — section heads (display) */
+  --text-3xl:  2.375rem;  /* 38 — page titles (display) */
+  --text-4xl:  3.25rem;   /* 52 — hero (display) */
+  --text-5xl:  4.5rem;    /* 72 — statement hero (display) */
+
+  /* Line heights */
+  --leading-display: 1.05;
+  --leading-tight:   1.2;
+  --leading-body:    1.55;
+
+  /* Weights (Figtree only — Instrument Serif is 400 only) */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* Eyebrow / label style */
+  --tracking-label: 0.14em;
+  --tracking-body:  0;
+}

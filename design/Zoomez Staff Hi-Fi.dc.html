@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/colors.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/typography.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/effects.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/styles.css">
+<script src="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--foam-50);font-family:var(--font-body)}
+a{color:var(--lagoon-700)}a:hover{color:var(--lagoon-500)}
+</style>
+</helmet>
+
+<div style="padding:44px 48px 56px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:baseline;gap:16px">
+  <span style="font-family:var(--font-display);font-style:italic;font-size:34px;color:var(--text-heading)">Zoomez<span style="color:var(--accent-gold)">.</span></span>
+  <span style="font-size:13px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Staff app · hi-fi · from wireframes 2b · 1n · 3a · 1r · 1s · 1t · 2d</span>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+
+<!-- ============ 01 TODAY ============ -->
+<div data-screen-label="Today" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">01 · Today</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <span style="display:inline-flex;align-items:center;gap:7px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase">
+      <span style="width:7px;height:7px;border-radius:999px;background:var(--green-success)"></span>On shift · 7a – 3p
+    </span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:7px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:999px;padding:4px 11px 4px 4px">
+        <div style="width:26px;height:26px;border-radius:999px;background:var(--tide-300);display:flex;align-items:center;justify-content:center;color:var(--tide-700)">
+          <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 14 }}" hint-size="14px,14px"></x-import>
+        </div>
+        <span style="font-size:13.5px;font-weight:600;color:var(--text-heading)">Jack</span>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-down" size="{{ 13 }}" style="color:var(--stone-400)" hint-size="13px,13px"></x-import>
+      </div>
+      <div style="width:36px;height:36px;border-radius:999px;background:var(--coral-200);display:flex;align-items:center;justify-content:center;color:#A94E33">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="triangle-alert" size="{{ 17 }}" hint-size="17px,17px"></x-import>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-family:var(--font-display);font-size:32px;line-height:1.05;color:var(--text-heading)">Saturday, Jul 5</div>
+    <div style="margin-top:4px;font-size:14px;color:var(--text-muted)">Five guests in residence · 5 tasks left today</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent-gold)">Next up</span>
+    <div style="background:var(--surface-inverse);border-radius:var(--radius-xl);padding:18px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-700);flex:none">
+          <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 22 }}" hint-size="22px,22px"></x-import>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:17px;font-weight:700;color:var(--foam-50)">Rimadyl 75 mg</span>
+          <span style="font-size:13.5px;color:var(--seaglass-200)">Bella · Golden Retriever</span>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:5px;background:var(--biscuit-500);color:var(--lagoon-900);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700">Due 4m</span>
+      </div>
+      <div style="display:flex;gap:10px">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="gold" size="md" style="flex:1" hint-size="50%,44px">Log it</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="md" style="flex:1;--accent-primary:var(--seaglass-200);color:var(--seaglass-200);border-color:rgba(207,228,218,0.4)" hint-size="50%,44px">Snooze</x-import>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Here now · 5 dogs</span>
+      <span style="font-size:13px;font-weight:600;color:var(--lagoon-700)">See all</span>
+    </div>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)">
+        <div style="width:34px;height:34px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;font-weight:600;color:var(--text-heading)">Biscuit</span><span style="font-size:12.5px;color:var(--text-muted)">Beagle</span></div>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="gold" hint-size="auto,24px">2 due</x-import>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)">
+        <div style="width:34px;height:34px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;font-weight:600;color:var(--text-heading)">Bella</span><span style="font-size:12.5px;color:var(--text-muted)">Golden Retriever</span></div>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="gold" hint-size="auto,24px">1 due</x-import>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)">
+        <div style="width:34px;height:34px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;font-weight:600;color:var(--text-heading)">Cooper</span><span style="font-size:12.5px;color:var(--text-muted)">Lab mix</span></div>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--green-success);font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 15 }}" hint-size="15px,15px"></x-import>Done</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0">
+        <div style="width:34px;height:34px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;font-weight:600;color:var(--text-heading)">Max</span><span style="font-size:12.5px;color:var(--text-muted)">Boxer</span></div>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="error" hint-size="auto,24px">Med</x-import>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-tint);border-radius:var(--radius-lg);padding:16px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;font-weight:600;color:var(--lagoon-700)">Today's progress</span><span style="font-size:13px;color:var(--text-muted)">9 of 14 tasks</span></div>
+    <div style="height:10px;border-radius:999px;background:var(--white);overflow:hidden"><div style="width:64%;height:100%;background:var(--lagoon-500)"></div></div>
+    <div style="font-size:12.5px;color:var(--text-muted)">3 photos captured · 1 report card sent</div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="sun" size="{{ 21 }}" hint-size="21px,21px"></x-import>Today</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Shifts</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="paw-print" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dogs</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="message-circle" size="{{ 21 }}" hint-size="21px,21px"></x-import>Messages</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 21 }}" hint-size="21px,21px"></x-import>Me</div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 02 SHIFTS ============ -->
+<div data-screen-label="Shifts" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">02 · Shift board</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <span style="font-family:var(--font-display);font-size:30px;color:var(--text-heading)">Shifts</span>
+    <div style="display:flex;align-items:center;gap:7px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:999px;padding:4px 11px 4px 4px">
+      <div style="width:26px;height:26px;border-radius:999px;background:var(--tide-300);display:flex;align-items:center;justify-content:center;color:var(--tide-700)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 14 }}" hint-size="14px,14px"></x-import></div>
+      <span style="font-size:13.5px;font-weight:600;color:var(--text-heading)">Jack</span>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-down" size="{{ 13 }}" style="color:var(--stone-400)" hint-size="13px,13px"></x-import>
+    </div>
+  </div>
+
+  <div style="display:flex;background:var(--stone-100);border-radius:999px;padding:4px">
+    <div style="flex:1;text-align:center;padding:8px 0;border-radius:999px;background:var(--surface-card);box-shadow:var(--shadow-card);font-size:14px;font-weight:600;color:var(--text-heading)">Open shifts</div>
+    <div style="flex:1;text-align:center;padding:8px 0;font-size:14px;font-weight:500;color:var(--text-muted)">My schedule</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Sunday, Jul 6</span>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--font-display);font-size:22px;color:var(--text-heading)">7:00a – 3:00p</span>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="gold" hint-size="auto,24px">Open</x-import>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;font-size:13.5px;color:var(--text-muted)">
+        <span style="display:inline-flex;align-items:center;gap:5px"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="paw-print" size="{{ 15 }}" hint-size="15px,15px"></x-import>6 dogs</span>
+        <span style="display:inline-flex;align-items:center;gap:5px"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="pill" size="{{ 15 }}" hint-size="15px,15px"></x-import>2 meds due</span>
+      </div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="primary" size="md" full-width="{{ true }}" hint-size="100%,44px">Claim shift</x-import>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Monday, Jul 7</span>
+    <div style="background:var(--surface-card);border:1.5px solid var(--biscuit-300);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--font-display);font-size:22px;color:var(--text-heading)">3:00p – 9:00p</span>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="gold" hint-size="auto,24px">Pending · you</x-import>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--biscuit-700)">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="info" size="{{ 15 }}" style="margin-top:1px;flex:none" hint-size="15px,15px"></x-import>
+        <span>Overlaps your 1 – 3p shift. A manager will confirm.</span>
+      </div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="md" full-width="{{ true }}" hint-size="100%,44px">Withdraw claim</x-import>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border-subtle)">
+      <div style="display:flex;flex-direction:column"><span style="font-size:14px;color:var(--text-body)">Tue, Jul 8 · 7a – 3p</span></div>
+      <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)"><div style="width:22px;height:22px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 12 }}" hint-size="12px,12px"></x-import></div>Brette</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0">
+      <span style="font-size:14px;color:var(--text-body)">Wed, Jul 9 · 7a – 3p</span>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="ghost" size="sm" hint-size="auto,34px">Claim</x-import>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="sun" size="{{ 21 }}" hint-size="21px,21px"></x-import>Today</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Shifts</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="paw-print" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dogs</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="message-circle" size="{{ 21 }}" hint-size="21px,21px"></x-import>Messages</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 21 }}" hint-size="21px,21px"></x-import>Me</div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 03 CHECKLIST ============ -->
+<div data-screen-label="Dog checklist" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">03 · Dog checklist + add task</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;gap:12px">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-left" size="{{ 22 }}" style="color:var(--lagoon-700)" hint-size="22px,22px"></x-import>
+    <div style="width:44px;height:44px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 22 }}" hint-size="22px,22px"></x-import></div>
+    <div style="flex:1;display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:26px;color:var(--text-heading)">Bella</span><span style="font-size:12.5px;color:var(--text-muted)">Golden · Jul 3 – 7 · owner Sarah M</span></div>
+    <div style="width:38px;height:38px;border-radius:999px;background:var(--surface-tint);display:flex;align-items:center;justify-content:center;color:var(--lagoon-700)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="message-circle" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+  </div>
+
+  <div style="display:flex;align-items:flex-start;gap:8px;background:var(--biscuit-200);border-radius:var(--radius-md);padding:11px 14px;font-size:13px;color:var(--biscuit-700)">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="triangle-alert" size="{{ 16 }}" style="margin-top:1px;flex:none" hint-size="16px,16px"></x-import>
+    <span>Arthritis — always give medication with food.</span>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Today · Sat Jul 5</span>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" icon="plus" hint-size="auto,34px">Add task</x-import>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle)">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--lagoon-700);display:flex;align-items:center;justify-content:center;flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 15 }}" style="color:var(--foam-50)" hint-size="15px,15px"></x-import></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;color:var(--stone-400);text-decoration:line-through">Breakfast, 1 cup</span><span style="font-size:12px;color:var(--stone-400)">6:00 AM · done 6:04 by you</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle)">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--lagoon-700);display:flex;align-items:center;justify-content:center;flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 15 }}" style="color:var(--foam-50)" hint-size="15px,15px"></x-import></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;color:var(--stone-400);text-decoration:line-through">Rimadyl 75 mg</span><span style="font-size:12px;color:var(--stone-400)">8:00 AM · done 8:07 by you</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle)">
+      <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface-card);flex:none"></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;font-weight:600;color:var(--text-heading)">Lunch, ½ cup</span><span style="font-size:12.5px;color:var(--text-muted)">12:00 PM · due in 2h 11m</span></div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-right" size="{{ 18 }}" style="color:var(--stone-400)" hint-size="18px,18px"></x-import>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle)">
+      <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface-card);flex:none"></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;color:var(--text-body)">Ear drops, both ears</span><span style="font-size:12.5px;color:var(--text-muted)">2:00 PM</span></div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-right" size="{{ 18 }}" style="color:var(--stone-400)" hint-size="18px,18px"></x-import>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle)">
+      <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface-card);flex:none"></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;color:var(--text-body)">Recheck hot spot on paw</span><span style="font-size:12.5px;color:var(--text-muted)">3:30 PM</span></div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="neutral" hint-size="auto,22px">Added by you</x-import>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+      <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface-card);flex:none"></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14.5px;color:var(--text-muted)">Rimadyl 75 mg</span><span style="font-size:12.5px;color:var(--text-muted)">8:00 PM · evening staff</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 03b ADD TASK SHEET ============ -->
+<div data-screen-label="Add task" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">03b · Add task sheet</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:rgba(12,43,42,0.45);font-family:var(--font-body);color:var(--text-body);justify-content:flex-end">
+  <div style="padding:56px 20px 12px;display:flex;flex-direction:column;gap:10px;opacity:0.5">
+    <div style="height:44px;border-radius:999px;background:var(--surface-card);opacity:0.6"></div>
+    <div style="height:60px;border-radius:var(--radius-lg);background:var(--surface-card);opacity:0.6"></div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="background:var(--surface-page);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:16px 20px 34px;display:flex;flex-direction:column;gap:16px;box-shadow:0 -8px 40px rgba(12,43,42,0.2)">
+    <div style="width:44px;height:5px;border-radius:999px;background:var(--stone-200);align-self:center"></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+      <span style="font-family:var(--font-display);font-size:24px;color:var(--text-heading)">Add a task for Bella</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Repeats</span>
+      <div style="display:flex;gap:8px">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" selected="{{ true }}" hint-size="auto,34px">One time</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Daily this stay</x-import>
+      </div>
+    </div>
+
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Input" label="Task" value="Recheck hot spot on paw" hint-size="100%,72px"></x-import>
+
+    <div style="display:flex;gap:12px">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Input" label="When" value="3:30 PM today" icon="clock" style="flex:1" hint-size="50%,72px"></x-import>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Type</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="pill" onClick="{{ noop }}" hint-size="auto,34px">Med</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="utensils" onClick="{{ noop }}" hint-size="auto,34px">Feed</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="paw-print" onClick="{{ noop }}" hint-size="auto,34px">Walk</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="clipboard-check" selected="{{ true }}" hint-size="auto,34px">Check</x-import>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:14px;color:var(--text-body)">Alert on-shift staff at task time</span>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Switch" checked="{{ true }}" hint-size="44px,26px"></x-import>
+    </div>
+
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="primary" size="lg" full-width="{{ true }}" hint-size="100%,54px">Add to checklist</x-import>
+    <div style="text-align:center;font-size:12px;color:var(--text-muted)">Logged as "added by Jack, 11:42 AM" — visible to management.</div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 04 REPORT CARD BUILDER ============ -->
+<div data-screen-label="Report card builder" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">04 · Report card builder</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-left" size="{{ 22 }}" style="color:var(--lagoon-700)" hint-size="22px,22px"></x-import>
+    <div style="flex:1;display:flex;align-items:center;gap:10px">
+      <div style="width:36px;height:36px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 18 }}" hint-size="18px,18px"></x-import></div>
+      <span style="font-family:var(--font-display);font-size:24px;color:var(--text-heading)">Biscuit's card</span>
+    </div>
+    <span style="font-size:13px;color:var(--text-muted)">Sat</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Photos · tap to add, drag to reorder</span>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div style="aspect-ratio:1;border-radius:var(--radius-md);background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-300)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="sun" size="{{ 18 }}" hint-size="18px,18px"></x-import></div>
+      <div style="aspect-ratio:1;border-radius:var(--radius-md);background:var(--seaglass-100);display:flex;align-items:center;justify-content:center;color:var(--lagoon-300)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="waves" size="{{ 18 }}" hint-size="18px,18px"></x-import></div>
+      <div style="aspect-ratio:1;border-radius:var(--radius-md);background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-300)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="bone" size="{{ 18 }}" hint-size="18px,18px"></x-import></div>
+      <div style="aspect-ratio:1;border-radius:var(--radius-md);border:1.5px dashed var(--border-strong);display:flex;align-items:center;justify-content:center;color:var(--stone-400)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="plus" size="{{ 20 }}" hint-size="20px,20px"></x-import></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Mood today</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Sleepy</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Calm</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" selected="{{ true }}" hint-size="auto,34px">Playful</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Anxious</x-import>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Appetite</span>
+    <div style="display:flex;gap:8px">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" selected="{{ true }}" hint-size="auto,34px">Ate everything</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Some</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">None</x-import>
+    </div>
+  </div>
+
+  <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Input" label="Best moment" value="Made a new friend with Luna at the fence — total zoomies." hint-size="100%,84px"></x-import>
+
+  <div style="background:var(--surface-tint);border-radius:var(--radius-md);padding:12px 14px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-body)">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 16 }}" style="color:var(--green-success)" hint-size="16px,16px"></x-import>
+    Care log auto-added: Breakfast 6:04a · Walk 10a
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="md" style="flex:1" hint-size="50%,48px">Save draft</x-import>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="primary" size="md" icon="send" style="flex:1" hint-size="50%,48px">Send to owner</x-import>
+  </div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 05 DOG ROSTER ============ -->
+<div data-screen-label="Dog roster" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">05 · Dog roster</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:30px;color:var(--text-heading)">Dogs here now</span><span style="font-size:13px;color:var(--text-muted)">Five in residence</span></div>
+    <div style="width:40px;height:40px;border-radius:999px;background:var(--lagoon-700);display:flex;align-items:center;justify-content:center;color:var(--foam-50)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="camera" size="{{ 19 }}" hint-size="19px,19px"></x-import></div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-items:center">
+    <div style="flex:1"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Input" placeholder="Search dogs" icon="search" hint-size="100%,48px"></x-import></div>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="md" icon-after="chevron-down" hint-size="auto,48px">Urgency</x-import>
+  </div>
+
+  <div style="background:var(--surface-card);border:1.5px solid var(--coral-500);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 22 }}" hint-size="22px,22px"></x-import></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Bella · Golden</span><span style="font-size:12.5px;color:var(--text-muted)">Jul 3 – 7 · Rimadyl 8:00a · feed 5:30p</span></div>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="error" hint-size="auto,24px">Overdue 3m</x-import>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 22 }}" hint-size="22px,22px"></x-import></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Biscuit · Beagle</span><span style="font-size:12.5px;color:var(--text-muted)">Next: lunch 12:00p · <span style="color:var(--red-error);font-weight:600">allergy: chicken</span></span></div>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="gold" hint-size="auto,24px">2 due</x-import>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 22 }}" hint-size="22px,22px"></x-import></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Max · Boxer</span><span style="font-size:12.5px;color:var(--text-muted)"><span style="color:var(--red-error);font-weight:600">Separate at feeding</span> · Jul 5 – 8</span></div>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="lagoon" hint-size="auto,24px">Insulin 6p</x-import>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 22 }}" hint-size="22px,22px"></x-import></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Cooper · Lab mix</span><span style="font-size:12.5px;color:var(--text-muted)">Jul 5 · all tasks complete</span></div>
+    <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--green-success);font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 15 }}" hint-size="15px,15px"></x-import>Done</span>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="sun" size="{{ 21 }}" hint-size="21px,21px"></x-import>Today</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Shifts</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="paw-print" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dogs</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="message-circle" size="{{ 21 }}" hint-size="21px,21px"></x-import>Messages</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 21 }}" hint-size="21px,21px"></x-import>Me</div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 06 INCIDENT REPORT ============ -->
+<div data-screen-label="Incident report" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">06 · Incident report</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="x" size="{{ 22 }}" style="color:var(--lagoon-700)" hint-size="22px,22px"></x-import>
+    <div style="flex:1;display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:26px;color:var(--text-heading)">Report an incident</span><span style="font-size:12.5px;color:var(--text-muted)">Autosaving · Sat Jul 5</span></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Type</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Injury</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" selected="{{ true }}" hint-size="auto,34px">Bite</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Escape</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Illness</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Other</x-import>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Dogs involved</span>
+    <div style="display:flex;gap:8px">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="dog" selected="{{ true }}" hint-size="auto,34px">Max</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="dog" onClick="{{ noop }}" hint-size="auto,34px">Cooper</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" icon="plus" onClick="{{ noop }}" hint-size="auto,34px">Add</x-import>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Input" label="When" value="1:42 PM today" icon="clock" style="flex:1" hint-size="50%,72px"></x-import>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Severity</span>
+    <div style="display:flex;gap:8px">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Minor</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" selected="{{ true }}" hint-size="auto,34px">Moderate</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Tag" onClick="{{ noop }}" hint-size="auto,34px">Severe</x-import>
+    </div>
+  </div>
+
+  <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Input" label="What happened" value="Max nipped at Cooper during feeding. No broken skin. Separated both immediately." hint-size="100%,96px"></x-import>
+
+  <div style="display:flex;gap:8px">
+    <div style="width:56px;height:56px;border-radius:var(--radius-md);background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-300)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="image" size="{{ 20 }}" hint-size="20px,20px"></x-import></div>
+    <div style="width:56px;height:56px;border-radius:var(--radius-md);border:1.5px dashed var(--border-strong);display:flex;align-items:center;justify-content:center;color:var(--stone-400)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="plus" size="{{ 20 }}" hint-size="20px,20px"></x-import></div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border-subtle)"><div style="width:22px;height:22px;border-radius:7px;background:var(--lagoon-700);display:flex;align-items:center;justify-content:center;flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 13 }}" style="color:var(--foam-50)" hint-size="13px,13px"></x-import></div><span style="font-size:14px;color:var(--text-body)">Separated the dogs</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border-subtle)"><div style="width:22px;height:22px;border-radius:7px;border:1.5px solid var(--border-strong);flex:none"></div><span style="font-size:14px;color:var(--text-body)">First aid given</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 0"><div style="width:22px;height:22px;border-radius:7px;border:1.5px solid var(--border-strong);flex:none"></div><span style="font-size:14px;color:var(--text-body)">Vet contacted</span></div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <span style="font-size:14px;color:var(--text-body)">Notify owner now</span>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Switch" hint-size="44px,26px"></x-import>
+  </div>
+
+  <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="primary" size="lg" full-width="{{ true }}" style="background:var(--coral-500)" hint-size="100%,54px">Submit — alerts management</x-import>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 07 ACCOUNT SWITCHER ============ -->
+<div data-screen-label="Account switcher" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">07 · Account · view switcher</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:rgba(12,43,42,0.45);font-family:var(--font-body);color:var(--text-body);justify-content:flex-end">
+  <div style="padding:56px 20px 12px;display:flex;flex-direction:column;gap:12px;opacity:0.4">
+    <div style="height:40px;border-radius:999px;background:var(--surface-card)"></div>
+    <div style="height:80px;border-radius:var(--radius-lg);background:var(--surface-card)"></div>
+    <div style="height:56px;border-radius:var(--radius-lg);background:var(--surface-card)"></div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="background:var(--surface-page);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:16px 20px 34px;display:flex;flex-direction:column;gap:16px;box-shadow:0 -8px 40px rgba(12,43,42,0.2)">
+    <div style="width:44px;height:5px;border-radius:999px;background:var(--stone-200);align-self:center"></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:52px;height:52px;border-radius:999px;background:var(--tide-300);display:flex;align-items:center;justify-content:center;color:var(--tide-700);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 24 }}" hint-size="24px,24px"></x-import></div>
+      <div style="display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:24px;color:var(--text-heading)">Jack Torres</span><span style="font-size:13px;color:var(--text-muted)">jack@zoomez.app</span></div>
+    </div>
+
+    <div style="height:1px;background:var(--border-subtle)"></div>
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">View as</span>
+
+    <div style="border:1.5px solid var(--lagoon-700);border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:flex-start;gap:12px">
+      <span style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--lagoon-700);display:inline-flex;align-items:center;justify-content:center;flex:none;margin-top:1px"><span style="width:12px;height:12px;border-radius:999px;background:var(--lagoon-700)"></span></span>
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Staff</span><span style="font-size:13px;color:var(--text-muted)">Today, shifts, dog checklists</span></div>
+    </div>
+
+    <div style="border:1.5px solid var(--border-subtle);border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:flex-start;gap:12px">
+      <span style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--border-strong);flex:none;margin-top:1px"></span>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Manager</span><span style="font-size:13px;color:var(--text-muted)">Approvals, oversight, reports</span></div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="gold" icon="lock" hint-size="auto,24px">PIN</x-import>
+    </div>
+
+    <div style="height:1px;background:var(--border-subtle)"></div>
+    <div style="display:flex;align-items:center;gap:12px;color:var(--text-body)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="settings" size="{{ 18 }}" style="color:var(--stone-600)" hint-size="18px,18px"></x-import><span style="flex:1;font-size:14.5px">Profile &amp; settings</span><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-right" size="{{ 17 }}" style="color:var(--stone-400)" hint-size="17px,17px"></x-import></div>
+    <div style="display:flex;align-items:center;gap:12px;color:var(--text-body)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="log-out" size="{{ 18 }}" style="color:var(--stone-600)" hint-size="18px,18px"></x-import><span style="flex:1;font-size:14.5px">Sign out</span></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;switcherOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;State&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      switcherOpen: this.props.switcherOpen ?? false,
+      noop: () => {},
+    };
+  }
+}
+
+</script>
+</body>
+</html>

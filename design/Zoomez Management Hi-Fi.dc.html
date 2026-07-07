@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/colors.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/typography.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/tokens/effects.css">
+<link rel="stylesheet" href="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/styles.css">
+<script src="_ds/zoomez-design-system-13f58d0b-d3fd-428b-977c-272f70164bcb/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--foam-50);font-family:var(--font-body)}
+a{color:var(--lagoon-700)}a:hover{color:var(--lagoon-500)}
+</style>
+</helmet>
+
+<div style="padding:44px 48px 56px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:baseline;gap:16px">
+  <span style="font-family:var(--font-display);font-style:italic;font-size:34px;color:var(--text-heading)">Zoomez<span style="color:var(--accent-gold)">.</span></span>
+  <span style="font-size:13px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Management app · hi-fi · from wireframes 1v · 1w · 1y · 1z · 1aa</span>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+
+<!-- ============ 01 DASHBOARD ============ -->
+<div data-screen-label="Dashboard" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">01 · Dashboard · live-ops</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <span style="font-family:var(--font-display);font-style:italic;font-size:26px;color:var(--text-heading)">Zoomez<span style="color:var(--accent-gold)">.</span></span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600">6 / 8 suites</span>
+      <div style="display:flex;align-items:center;gap:7px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:999px;padding:4px 11px 4px 4px">
+        <div style="width:26px;height:26px;border-radius:999px;background:var(--biscuit-300);display:flex;align-items:center;justify-content:center;color:var(--biscuit-700)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 14 }}" hint-size="14px,14px"></x-import></div>
+        <span style="font-size:13.5px;font-weight:600;color:var(--text-heading)">Corry</span>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-down" size="{{ 13 }}" style="color:var(--stone-400)" hint-size="13px,13px"></x-import>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-family:var(--font-display);font-size:32px;line-height:1.05;color:var(--text-heading)">Wednesday, Jul 3</div>
+    <div style="margin-top:4px;font-size:14px;color:var(--text-muted)">On shift: Jack Torres · 7a – 3p</div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:6px;background:var(--biscuit-200);color:var(--biscuit-700);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600">2 bookings</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;background:var(--biscuit-200);color:var(--biscuit-700);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600">1 shift claim</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;background:var(--biscuit-200);color:var(--biscuit-700);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600">2 messages</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--red-error)">Overdue</span>
+    <div style="background:var(--surface-card);border:1.5px solid var(--coral-500);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 20 }}" hint-size="20px,20px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Bella · Insulin 4u</span><span style="font-size:12.5px;color:var(--text-muted)">Due 2:00 PM · assigned to Jack</span></div>
+        <span style="display:inline-flex;align-items:center;gap:5px;background:var(--coral-500);color:var(--foam-50);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700">+38m</span>
+      </div>
+      <div style="display:flex;gap:10px">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" style="flex:1" hint-size="50%,38px">Ping Jack</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" style="flex:1" hint-size="50%,38px">Reassign</x-import>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Live board</span>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)">
+        <div style="width:30px;height:30px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 15 }}" hint-size="15px,15px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;color:var(--text-body)">Biscuit · Rimadyl 75 mg</span><span style="font-size:12px;color:var(--text-muted)">4:00 PM</span></div>
+        <span style="font-size:12.5px;color:var(--text-muted)">Jack</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)">
+        <div style="width:30px;height:30px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 15 }}" hint-size="15px,15px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;color:var(--text-body)">Cooper · Dinner 1.5 cup</span><span style="font-size:12px;color:var(--text-muted)">4:00 PM</span></div>
+        <span style="font-size:12.5px;color:var(--text-muted)">Jack</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0">
+        <div style="width:30px;height:30px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 15 }}" hint-size="15px,15px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;color:var(--text-body)">Bella · Dinner + insulin</span><span style="font-size:12px;color:var(--text-muted)">6:30 PM</span></div>
+        <span style="font-size:12.5px;color:var(--text-muted)">Jack</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">In residence</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 12px 5px 5px;font-size:13px;font-weight:500"><span style="width:22px;height:22px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 12 }}" hint-size="12px,12px"></x-import></span>Biscuit</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 12px 5px 5px;font-size:13px;font-weight:500"><span style="width:22px;height:22px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 12 }}" hint-size="12px,12px"></x-import></span>Bella</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--coral-200);color:#A94E33;border-radius:999px;padding:5px 12px 5px 5px;font-size:13px;font-weight:500"><span style="width:22px;height:22px;border-radius:999px;background:var(--coral-200);display:flex;align-items:center;justify-content:center;color:#A94E33"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 12 }}" hint-size="12px,12px"></x-import></span>Cooper?</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 12px 5px 5px;font-size:13px;font-weight:500"><span style="width:22px;height:22px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 12 }}" hint-size="12px,12px"></x-import></span>Luna</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 12px 5px 5px;font-size:13px;font-weight:500"><span style="width:22px;height:22px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 12 }}" hint-size="12px,12px"></x-import></span>Max</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 12px 5px 5px;font-size:13px;font-weight:500"><span style="width:22px;height:22px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 12 }}" hint-size="12px,12px"></x-import></span>Rocky</span>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="layout-dashboard" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dash</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Calendar</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500;position:relative"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="inbox" size="{{ 21 }}" hint-size="21px,21px"></x-import>Inbox<span style="position:absolute;top:-4px;right:6px;width:16px;height:16px;border-radius:999px;background:var(--coral-500);color:var(--foam-50);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center">3</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="images" size="{{ 21 }}" hint-size="21px,21px"></x-import>Photos</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="menu" size="{{ 21 }}" hint-size="21px,21px"></x-import>More</div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 02 CALENDAR + APPROVALS ============ -->
+<div data-screen-label="Calendar approvals" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">02 · Capacity calendar + booking approvals</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:28px;color:var(--text-heading)">July 2026</span><span style="font-size:12.5px;color:var(--text-muted)">Capacity: 8 suites / night</span></div>
+    <div style="display:flex;gap:6px">
+      <div style="width:36px;height:36px;border-radius:999px;background:var(--surface-card);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;color:var(--lagoon-700)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-left" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+      <div style="width:36px;height:36px;border-radius:999px;background:var(--surface-card);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;color:var(--lagoon-700)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-right" size="{{ 17 }}" hint-size="17px,17px"></x-import></div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:14px 12px;display:flex;flex-direction:column;gap:8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;text-align:center">
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;color:var(--text-muted)">Th 3</span><span style="font-size:15px;font-weight:700;color:var(--text-heading)">6</span><span style="font-size:9.5px;color:var(--green-success);font-weight:600">OK</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;color:var(--text-muted)">Fr 4</span><span style="font-size:15px;font-weight:700;color:var(--red-error)">8</span><span style="font-size:9.5px;color:var(--red-error);font-weight:600">FULL</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;color:var(--text-muted)">Sa 5</span><span style="font-size:15px;font-weight:700;color:var(--red-error)">8</span><span style="font-size:9.5px;color:var(--red-error);font-weight:600">FULL</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;color:var(--text-muted)">Su 6</span><span style="font-size:15px;font-weight:700;color:var(--text-heading)">5</span><span style="font-size:9.5px;color:var(--green-success);font-weight:600">OK</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;color:var(--text-muted)">Mo 7</span><span style="font-size:15px;font-weight:700;color:var(--text-heading)">4</span><span style="font-size:9.5px;color:var(--green-success);font-weight:600">OK</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;color:var(--text-muted)">Tu 8</span><span style="font-size:15px;font-weight:700;color:var(--text-heading)">3</span><span style="font-size:9.5px;color:var(--green-success);font-weight:600">OK</span></div>
+    </div>
+  </div>
+
+  <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Pending requests · 2</span>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 20 }}" hint-size="20px,20px"></x-import></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Rocky · Lab</span><span style="font-size:12.5px;color:var(--text-muted)">Diaz · Jul 4 → 6</span></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:7px;background:var(--coral-200);border-radius:var(--radius-md);padding:9px 12px;font-size:12.5px;color:#A94E33">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="triangle-alert" size="{{ 15 }}" style="margin-top:1px;flex:none" hint-size="15px,15px"></x-import>
+      <span>Overlaps FULL nights Jul 4 and 5.</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-muted)">Waiver signed · $50 deposit held · "Intact male, crate-trained."</div>
+    <div style="display:flex;gap:8px">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="ghost" size="sm" style="flex:1" hint-size="33%,38px">Deny</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" style="flex:1" hint-size="33%,38px">Waitlist</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="primary" size="sm" style="flex:1.3" hint-size="33%,38px">Approve</x-import>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 20 }}" hint-size="20px,20px"></x-import></div>
+      <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Luna · Poodle</span><span style="font-size:12.5px;color:var(--text-muted)">Kim · Jul 9 → 12</span></div>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="success" hint-size="auto,24px">Space OK</x-import>
+    </div>
+    <div style="font-size:12.5px;color:var(--red-error);font-weight:600">Waiver not signed · no deposit</div>
+    <div style="display:flex;gap:8px">
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="ghost" size="sm" style="flex:1" hint-size="33%,38px">Deny</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" style="flex:1.4" hint-size="33%,38px">Request waiver</x-import>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="primary" size="sm" style="flex:1" disabled="{{ true }}" hint-size="33%,38px">Approve</x-import>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="layout-dashboard" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dash</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Calendar</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="inbox" size="{{ 21 }}" hint-size="21px,21px"></x-import>Inbox</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="images" size="{{ 21 }}" hint-size="21px,21px"></x-import>Photos</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="menu" size="{{ 21 }}" hint-size="21px,21px"></x-import>More</div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 03 INBOX OVERSIGHT ============ -->
+<div data-screen-label="Inbox oversight" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">03 · Inbox oversight · periscope + takeover</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="padding:60px 20px 12px;border-bottom:1px solid var(--border-subtle);background:var(--surface-card);display:flex;align-items:center;gap:10px">
+  <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-left" size="{{ 22 }}" style="color:var(--lagoon-700)" hint-size="22px,22px"></x-import>
+  <div style="flex:1;display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:22px;color:var(--text-heading)">Diaz &amp; Jack</span><span style="font-size:12px;color:var(--text-muted)">Rocky · booking request</span></div>
+  <span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-tint);color:var(--lagoon-700);border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="eye" size="{{ 13 }}" hint-size="13px,13px"></x-import>Watching</span>
+</div>
+<div style="flex:1;overflow:auto;padding:14px 20px;display:flex;flex-direction:column;gap:10px">
+  <div style="text-align:center;font-size:11.5px;color:var(--text-muted);background:var(--surface-tint);border-radius:999px;padding:6px 12px;align-self:center">Viewing silently · Jack can't see you · logged 2:14 PM</div>
+  <div style="align-self:flex-start;max-width:80%;display:flex;flex-direction:column;gap:3px">
+    <span style="font-size:11.5px;font-weight:600;color:var(--stone-400);padding-left:6px">Diaz</span>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:16px 16px 16px 4px;padding:9px 14px;font-size:14px;box-shadow:var(--shadow-card)">Any update on Rocky today?</div>
+  </div>
+  <div style="align-self:flex-end;max-width:80%;display:flex;flex-direction:column;gap:3px;align-items:flex-end">
+    <span style="font-size:11.5px;font-weight:600;color:var(--stone-400);padding-right:6px">Jack</span>
+    <div style="background:var(--lagoon-700);color:var(--foam-50);border-radius:16px 16px 4px 16px;padding:9px 14px;font-size:14px">Pickup is anytime before 6.</div>
+    <span style="font-size:11px;color:var(--stone-400)">Read 2:10 PM</span>
+  </div>
+  <div style="align-self:flex-start;max-width:80%;display:flex;flex-direction:column;gap:3px">
+    <span style="font-size:11.5px;font-weight:600;color:var(--stone-400);padding-left:6px">Diaz</span>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:16px 16px 16px 4px;padding:9px 14px;font-size:14px;box-shadow:var(--shadow-card)">Is the deposit refundable if we cancel?</div>
+  </div>
+  <div style="align-self:center;font-size:11.5px;color:var(--red-error);font-weight:600">Unanswered 40m · SLA breach at 60m</div>
+</div>
+<div style="padding:12px 16px 30px;background:var(--surface-card);border-top:1px solid var(--border-subtle);display:flex;flex-direction:column;gap:12px">
+  <div style="text-align:center;font-size:12px;color:var(--text-muted)">Reply as Zoomez management — Jack is muted and notified</div>
+  <div style="display:flex;align-items:center;gap:8px;border:2px solid var(--lagoon-700);border-radius:999px;padding:5px 5px 5px 6px">
+    <span style="width:34px;height:34px;border-radius:999px;background:var(--coral-500);color:var(--foam-50);display:flex;align-items:center;justify-content:center;flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevrons-right" size="{{ 18 }}" hint-size="18px,18px"></x-import></span>
+    <span style="flex:1;font-size:14px;color:var(--text-muted)">Slide to take over the thread</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--lagoon-700)"><span>Nudge Jack to reply</span><span>Suggest an answer</span></div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 04 TASK BOARD ============ -->
+<div data-screen-label="Task board" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">04 · Live med / task board</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;flex-direction:column"><span style="font-family:var(--font-display);font-size:28px;color:var(--text-heading)">Task board</span><span style="font-size:12.5px;color:var(--text-muted)">Wed Jul 3 · on shift Jack T, 7a – 3p</span></div>
+    <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="lagoon" hint-size="auto,24px">7 / 11 done</x-import>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--red-error)">Overdue</span>
+    <div style="background:var(--surface-card);border:1.5px solid var(--coral-500);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:38px;height:38px;border-radius:999px;background:var(--seaglass-200);display:flex;align-items:center;justify-content:center;color:var(--lagoon-500);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="dog" size="{{ 19 }}" hint-size="19px,19px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Bella · Insulin 4u</span><span style="font-size:12.5px;color:var(--text-muted)">Due 2:00 PM · assigned Jack</span></div>
+        <span style="background:var(--coral-500);color:var(--foam-50);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700">+38m</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" style="flex:1" hint-size="33%,38px">Ping</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="secondary" size="sm" style="flex:1" hint-size="33%,38px">Reassign</x-import>
+        <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="ghost" size="sm" style="flex:1" hint-size="33%,38px">Mark done*</x-import>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Upcoming</span>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)"><span style="font-size:12.5px;font-weight:600;color:var(--lagoon-700);width:52px">4:00p</span><span style="flex:1;font-size:14px;color:var(--text-body)">Biscuit · Rimadyl w/ food</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)"><span style="font-size:12.5px;font-weight:600;color:var(--lagoon-700);width:52px">4:00p</span><span style="flex:1;font-size:14px;color:var(--text-body)">Cooper · dinner 1.5 cup</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)"><span style="font-size:12.5px;font-weight:600;color:var(--lagoon-700);width:52px">6:30p</span><span style="flex:1;font-size:14px;color:var(--text-body)">Bella · dinner + insulin 4u</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0"><span style="font-size:12.5px;font-weight:600;color:var(--lagoon-700);width:52px">8:00p</span><span style="flex:1;font-size:14px;color:var(--text-body)">Rocky · walk 15 min</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Done today</span>
+    <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 16 }}" style="color:var(--green-success);margin-top:2px;flex:none" hint-size="16px,16px"></x-import><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;color:var(--text-body)">Biscuit · Rimadyl · 8:00a</span><span style="font-size:12px;color:var(--text-muted)">Jack · "took w/ peanut butter, ate fine" · +photo</span></div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="check" size="{{ 16 }}" style="color:var(--green-success);flex:none" hint-size="16px,16px"></x-import><span style="flex:1;font-size:14px;color:var(--text-body)">Bella · Insulin 4u · 8:00a</span><span style="font-size:12px;color:var(--text-muted)">Jack</span></div>
+    </div>
+  </div>
+
+  <div style="font-size:11.5px;color:var(--text-muted)">* A management override is flagged and written to the audit log.</div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="layout-dashboard" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dash</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Calendar</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="inbox" size="{{ 21 }}" hint-size="21px,21px"></x-import>Inbox</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="images" size="{{ 21 }}" hint-size="21px,21px"></x-import>Photos</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="menu" size="{{ 21 }}" hint-size="21px,21px"></x-import>More</div>
+</div>
+</div>
+</x-import>
+</div>
+
+<!-- ============ 05 REPORTS + AUDIT ============ -->
+<div data-screen-label="Reports audit" style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">05 · Reports + audit log</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--surface-page);font-family:var(--font-body);color:var(--text-body)">
+<div style="flex:1;overflow:auto;padding:64px 20px 14px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <span style="font-family:var(--font-display);font-size:30px;color:var(--text-heading)">Reports</span>
+    <div style="display:flex;align-items:center;gap:7px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--text-heading)">July 2026 <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="chevron-down" size="{{ 14 }}" style="color:var(--stone-400)" hint-size="14px,14px"></x-import></div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Occupancy</span><span style="font-size:13px;color:var(--text-muted)">avg 74% · peak Jul 4 – 5</span></div>
+    <div style="display:flex;align-items:flex-end;gap:5px;height:56px">
+      <div style="flex:1;background:var(--seaglass-200);height:40%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--seaglass-200);height:55%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--lagoon-500);height:100%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--lagoon-500);height:100%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--seaglass-200);height:62%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--seaglass-200);height:50%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--seaglass-200);height:38%;border-radius:4px 4px 0 0"></div>
+      <div style="flex:1;background:var(--seaglass-200);height:45%;border-radius:4px 4px 0 0"></div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:16px;display:flex;flex-direction:column;gap:10px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Revenue · July</span>
+    <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:var(--text-muted)">Boarding</span><span style="font-weight:600;color:var(--text-heading)">$3,540</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:var(--text-muted)">Upsells</span><span style="font-weight:600;color:var(--text-heading)">$640</span></div>
+    <div style="height:1px;background:var(--border-subtle)"></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:700;color:var(--text-heading)">Total</span><span style="font-family:var(--font-display);font-size:24px;color:var(--text-heading)">$4,180</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--biscuit-200);border-radius:var(--radius-md);padding:10px 13px">
+      <span style="font-size:13px;font-weight:600;color:var(--biscuit-700)">$560 outstanding · 3 invoices</span>
+      <x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Button" variant="gold" size="sm" hint-size="auto,34px">Chase</x-import>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:4px 16px">
+    <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-subtle)"><div style="width:30px;height:30px;border-radius:999px;background:var(--tide-300);display:flex;align-items:center;justify-content:center;color:var(--tide-700);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 15 }}" hint-size="15px,15px"></x-import></div><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600;color:var(--text-heading)">Jack</span><span style="font-size:12px;color:var(--text-muted)">14 shifts · 46 tasks</span></div><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="success" hint-size="auto,24px">98% on time</x-import></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:11px 0"><div style="width:30px;height:30px;border-radius:999px;background:var(--biscuit-300);display:flex;align-items:center;justify-content:center;color:var(--biscuit-700);flex:none"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="user-round" size="{{ 15 }}" hint-size="15px,15px"></x-import></div><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600;color:var(--text-heading)">Maria</span><span style="font-size:12px;color:var(--text-muted)">11 shifts · 33 tasks</span></div><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Badge" tone="success" hint-size="auto,24px">100%</x-import></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--stone-600)">Audit log</span>
+    <div style="background:var(--surface-inverse);border-radius:var(--radius-lg);padding:14px 16px;display:flex;flex-direction:column;gap:10px;font-family:var(--font-body)">
+      <div style="display:flex;gap:10px;font-size:12.5px"><span style="color:var(--seaglass-200);width:44px;flex:none">2:48p</span><span style="color:var(--foam-50)"><b>Corry</b> approved booking · Rocky Jul 4 – 6</span></div>
+      <div style="display:flex;gap:10px;font-size:12.5px"><span style="color:var(--seaglass-200);width:44px;flex:none">2:41p</span><span style="color:var(--foam-50)"><b>Brette</b> took over thread · Diaz &amp; Jack</span></div>
+      <div style="display:flex;gap:10px;font-size:12.5px"><span style="color:var(--seaglass-200);width:44px;flex:none">2:38p</span><span style="color:var(--foam-50)"><b>Corry</b> override · marked Bella insulin done</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-around;align-items:center;padding:10px 8px 26px;background:var(--surface-card);border-top:1px solid var(--border-subtle)">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="layout-dashboard" size="{{ 21 }}" hint-size="21px,21px"></x-import>Dash</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="calendar-days" size="{{ 21 }}" hint-size="21px,21px"></x-import>Calendar</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="inbox" size="{{ 21 }}" hint-size="21px,21px"></x-import>Inbox</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--stone-400);font-size:10.5px;font-weight:500"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="images" size="{{ 21 }}" hint-size="21px,21px"></x-import>Photos</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--lagoon-700);font-size:10.5px;font-weight:600"><x-import component-from-global-scope="ZoomezDesignSystem_13f58d.Icon" name="menu" size="{{ 21 }}" hint-size="21px,21px"></x-import>More</div>
+</div>
+</div>
+</x-import>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { noop: () => {} };
+  }
+}
+
+</script>
+</body>
+</html>
