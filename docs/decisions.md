@@ -47,5 +47,15 @@ changes, update 1Password first, then re-encrypt. Never commit plaintext secrets
 
 ### ADR-009 · Postgres runs on the VPS itself (no managed DB) — *2026-07-07, accepted*
 "Host the DB and everything else" on the one NixOS box. This makes backup rigor non-negotiable:
-wal-g PITR + nightly restic offsite + a **calendared, actually-executed restore drill** (see
+PITR + nightly restic offsite + a **calendared, actually-executed restore drill** (see
 `infra/README.md` runbooks). Managed Postgres remains the fallback if operating it ever hurts.
+
+### ADR-010 · All-native NixOS modules — zero containers — *2026-07-07, accepted*
+The 2026-07-07 verification pass (13 topics, adversarially checked against nixpkgs 26.05)
+found first-class NixOS modules for the *entire* stack, so the design drops containers
+completely: **DocuSeal runs via `services.docuseal`** (native since 25.11; accepts nixpkgs'
+2.5.x lag vs upstream 3.x — our hosted-page/template/webhook flow exists in 2.5), **PITR is
+`services.pgbackrest`** (native module) instead of hand-rolled wal-g units, plus native
+`services.postgresqlBackup` for nightly dumps, and the app builds with `buildNpmPackage` +
+**`importNpmLock`** (no `npmDepsHash` churn — lockfile changes deploy without hash edits).
+wal-g and the OCI-container DocuSeal remain documented fallbacks in `infra/`.

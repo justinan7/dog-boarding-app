@@ -1,0 +1,15 @@
+# sops creation rules — completed in task A3 (see secrets/README.md).
+# Two age recipients: Justin's admin key (can always rekey) + the host's key
+# (derived from its SSH ed25519 host key after the A1 install).
+keys:
+  # TODO(A3): admin key — generate once, private half → 1Password:
+  #   age-keygen -o ~/.config/sops/age/keys.txt   (prints the public key)
+  - &admin age1REPLACE_WITH_ADMIN_PUBKEY
+  # TODO(A3): host key — after A1:
+  #   ssh root@<host> 'nix run nixpkgs#ssh-to-age -- -i /etc/ssh/ssh_host_ed25519_key.pub'
+  - &zoomez age1REPLACE_WITH_HOST_PUBKEY
+
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age: [ *admin, *zoomez ]
