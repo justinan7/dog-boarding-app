@@ -77,8 +77,8 @@ Stack: Node 22 + TypeScript strict + **Hono** (routing) + **Drizzle** (Postgres)
 
 | # | Task | DoD | Verify | Status |
 |---|---|---|---|---|
-| B1 | Scaffold `server/`: package.json (pinned deps), tsconfig, `src/{db,routes,services,jobs,lib}/`, Drizzle config, `.env.example`, health route, Vitest wired, README | `npm run dev` serves `/api/v1/health`; `npm test` green | curl + test run | ☐ |
-| B2 | Drizzle schema + migration 0001 for **all** `data-model.md` tables (enums included), plus seed script with the design's sample data (Biscuit, Bella, Rocky, Jack, Maria…) | `drizzle-kit migrate` clean on fresh db; seed loads | migrate + seed + `\dt` | ☐ |
+| B1 | Scaffold `server/`: package.json (pinned deps), tsconfig, `src/{db,routes,services,jobs,lib}/`, Drizzle config, `.env.example`, health route, Vitest wired, README | `npm run dev` serves `/api/v1/health`; `npm test` green | curl + test run | ☑ 2026-07-07 |
+| B2 | Drizzle schema + migration for **all** `data-model.md` tables (enums included), plus seed script with the design's sample data (Biscuit, Bella, Rocky, Jack, Maria…) | `db:migrate` clean on fresh db; seed loads | migrate + seed + `\dt`. *B1 shipped a partial slice (org/user/customer/pet) + generated migration + FK/enum tests as the foundation.* | ☐ |
 | B3 | Better Auth mounted (email+password, magic link, **bearer plugin** for native), roles, `/me`, manager PIN elevate/de-elevate per contract §2.3 | Auth flows pass integration tests incl. bearer round-trip | Vitest against real PG | ☐ |
 | B4 | Customers/pets/care-profile/vaccinations/safety-flags routes (§5.2) + audit middleware pattern established | Contract-shape tests green | Vitest | ☐ |
 | B5 | Capacity + reservations + lifecycle (§5.3): range-overlap capacity query, approve materializes CareTasks, waiver/capacity gates, check-in/out state machine | **Invariant tests 1 (no overbook) and DST test 4 pass**; concurrent-approve test | Vitest w/ concurrent txns | ☐ |
@@ -135,12 +135,25 @@ in CSS but map 1:1 to native constants.
 
 ## Current status (2026-07-07)
 
-- ✅ Research + architecture + license matrix + data model + design handoff + Management-view PWA.
-- ✅ This plan, the API contract, the decision log, the NixOS design + flake skeleton (`infra/`).
-- ▶️ Next up: **J1/J2/J5** (Justin), then **A1** (smaller model), **B1** (smaller model, parallel with A), **C1** (Fable), **D0** (Opus).
+- ✅ Research + architecture + license matrix + data model + design handoff.
+- ✅ Full PWA — all three role views (24 screens), builds clean + SSR-smoke-passes (WS-C C1/C2).
+- ✅ Plan + API contract + decision log + NixOS design/flake skeleton (`infra/`).
+- ✅ **B1 backend scaffold** — Hono + Drizzle + zod, health endpoint live, tests green, builds to
+  `dist/{api,worker,migrate}.js`, runs end-to-end.
+- ▶️ Next up: **B2** (full schema + seed — no infra needed), then B3+ ; **J1/J2/J5** (Justin) to unblock A/deploy; **D0** (Opus, native).
+
+### Dev-database approach (decided 2026-07-07)
+
+Local dev + tests + CI use **PGlite** (Postgres-as-WASM, in-process) — zero infrastructure, driver
+auto-selected by `DATABASE_URL` scheme; prod points at the real Postgres 17 unchanged. **A real
+multi-connection Postgres is needed only for the concurrency-invariant tests (B5 overbook, B9 race-safe
+claim)** — at that point spin up a throwaway **Postgres 17 dev instance on Proxmox over Tailscale**
+(Justin offered), clearly labelled dev, since prod is a VPS. Not needed before B5.
 
 ## Open questions
 
 - Domain name / final product branding confirmation with Corry & Brette (design says "Zoomez").
 - Twilio SMS nudges: defer to P2 (interface stubbed in B12) — confirm toll-free verification timing.
 - DocuSeal "Powered by" attribution acceptable, or budget Pro? (default: accept attribution)
+- **Everything above is built on unconfirmed assumptions** — Corry hasn't confirmed requirements yet;
+  no VPS provisioned, no spend. Current work is deliberately all local/reversible.
