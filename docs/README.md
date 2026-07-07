@@ -1,16 +1,17 @@
 # Documentation
 
-Design-phase docs for the Dog Boarding App. Read in this order:
+**Implementers start here → [build-plan.md](build-plan.md)** (the master task list), and use
+**[decisions.md](decisions.md)** to resolve any conflict between docs.
 
-1. **[architecture-and-components.md](architecture-and-components.md)** — the recommended stack, the
-   30-component inventory, and the open-source candidates evaluated for each component (with verified
-   SPDX licenses and fit scores). Start here.
-2. **[data-model.md](data-model.md)** — draft entities, relationships, enums, and the invariants to test
-   first (date-range overlap, race-safe shift claims, local-time+zone alerts, append-only audit).
-3. **[design-brief.md](design-brief.md)** — for the UI designer: personas, information architecture, and
-   a screen-by-screen inventory with lo-fi wireframe references for all three views.
-4. **[licenses.md](licenses.md)** — the app's AGPL-3.0-or-later decision, the third-party license matrix,
-   attribution obligations, and the source-available projects deliberately avoided.
+| Doc | Role |
+|---|---|
+| [build-plan.md](build-plan.md) | **The master task list** — workstreams, ownership, DoD + verify per task |
+| [decisions.md](decisions.md) | ADR-lite decision log — newest entry wins doc conflicts |
+| [api-contract.md](api-contract.md) | **Binding HTTP API contract** for PWA + iOS + Android + server |
+| [data-model.md](data-model.md) | Entities, relationships, and the 6 invariants to test first |
+| [architecture-and-components.md](architecture-and-components.md) | Stack rationale: 30-component inventory + verified OSS candidates (deployment substrate superseded by ADR-003 → [`../infra/`](../infra/)) |
+| [design-brief.md](design-brief.md) | Pre-design screen inventory (historical; visual truth is now [`../design/`](../design/)) |
+| [licenses.md](licenses.md) | AGPL decision, third-party license matrix, attribution duties, avoid-list |
 
-*All four were produced from a multi-agent component/OSS/design study on 2026-07-03. Re-verify any
-dependency's license before adopting it — projects relicense.*
+*Produced from multi-agent studies on 2026-07-03 (components/licenses) and 2026-07-07 (NixOS infra).
+Re-verify any dependency's license before adopting it — projects relicense.*

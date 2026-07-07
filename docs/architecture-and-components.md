@@ -4,6 +4,14 @@
 open-source candidates researched, and each recommendation adversarially verified against primary
 sources (repo `LICENSE` files, release pages). See the per-component appendix at the end.*
 
+> **Substrate update (2026-07-07, ADR-003…009 in [`decisions.md`](decisions.md)):** deployment moved
+> from Docker Compose to a **NixOS flake** — see [`../infra/`](../infra/). The component choices below
+> stand, with three NixOS-driven adjustments: object storage is **Garage** (not SeaweedFS), Backrest is
+> **dropped** (native `services.restic` replaces it), and GlitchTip is **deferred**. §4's Compose
+> layout remains as rationale; `infra/README.md` is the operative server design. Native iOS/Android
+> apps were also added alongside the PWA (ADR-007) — the binding HTTP surface for all clients is
+> [`api-contract.md`](api-contract.md).
+
 ---
 
 ## TL;DR

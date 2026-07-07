@@ -1,7 +1,8 @@
 # Contributing
 
-This project is in the **design / scaffold phase** — the architecture, component choices, data model,
-and design brief are in [`docs/`](docs/); application code has not been scaffolded yet.
+**All implementation work — human or model — starts at [`docs/build-plan.md`](docs/build-plan.md).**
+Pick the next unblocked task in your workstream, follow its DoD and Verify steps, update the status
+table, commit. Doc conflicts are resolved by [`docs/decisions.md`](docs/decisions.md).
 
 ## License of contributions
 
