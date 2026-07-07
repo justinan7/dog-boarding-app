@@ -1,4 +1,4 @@
-import { Icon } from '../components/Icon'
+import { Icon } from '../../components/Icon'
 
 // Photos is referenced in the Management IA but not part of the 5 designed
 // hi-fi screens. Tasteful placeholder for the all-photos feed.

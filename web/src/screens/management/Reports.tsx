@@ -1,5 +1,5 @@
-import { Icon } from '../components/Icon'
-import { Section, Card, Button, Badge, Eyebrow } from '../components/primitives'
+import { Icon } from '../../components/Icon'
+import { Section, Card, Button, Badge, Eyebrow } from '../../components/primitives'
 
 const BARS: { h: number; peak?: boolean }[] = [
   { h: 40 }, { h: 55 }, { h: 100, peak: true }, { h: 100, peak: true },

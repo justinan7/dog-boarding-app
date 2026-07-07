@@ -1,5 +1,5 @@
-import { Icon } from '../components/Icon'
-import { Wordmark, Section, Card, Button, Chip, DogAvatar } from '../components/primitives'
+import { Icon } from '../../components/Icon'
+import { Wordmark, Section, Card, Button, Chip, DogAvatar } from '../../components/primitives'
 
 function AccountChip({ name }: { name: string }) {
   return (

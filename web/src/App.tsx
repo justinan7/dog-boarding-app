@@ -1,17 +1,18 @@
 import { useState, type CSSProperties } from 'react'
 import { PhoneFrame } from './components/PhoneFrame'
 import { TabBar } from './components/TabBar'
-import { Dashboard } from './screens/Dashboard'
-import { Calendar } from './screens/Calendar'
-import { Inbox } from './screens/Inbox'
-import { TaskBoard } from './screens/TaskBoard'
-import { Reports } from './screens/Reports'
-import { More } from './screens/More'
-import { Photos } from './screens/Photos'
-import { type Route, tabForRoute } from './lib/nav'
+import { Dashboard } from './screens/management/Dashboard'
+import { Calendar } from './screens/management/Calendar'
+import { Inbox } from './screens/management/Inbox'
+import { TaskBoard } from './screens/management/TaskBoard'
+import { Reports } from './screens/management/Reports'
+import { More } from './screens/management/More'
+import { Photos } from './screens/management/Photos'
+import { MANAGER_TABS, managerTab, type ManagerRoute } from './lib/nav'
 
 // Standard scrollable screens share the hi-fi content frame (64px top padding
-// clears the notch; 16px section rhythm). Inbox is a full-screen thread.
+// clears the notch; 16px section rhythm). Full-screen screens (Inbox) render
+// without it.
 const SCROLL_STYLE: CSSProperties = {
   padding: '64px 20px 14px',
   display: 'flex',
@@ -20,7 +21,7 @@ const SCROLL_STYLE: CSSProperties = {
 }
 
 export default function App() {
-  const [route, setRoute] = useState<Route>('dash')
+  const [route, setRoute] = useState<ManagerRoute>('dash')
 
   if (route === 'inbox') {
     return (
@@ -45,7 +46,7 @@ export default function App() {
       <div className="z-phone__scroll" style={SCROLL_STYLE}>
         {content}
       </div>
-      <TabBar active={tabForRoute(route)} onNavigate={setRoute} />
+      <TabBar tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={setRoute} />
     </PhoneFrame>
   )
 }

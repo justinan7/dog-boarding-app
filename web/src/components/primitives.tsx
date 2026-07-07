@@ -211,3 +211,147 @@ export function Section({
     </div>
   )
 }
+
+/* ---------- Segmented control (e.g. "Open shifts / My schedule") ---------- */
+export function SegmentedControl({
+  options,
+  value,
+  onChange,
+}: {
+  options: string[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        background: 'var(--stone-100)',
+        borderRadius: 999,
+        padding: 3,
+        gap: 2,
+      }}
+    >
+      {options.map((o) => {
+        const active = o === value
+        return (
+          <button
+            key={o}
+            type="button"
+            onClick={() => onChange(o)}
+            style={{
+              flex: 1,
+              border: 0,
+              cursor: 'pointer',
+              borderRadius: 999,
+              padding: '8px 12px',
+              fontFamily: 'var(--font-body)',
+              fontSize: 13.5,
+              fontWeight: active ? 600 : 500,
+              background: active ? 'var(--surface-card)' : 'transparent',
+              color: active ? 'var(--text-heading)' : 'var(--stone-600)',
+              boxShadow: active ? 'var(--shadow-card)' : 'none',
+              transition: 'all var(--dur-fast) var(--ease-out)',
+            }}
+          >
+            {o}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ---------- Switch (e.g. "Alert on-shift staff at task time") ---------- */
+export function Switch({
+  checked,
+  onChange,
+}: {
+  checked: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      style={{
+        width: 46,
+        height: 28,
+        flex: 'none',
+        border: 0,
+        cursor: 'pointer',
+        borderRadius: 999,
+        padding: 3,
+        background: checked ? 'var(--lagoon-700)' : 'var(--stone-200)',
+        display: 'flex',
+        justifyContent: checked ? 'flex-end' : 'flex-start',
+        transition: 'background var(--dur-fast) var(--ease-out)',
+      }}
+    >
+      <span
+        style={{
+          width: 22,
+          height: 22,
+          borderRadius: 999,
+          background: 'var(--white)',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      />
+    </button>
+  )
+}
+
+/* ---------- Bottom sheet (add-task, account switcher) ---------- */
+export function Sheet({
+  open,
+  onClose,
+  children,
+}: {
+  open: boolean
+  onClose: () => void
+  children: ReactNode
+}) {
+  if (!open) return null
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 40,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        // dialog scrim per DS: lagoon 45% + blur
+        background: 'rgba(12,43,42,0.45)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: 'var(--surface-card)',
+          borderRadius: '28px 28px 0 0',
+          padding: '12px 20px 30px',
+          maxHeight: '85%',
+          overflowY: 'auto',
+          boxShadow: 'var(--shadow-float)',
+        }}
+      >
+        <div
+          style={{
+            width: 40,
+            height: 4,
+            borderRadius: 999,
+            background: 'var(--stone-200)',
+            margin: '0 auto 14px',
+          }}
+        />
+        {children}
+      </div>
+    </div>
+  )
+}

@@ -1,5 +1,5 @@
-import { Icon } from '../components/Icon'
-import { Eyebrow, Card, Button, Badge, DogAvatar } from '../components/primitives'
+import { Icon } from '../../components/Icon'
+import { Eyebrow, Card, Button, Badge, DogAvatar } from '../../components/primitives'
 
 function RoundBtn({ icon }: { icon: 'chevron-left' | 'chevron-right' }) {
   return (

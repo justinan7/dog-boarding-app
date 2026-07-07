@@ -1,6 +1,6 @@
-import { Icon, type IconName } from '../components/Icon'
-import { Card, Button } from '../components/primitives'
-import type { Route } from '../lib/nav'
+import { Icon, type IconName } from '../../components/Icon'
+import { Card, Button } from '../../components/primitives'
+import type { ManagerRoute } from '../../lib/nav'
 
 function MenuRow({
   icon, label, onClick, last,
@@ -26,7 +26,7 @@ function MenuRow({
   )
 }
 
-export function More({ onNavigate }: { onNavigate: (route: Route) => void }) {
+export function More({ onNavigate }: { onNavigate: (route: ManagerRoute) => void }) {
   return (
     <>
       <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>More</span>

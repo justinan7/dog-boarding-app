@@ -1,5 +1,5 @@
-import { Icon } from '../components/Icon'
-import { Section, Card, Button, Badge, DogAvatar } from '../components/primitives'
+import { Icon } from '../../components/Icon'
+import { Section, Card, Button, Badge, DogAvatar } from '../../components/primitives'
 
 function UpcomingRow({ time, task, last }: { time: string; task: string; last?: boolean }) {
   return (

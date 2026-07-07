@@ -3,7 +3,8 @@ import {
   Dog, UserRound, ChevronDown, ChevronLeft, ChevronRight, ChevronsRight,
   TriangleAlert, Eye, Check, Bell, ClipboardCheck, FileCheck,
   Settings, LogOut, Lock, Send, Plus, Search, MessageCircle, Clock,
-  Heart, Info, PawPrint, type LucideIcon,
+  Heart, Info, PawPrint, ArrowUp, Bone, Camera, CreditCard, Download,
+  House, Image, Pill, Sun, Utensils, Waves, X, type LucideIcon,
 } from 'lucide-react'
 
 // Lucide icons, addressed by the design system's kebab-case names.
@@ -37,6 +38,18 @@ const MAP: Record<string, LucideIcon> = {
   heart: Heart,
   info: Info,
   'paw-print': PawPrint,
+  'arrow-up': ArrowUp,
+  bone: Bone,
+  camera: Camera,
+  'credit-card': CreditCard,
+  download: Download,
+  house: House,
+  image: Image,
+  pill: Pill,
+  sun: Sun,
+  utensils: Utensils,
+  waves: Waves,
+  x: X,
 }
 
 export type IconName = keyof typeof MAP
