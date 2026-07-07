@@ -4,7 +4,7 @@ import {
   TriangleAlert, Eye, Check, Bell, ClipboardCheck, FileCheck,
   Settings, LogOut, Lock, Send, Plus, Search, MessageCircle, Clock,
   Heart, Info, PawPrint, ArrowUp, Bone, Camera, CreditCard, Download,
-  House, Image, Pill, Sun, Utensils, Waves, X, type LucideIcon,
+  House, Image, Pill, Sun, Utensils, Waves, X, Upload, type LucideIcon,
 } from 'lucide-react'
 
 // Lucide icons, addressed by the design system's kebab-case names.
@@ -50,6 +50,7 @@ const MAP: Record<string, LucideIcon> = {
   utensils: Utensils,
   waves: Waves,
   x: X,
+  upload: Upload,
 }
 
 export type IconName = keyof typeof MAP

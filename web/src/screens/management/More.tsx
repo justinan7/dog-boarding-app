@@ -26,7 +26,13 @@ function MenuRow({
   )
 }
 
-export function More({ onNavigate }: { onNavigate: (route: ManagerRoute) => void }) {
+export function More({
+  onNavigate,
+  onSwitchView,
+}: {
+  onNavigate: (route: ManagerRoute) => void
+  onSwitchView?: () => void
+}) {
   return (
     <>
       <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>More</span>
@@ -35,6 +41,7 @@ export function More({ onNavigate }: { onNavigate: (route: ManagerRoute) => void
         <MenuRow icon="file-check" label="Reports & audit log" onClick={() => onNavigate('reports')} />
         <MenuRow icon="calendar-days" label="Staff schedule" />
         <MenuRow icon="paw-print" label="Customers & pets" />
+        <MenuRow icon="eye" label="View as staff" onClick={onSwitchView} />
         <MenuRow icon="settings" label="Settings" last />
       </Card>
       <Button variant="secondary" size="md" icon="log-out" fullWidth>Sign out</Button>

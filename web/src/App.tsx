@@ -1,6 +1,8 @@
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { PhoneFrame } from './components/PhoneFrame'
 import { TabBar } from './components/TabBar'
+import { PinSheet } from './components/PinSheet'
+// management
 import { Dashboard } from './screens/management/Dashboard'
 import { Calendar } from './screens/management/Calendar'
 import { Inbox } from './screens/management/Inbox'
@@ -8,11 +10,34 @@ import { TaskBoard } from './screens/management/TaskBoard'
 import { Reports } from './screens/management/Reports'
 import { More } from './screens/management/More'
 import { Photos } from './screens/management/Photos'
-import { MANAGER_TABS, managerTab, type ManagerRoute } from './lib/nav'
+// customer
+import { CustomerHome } from './screens/customer/Home'
+import { BookStay } from './screens/customer/Book'
+import { ReportCardPostcard } from './screens/customer/ReportCard'
+import { ReportCardStory } from './screens/customer/StoryView'
+import { StayDetail } from './screens/customer/StayDetail'
+import { CustomerMessages } from './screens/customer/Messages'
+import { Payment } from './screens/customer/Payment'
+import { PetProfile } from './screens/customer/PetProfile'
+import { CustomerAccount } from './screens/customer/Account'
+// staff
+import { StaffToday } from './screens/staff/Today'
+import { ShiftBoard } from './screens/staff/ShiftBoard'
+import { DogChecklist } from './screens/staff/Checklist'
+import { ReportCardBuilder } from './screens/staff/ReportCardBuilder'
+import { DogRoster } from './screens/staff/DogRoster'
+import { IncidentReport } from './screens/staff/IncidentReport'
+import { StaffMessages } from './screens/staff/Messages'
+import { AccountSheet } from './screens/staff/AccountSheet'
+import { Icon } from './components/Icon'
+import { Card, Button } from './components/primitives'
+import {
+  CUSTOMER_TABS, STAFF_TABS, MANAGER_TABS,
+  customerTab, staffTab, managerTab,
+  type Role, type CustomerRoute, type StaffRoute, type ManagerRoute,
+} from './lib/nav'
 
-// Standard scrollable screens share the hi-fi content frame (64px top padding
-// clears the notch; 16px section rhythm). Full-screen screens (Inbox) render
-// without it.
+// The hi-fi content frame: 64px top clears the notch, 16px section rhythm.
 const SCROLL_STYLE: CSSProperties = {
   padding: '64px 20px 14px',
   display: 'flex',
@@ -20,33 +45,208 @@ const SCROLL_STYLE: CSSProperties = {
   gap: 16,
 }
 
-export default function App() {
-  const [route, setRoute] = useState<ManagerRoute>('dash')
+/** Scrollable content + tab bar (the default screen wrapper). */
+function TabScreen<R extends string>({
+  tabs, active, onNavigate, children,
+}: {
+  tabs: typeof CUSTOMER_TABS | typeof STAFF_TABS | typeof MANAGER_TABS
+  active: R
+  onNavigate: (r: R) => void
+  children: ReactNode
+}) {
+  return (
+    <>
+      <div className="z-phone__scroll" style={SCROLL_STYLE}>{children}</div>
+      <TabBar tabs={tabs as never} active={active as never} onNavigate={onNavigate as never} />
+    </>
+  )
+}
 
-  if (route === 'inbox') {
+/** Full-screen screen (own header/footer) that keeps the tab bar below it. */
+function FullWithTabs<R extends string>({
+  tabs, active, onNavigate, children,
+}: {
+  tabs: typeof CUSTOMER_TABS | typeof STAFF_TABS | typeof MANAGER_TABS
+  active: R
+  onNavigate: (r: R) => void
+  children: ReactNode
+}) {
+  return (
+    <>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>{children}</div>
+      <TabBar tabs={tabs as never} active={active as never} onNavigate={onNavigate as never} />
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+function CustomerView() {
+  const [route, go] = useState<CustomerRoute>('home')
+
+  if (route === 'story') return <ReportCardStory onClose={() => go('report-card')} />
+
+  if (route === 'messages') {
     return (
-      <PhoneFrame>
-        <Inbox onBack={() => setRoute('dash')} />
-      </PhoneFrame>
+      <FullWithTabs tabs={CUSTOMER_TABS} active={customerTab(route)} onNavigate={go}>
+        <CustomerMessages />
+      </FullWithTabs>
     )
   }
 
-  let content
+  let content: ReactNode
+  switch (route) {
+    case 'book': content = <BookStay />; break
+    case 'pets': content = <PetProfile />; break
+    case 'account': content = <CustomerAccount />; break
+    case 'report-card': content = <ReportCardPostcard go={(r) => go(r)} onBack={() => go('home')} />; break
+    case 'stay': content = <StayDetail go={(r) => go(r)} onBack={() => go('home')} />; break
+    case 'pay': content = <Payment onBack={() => go('home')} />; break
+    default: content = <CustomerHome go={(r) => go(r)} />
+  }
+  return (
+    <TabScreen tabs={CUSTOMER_TABS} active={customerTab(route)} onNavigate={go}>
+      {content}
+    </TabScreen>
+  )
+}
+
+// ---------------------------------------------------------------------------
+function StaffMe({ onOpenAccount }: { onOpenAccount: () => void }) {
+  return (
+    <>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>Me</span>
+      <Card style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ width: 44, height: 44, borderRadius: 999, background: 'var(--tide-300)', color: 'var(--tide-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+          <Icon name="user-round" size={22} />
+        </span>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--text-heading)' }}>Jack Torres</span>
+          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>On shift today · 7a – 3p</span>
+        </div>
+      </Card>
+      <Button variant="secondary" fullWidth icon="user-round" onClick={onOpenAccount}>
+        Account &amp; view options
+      </Button>
+    </>
+  )
+}
+
+function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
+  const [route, go] = useState<StaffRoute>('today')
+  const [accountOpen, setAccountOpen] = useState(false)
+  const [pinOpen, setPinOpen] = useState(false)
+
+  let content: ReactNode
+  switch (route) {
+    case 'shifts': content = <ShiftBoard />; break
+    case 'roster': content = <DogRoster go={(r) => go(r)} />; break
+    case 'messages': content = <StaffMessages />; break
+    case 'me': content = <StaffMe onOpenAccount={() => setAccountOpen(true)} />; break
+    case 'checklist': content = <DogChecklist onBack={() => go('roster')} go={(r) => go(r)} />; break
+    case 'report-builder': content = <ReportCardBuilder onBack={() => go('checklist')} />; break
+    case 'incident': content = <IncidentReport onBack={() => go('today')} />; break
+    default: content = <StaffToday go={(r) => go(r)} />
+  }
+
+  return (
+    <>
+      <TabScreen tabs={STAFF_TABS} active={staffTab(route)} onNavigate={go}>
+        {content}
+      </TabScreen>
+      <AccountSheet
+        open={accountOpen}
+        onClose={() => setAccountOpen(false)}
+        role="staff"
+        onSwitchRole={(r) => {
+          setAccountOpen(false)
+          if (r === 'manager') setPinOpen(true)
+        }}
+      />
+      <PinSheet
+        open={pinOpen}
+        onClose={() => setPinOpen(false)}
+        onUnlock={() => { setPinOpen(false); onSwitchToManager() }}
+      />
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+function ManagerView({ onSwitchToStaff }: { onSwitchToStaff: () => void }) {
+  const [route, go] = useState<ManagerRoute>('dash')
+
+  if (route === 'inbox') {
+    return (
+      <FullWithTabs tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
+        <Inbox onBack={() => go('dash')} />
+      </FullWithTabs>
+    )
+  }
+
+  let content: ReactNode
   switch (route) {
     case 'calendar': content = <Calendar />; break
     case 'photos': content = <Photos />; break
-    case 'more': content = <More onNavigate={setRoute} />; break
+    case 'more': content = <More onNavigate={go} onSwitchView={onSwitchToStaff} />; break
     case 'taskboard': content = <TaskBoard />; break
     case 'reports': content = <Reports />; break
     default: content = <Dashboard />
   }
+  return (
+    <TabScreen tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
+      {content}
+    </TabScreen>
+  )
+}
+
+// ---------------------------------------------------------------------------
+/** Demo chrome (not app UI): jump between the three role views while there's
+ *  no real login. The in-app path is the designed one — staff Me → account
+ *  sheet → Manager (PIN 1234). */
+function DemoRoleBar({ role, onChange }: { role: Role; onChange: (r: Role) => void }) {
+  return (
+    <div
+      style={{
+        position: 'fixed', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 60, display: 'flex', alignItems: 'center', gap: 4,
+        background: 'rgba(12,43,42,0.82)', backdropFilter: 'blur(6px)',
+        borderRadius: 999, padding: '4px 6px',
+      }}
+    >
+      <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--seaglass-200)', padding: '0 6px' }}>
+        Demo · view as
+      </span>
+      {(['customer', 'staff', 'manager'] as Role[]).map((r) => (
+        <button
+          key={r}
+          type="button"
+          onClick={() => onChange(r)}
+          style={{
+            border: 0, cursor: 'pointer', borderRadius: 999, padding: '5px 12px',
+            fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
+            textTransform: 'capitalize',
+            background: role === r ? 'var(--foam-50)' : 'transparent',
+            color: role === r ? 'var(--lagoon-900)' : 'var(--foam-50)',
+          }}
+        >
+          {r}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+export default function App() {
+  const [role, setRole] = useState<Role>('customer')
 
   return (
-    <PhoneFrame>
-      <div className="z-phone__scroll" style={SCROLL_STYLE}>
-        {content}
-      </div>
-      <TabBar tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={setRoute} />
-    </PhoneFrame>
+    <>
+      <PhoneFrame>
+        {role === 'customer' && <CustomerView />}
+        {role === 'staff' && <StaffView onSwitchToManager={() => setRole('manager')} />}
+        {role === 'manager' && <ManagerView onSwitchToStaff={() => setRole('staff')} />}
+      </PhoneFrame>
+      <DemoRoleBar role={role} onChange={setRole} />
+    </>
   )
 }

@@ -100,12 +100,12 @@ of B12, P3 = B9 + task-board polish.
 
 | # | Task | Status |
 |---|---|---|
-| C1 | Customer view from `design/Zoomez Customer Hi-Fi.dc.html` (8 screens, same primitives/tokens) | ☐ |
-| C2 | Staff view from `design/Zoomez Staff Hi-Fi.dc.html` (8 screens incl. add-task sheet, view-switcher) | ☐ |
-| C3 | Role-routed app shell: login/magic-link screens, account chip + PIN-gated manager switch, real API wiring (replace design sample data), Centrifugo client | ☐ |
+| C1 | Customer view from `design/Zoomez Customer Hi-Fi.dc.html` (8 screens, same primitives/tokens) | ☑ 2026-07-07 |
+| C2 | Staff view from `design/Zoomez Staff Hi-Fi.dc.html` (8 screens incl. add-task sheet, view-switcher) | ☑ 2026-07-07 |
+| C3 | Real API wiring (replace design sample data), login/magic-link screens, Centrifugo client. *(Role-routed shell + account sheet + PIN-gated manager switch already built in C1/C2.)* | ☐ |
 | C4 | PWA-ification: manifest polish, service worker (offline-tolerant shell), web-push subscribe (iOS Declarative + FCM/WebAPK), install coach marks | ☐ |
 | C5 | Serve from the monolith in prod (static assets), remove the desktop phone-frame chrome for real mobile use (frame stays for desktop demo) | ☐ |
-| — | *Done:* Management view (5 screens) implemented + pushed (2026-07-07) | ☑ |
+| — | *Done:* Management view (5 screens, 2026-07-07); Customer (8) + Staff (7) views + role-routed shell with PIN gate (2026-07-07). All 24 screens build clean + pass an SSR render smoke test. | ☑ |
 
 ## Workstream D — native apps · owner: Opus
 
