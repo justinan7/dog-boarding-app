@@ -78,7 +78,7 @@ Stack: Node 22 + TypeScript strict + **Hono** (routing) + **Drizzle** (Postgres)
 | # | Task | DoD | Verify | Status |
 |---|---|---|---|---|
 | B1 | Scaffold `server/`: package.json (pinned deps), tsconfig, `src/{db,routes,services,jobs,lib}/`, Drizzle config, `.env.example`, health route, Vitest wired, README | `npm run dev` serves `/api/v1/health`; `npm test` green | curl + test run | ☑ 2026-07-07 |
-| B2 | Drizzle schema + migration for **all** `data-model.md` tables (enums included), plus seed script with the design's sample data (Biscuit, Bella, Rocky, Jack, Maria…) | `db:migrate` clean on fresh db; seed loads | migrate + seed + `\dt`. *B1 shipped a partial slice (org/user/customer/pet) + generated migration + FK/enum tests as the foundation.* | ☐ |
+| B2 | Drizzle schema + migration for **all** `data-model.md` tables (enums included), plus seed script with the design's sample data (Biscuit, Bella, Rocky, Jack, Maria…) | `db:migrate` clean on fresh db; seed loads | migrate + seed + `\dt`. | ☑ 2026-07-08 |
 | B3 | Better Auth mounted (email+password, magic link, **bearer plugin** for native), roles, `/me`, manager PIN elevate/de-elevate per contract §2.3 | Auth flows pass integration tests incl. bearer round-trip | Vitest against real PG | ☐ |
 | B4 | Customers/pets/care-profile/vaccinations/safety-flags routes (§5.2) + audit middleware pattern established | Contract-shape tests green | Vitest | ☐ |
 | B5 | Capacity + reservations + lifecycle (§5.3): range-overlap capacity query, approve materializes CareTasks, waiver/capacity gates, check-in/out state machine | **Invariant tests 1 (no overbook) and DST test 4 pass**; concurrent-approve test | Vitest w/ concurrent txns | ☐ |
