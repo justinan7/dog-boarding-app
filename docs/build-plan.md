@@ -145,13 +145,18 @@ in CSS but map 1:1 to native constants.
   C5 (serve from monolith → B14), D0–D3 (native apps → API live). Next: **create a Proxmox CT**
   for a dev Postgres (concurrent-invariant tests + pg-boss integration), then J-tasks to unblock prod.
 
-### Dev-database approach (decided 2026-07-07)
+### Dev-database approach (decided 2026-07-07; CT live 2026-07-08)
 
 Local dev + tests + CI use **PGlite** (Postgres-as-WASM, in-process) — zero infrastructure, driver
-auto-selected by `DATABASE_URL` scheme; prod points at the real Postgres 17 unchanged. **A real
-multi-connection Postgres is needed only for the concurrency-invariant tests (B5 overbook, B9 race-safe
-claim)** — at that point spin up a throwaway **Postgres 17 dev instance on Proxmox over Tailscale**
-(Justin offered), clearly labelled dev, since prod is a VPS. Not needed before B5.
+auto-selected by `DATABASE_URL` scheme; prod points at the real Postgres 17 unchanged.
+
+**Dev/test server: Proxmox CT 145 `zoomez-devdb`** — Debian 13 + PostgreSQL 17, tailnet-only
+(`zoomez-devdb.lion-manta.ts.net` / 100.113.21.118:5432), ephemeral. Creds in `server/.env`
+(gitignored). Point the app at it with `set -a; source .env; set +a`. Verified 2026-07-08 against real
+PG: migrations + seed apply, full API auth round-trip (signup→/me with provisioning), pg-boss connects +
+creates its schema + catch-up sweep fires, and **`scripts/concurrency-check.ts` proves invariant 2** —
+8 concurrent shift claims → exactly 1 wins, 7 rejected by the partial unique index (the thing PGlite
+can't test). Run: `set -a; source .env; set +a; npx tsx scripts/concurrency-check.ts`.
 
 ## Open questions
 

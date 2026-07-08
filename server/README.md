@@ -20,6 +20,21 @@ PGlite *is* Postgres, so the same generated migrations apply everywhere. **Cavea
 single-connection — the concurrency-invariant tests (overbook / race-safe shift claim, tasks B5/B9)
 need a real multi-connection Postgres; point `DATABASE_URL` at one for those.
 
+### Dev/test server (real Postgres 17)
+
+Proxmox **CT 145 `zoomez-devdb`** (Debian 13 + PG17, tailnet-only, ephemeral) is the multi-connection
+dev DB. `server/.env` (gitignored) already points `DATABASE_URL` at it. Because the app reads
+`process.env` directly, source `.env` for commands that should hit it:
+
+```bash
+set -a; source .env; set +a
+npm run db:migrate        # apply migrations to the CT
+npm run db:seed           # (re)load the design world — safe, data is throwaway
+npx tsx scripts/concurrency-check.ts   # prove the first-come shift-claim race on real PG
+```
+
+Reach it directly at `zoomez-devdb.lion-manta.ts.net:5432` (100.113.21.118) over Tailscale.
+
 ## Commands
 
 ```bash
