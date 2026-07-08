@@ -1,7 +1,10 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useState, useEffect, type CSSProperties, type ReactNode } from 'react'
 import { PhoneFrame } from './components/PhoneFrame'
 import { TabBar } from './components/TabBar'
 import { PinSheet } from './components/PinSheet'
+import { Login } from './screens/Login'
+import { useAuth } from './lib/auth-context'
+import { Wordmark, Card, Button } from './components/primitives'
 // management
 import { Dashboard } from './screens/management/Dashboard'
 import { Calendar } from './screens/management/Calendar'
@@ -30,7 +33,6 @@ import { IncidentReport } from './screens/staff/IncidentReport'
 import { StaffMessages } from './screens/staff/Messages'
 import { AccountSheet } from './screens/staff/AccountSheet'
 import { Icon } from './components/Icon'
-import { Card, Button } from './components/primitives'
 import {
   CUSTOMER_TABS, STAFF_TABS, MANAGER_TABS,
   customerTab, staffTab, managerTab,
@@ -237,7 +239,32 @@ function DemoRoleBar({ role, onChange }: { role: Role; onChange: (r: Role) => vo
 }
 
 export default function App() {
+  const { user, loading } = useAuth()
+  // Default role from the auth context; demo bar can override.
   const [role, setRole] = useState<Role>('customer')
+
+  // When the auth user loads, set the role from the server.
+  useEffect(() => {
+    if (user) setRole(user.role as Role)
+  }, [user])
+
+  if (loading) {
+    return (
+      <PhoneFrame>
+        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Wordmark size={42} />
+        </div>
+      </PhoneFrame>
+    )
+  }
+
+  if (!user) {
+    return (
+      <PhoneFrame>
+        <Login />
+      </PhoneFrame>
+    )
+  }
 
   return (
     <>
