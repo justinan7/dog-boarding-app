@@ -1,7 +1,9 @@
 // API client — thin fetch wrapper that handles auth (cookie for web, bearer
 // for native) and the error envelope from api-contract.md §1.
 
-const BASE = import.meta.env.DEV ? 'http://localhost:3000' : ''
+// Same-origin: '/api/*' is proxied to the API by Vite in dev (see vite.config.ts)
+// and served by the monolith in prod. No cross-origin, so cookies just work.
+const BASE = ''
 
 export interface ApiError {
   code: string

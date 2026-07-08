@@ -1,3 +1,4 @@
+import 'dotenv/config' // auto-load server/.env so `npm run dev/db:*` need no manual sourcing
 import { z } from 'zod'
 
 const schema = z.object({

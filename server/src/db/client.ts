@@ -21,6 +21,13 @@ export async function createDb(url: string): Promise<Handle> {
     const dataDir = rest === '' || rest === 'memory' ? undefined : rest
     const { PGlite } = await import('@electric-sql/pglite')
     const { drizzle } = await import('drizzle-orm/pglite')
+    // PGlite's nodefs mkdir is non-recursive, so a nested data path like
+    // ".data/dev" crashes with ENOENT on a fresh clone (no ".data" parent).
+    // Create the directory tree ourselves first.
+    if (dataDir) {
+      const { mkdirSync } = await import('node:fs')
+      mkdirSync(dataDir, { recursive: true })
+    }
     const client = new PGlite(dataDir)
     const db = drizzle(client, { schema }) as unknown as Db
     return { db, kind: 'pglite', rawClient: client, close: () => client.close() }

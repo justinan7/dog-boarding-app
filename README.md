@@ -5,9 +5,42 @@ owned in-app messaging with photo report cards, per-dog timed medication/feeding
 Uber-style open-shift claiming for staff, all under management oversight.
 
 > **Status: build phase.** Architecture, license analysis, data model, API contract, NixOS server
-> design, and the hi-fi visual design ("Zoomez") are done; the Management PWA view is implemented.
-> **The master task list is [`docs/build-plan.md`](docs/build-plan.md)** — implementers (human or
-> model) start there. Conflicts between docs are resolved by [`docs/decisions.md`](docs/decisions.md).
+> design, and the hi-fi visual design ("Zoomez") are done. The **API monolith is implemented**
+> (Hono + Drizzle + Better Auth, 60 passing tests) and the **Management PWA view is wired to it
+> live**; the Customer and Staff views still render design sample data. **The master task list is
+> [`docs/build-plan.md`](docs/build-plan.md)** — implementers (human or model) start there. Conflicts
+> between docs are resolved by [`docs/decisions.md`](docs/decisions.md).
+
+## Run it locally (Mac/Linux)
+
+Zero infrastructure — no Postgres, no Docker, no Tailscale. The dev database is
+[PGlite](https://pglite.dev) (Postgres compiled to WASM, in-process), so the whole app runs from a
+single command. **You only need [Node 22+](https://nodejs.org)** (`brew install node`).
+
+```bash
+git clone https://github.com/justinan7/dog-boarding-app
+cd dog-boarding-app
+./scripts/dev-local.sh          # installs deps, migrates + seeds demo data, starts everything
+```
+
+Then open **http://localhost:5173**. The script runs the API on `:3000`, the PWA on `:5173` (Vite
+proxies `/api` to the API, so it's all same-origin), and loads the design's demo world (six
+in-residence dogs, the July stays, a customer↔staff message thread).
+
+**Logging in** — hit **Sign up** (not sign in) and your role is matched by the email you use; the API
+enforces the real role server-side, while the on-screen *demo bar* just swaps which view is rendered:
+
+| Sign up with | Role you get |
+|---|---|
+| `corry@zoomez.app` (or `brette@zoomez.app`) | **Manager** — all seeded data, the wired-up view |
+| `jack@zoomez.app` (or `maria@zoomez.app`) | Staff |
+| any other email | Customer (auto-provisioned) |
+
+Password is anything 8+ characters. Manager approvals and the Reports screen are PIN-gated — **demo
+PIN `1234`**. Re-run with `./scripts/dev-local.sh --reseed` to wipe and reload the demo data.
+
+> This local database is a throwaway demo (PGlite, persisted under `server/.data/`, gitignored). It
+> holds only the sample world above — never real customer data.
 
 ## Repository layout
 
@@ -15,9 +48,10 @@ Uber-style open-shift claiming for staff, all under management oversight.
 |---|---|
 | `docs/` | The paper trail: build plan, decision log, API contract, data model, architecture, licenses |
 | `design/` | The Claude Design handoff — hi-fi `.dc.html` for all three role views + design-system tokens (visual truth) |
-| `web/` | The PWA (React + TS + Vite) — Management view implemented; Customer/Staff next |
+| `web/` | The PWA (React + TS + Vite) — Management view wired to the live API; Customer/Staff render design sample data (next) |
+| `server/` | The Node/TS API monolith (Hono + Drizzle + Better Auth) — implemented; PGlite for local dev, Postgres in prod |
+| `scripts/` | `dev-local.sh` — one-command local run (see [Run it locally](#run-it-locally-maclinux)) |
 | `infra/` | The NixOS flake for the production VPS (Postgres, Caddy, Garage, Centrifugo, DocuSeal, backups, monitoring) |
-| `server/` | The Node/TS API monolith — *not yet scaffolded; task B1 in the build plan* |
 
 ## Why this exists
 
