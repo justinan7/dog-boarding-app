@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq, ilike, or, and, sql } from 'drizzle-orm'
+import { eq, ilike, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
 import { customers, users } from '../db/schema'
@@ -28,11 +28,14 @@ customersRouter.get('/', async (c) => {
     ))
   }
 
+  // Keyset pagination: order by and page on the SAME column (id) so the cursor
+  // comparison matches the sort order. (defaultRandom UUIDs aren't time-ordered,
+  // but id-keyset is internally consistent and stable for listing.)
   if (cursor) {
-    query = query.where(and(sql`${customers.id} > ${cursor}`))
+    query = query.where(sql`${customers.id} > ${cursor}`)
   }
 
-  const rows = await query.orderBy(customers.createdAt).limit(limit + 1)
+  const rows = await query.orderBy(customers.id).limit(limit + 1)
   const hasMore = rows.length > limit
   const items = hasMore ? rows.slice(0, limit) : rows
   const nextCursor = hasMore ? items[items.length - 1]?.id ?? null : null

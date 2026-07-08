@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { getDb } from '../db/client'
 import { shifts, shiftClaims, users, auditEntries } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { requireElevation, requireRole } from '../middleware/guards'
+import { zonedWallTimeToUtc } from '../lib/time'
 import type { AppEnv } from '../lib/hono-env'
 
 export const shiftsRouter = new Hono<AppEnv>()
@@ -55,7 +57,7 @@ const createSchema = z.object({
   notes: z.string().optional(),
 })
 
-shiftsRouter.post('/', async (c) => {
+shiftsRouter.post('/', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -63,12 +65,8 @@ shiftsRouter.post('/', async (c) => {
   const actor = await resolveActor(db, user.email)
   if (!actor) throw new AppError('FORBIDDEN', 'User not found')
 
-  // Compute UTC bounds (rough — proper IANA in B8)
-  const utcOffset = body.timeZone === 'America/Los_Angeles' ? 7 : 0
-  const startUtc = new Date(`${body.windowDate}T${body.windowStartLocal}:00`)
-  startUtc.setHours(startUtc.getHours() + utcOffset)
-  const endUtc = new Date(`${body.windowDate}T${body.windowEndLocal}:00`)
-  endUtc.setHours(endUtc.getHours() + utcOffset)
+  const startUtc = zonedWallTimeToUtc(body.windowDate, body.windowStartLocal, body.timeZone)
+  const endUtc = zonedWallTimeToUtc(body.windowDate, body.windowEndLocal, body.timeZone)
 
   const [shift] = await db.insert(shifts).values({
     orgId: actor.orgId,
@@ -85,7 +83,7 @@ shiftsRouter.post('/', async (c) => {
 // The partial unique index on shift_claims (state IN pending/approved) ensures
 // exactly one active claim per shift. A concurrent second claim violates the
 // unique constraint → catch → 409.
-shiftsRouter.post('/:id/claim', async (c) => {
+shiftsRouter.post('/:id/claim', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -134,7 +132,7 @@ shiftsRouter.post('/:id/claim', async (c) => {
 })
 
 // DELETE /api/v1/shifts/:id/claim — withdraw (own, while pending)
-shiftsRouter.delete('/:id/claim', async (c) => {
+shiftsRouter.delete('/:id/claim', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -158,7 +156,7 @@ shiftsRouter.delete('/:id/claim', async (c) => {
 })
 
 // POST /api/v1/shifts/:id/claim/approve — (M🔒)
-shiftsRouter.post('/:id/claim/approve', async (c) => {
+shiftsRouter.post('/:id/claim/approve', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -188,7 +186,7 @@ shiftsRouter.post('/:id/claim/approve', async (c) => {
 })
 
 // POST /api/v1/shifts/:id/claim/deny — (M🔒)
-shiftsRouter.post('/:id/claim/deny', async (c) => {
+shiftsRouter.post('/:id/claim/deny', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()

@@ -8,6 +8,8 @@ import {
 } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { CAPACITY } from './capacity'
+import { requireElevation } from '../middleware/guards'
+import { zonedWallTimeToUtc } from '../lib/time'
 import type { AppEnv } from '../lib/hono-env'
 
 export const reservationsRouter = new Hono<AppEnv>()
@@ -119,12 +121,11 @@ const approveSchema = z.object({
   overrideWaiver: z.boolean().optional(),
 })
 
-reservationsRouter.post('/:id/approve', async (c) => {
+reservationsRouter.post('/:id/approve', requireElevation, async (c) => {
   const user = c.get('user')
   const session = c.get('session')
   if (!user || !session) throw new AppError('UNAUTHORIZED', 'Not authenticated')
 
-  // TODO: wire requireElevation middleware once we have the full guard chain
   const db = getDb()
   const resId = c.req.param('id')
   const body = approveSchema.parse(await c.req.json())
@@ -160,12 +161,7 @@ reservationsRouter.post('/:id/approve', async (c) => {
       const end = new Date(res.endDate)
       for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
         const dateStr = d.toISOString().slice(0, 10)
-        const [hours, minutes] = item.localTime.split(':').map(Number)
-        const fireDate = new Date(d)
-        fireDate.setHours(hours!, minutes!, 0, 0)
-        // Rough UTC conversion — proper IANA-zone calc is task B8's domain
-        const utcOffset = item.timeZone === 'America/Los_Angeles' ? 7 : 0
-        const fireUtc = new Date(fireDate.getTime() + utcOffset * 60 * 60 * 1000)
+        const fireUtc = zonedWallTimeToUtc(dateStr, item.localTime, item.timeZone)
 
         await db.insert(careTasks).values({
           reservationId: resId,
@@ -201,7 +197,7 @@ reservationsRouter.post('/:id/approve', async (c) => {
 })
 
 // POST /api/v1/reservations/:id/deny
-reservationsRouter.post('/:id/deny', async (c) => {
+reservationsRouter.post('/:id/deny', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -232,7 +228,7 @@ reservationsRouter.post('/:id/deny', async (c) => {
 })
 
 // POST /api/v1/reservations/:id/waitlist
-reservationsRouter.post('/:id/waitlist', async (c) => {
+reservationsRouter.post('/:id/waitlist', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()

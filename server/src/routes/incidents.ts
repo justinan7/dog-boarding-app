@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq } from 'drizzle-orm'
+import { eq, sql, desc } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
 import { incidentReports, users, auditEntries } from '../db/schema'
@@ -68,9 +68,9 @@ incidentsRouter.get('/', async (c) => {
   const petId = c.req.query('petId')
   let query = db.select().from(incidentReports).$dynamic()
   if (petId) {
-    // Array contains — PGlite supports @> with text[]
-    query = query.where(eq(incidentReports.type, incidentReports.type)) // placeholder; filter in memory for now
+    // petIds is a uuid[]; use array containment (@>) to match reports involving this pet.
+    query = query.where(sql`${incidentReports.petIds} @> ARRAY[${petId}]::uuid[]`)
   }
-  const rows = await query.limit(50)
+  const rows = await query.orderBy(desc(incidentReports.occurredAt)).limit(50)
   return c.json({ items: rows })
 })

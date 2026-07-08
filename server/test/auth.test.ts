@@ -100,8 +100,24 @@ describe('manager PIN elevation (§2.3)', () => {
   let cookie: string
 
   beforeAll(async () => {
-    const result = await signIn('testuser@example.com', 'SecureP@ss123')
+    // Elevation requires a staff/manager role — use the seeded manager Corry.
+    await app.request('/api/auth/sign-up/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'corry@zoomez.app', password: 'SecureP@ss123', name: 'Corry' }),
+    })
+    const result = await signIn('corry@zoomez.app', 'SecureP@ss123')
     cookie = result.cookie
+  })
+
+  test('a customer cannot elevate even with the correct PIN', async () => {
+    const cust = await signIn('testuser@example.com', 'SecureP@ss123')
+    const res = await app.request('/api/v1/me/elevate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Cookie: cust.cookie },
+      body: JSON.stringify({ pin: '1234' }),
+    })
+    expect(res.status).toBe(403)
   })
 
   test('wrong PIN returns 403', async () => {

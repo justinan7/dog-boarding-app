@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
-import { users, customers } from '../db/schema'
+import { customers } from '../db/schema'
 import { AppError } from '../lib/errors'
 import type { AppEnv } from '../lib/hono-env'
 
@@ -35,7 +35,8 @@ me.get('/', async (c) => {
   if (!user || !session) throw new AppError('UNAUTHORIZED', 'Not authenticated')
 
   const db = getDb()
-  const [domainUser] = await db.select().from(users).where(eq(users.email, user.email)).limit(1)
+  // Domain user is provisioned by the session middleware.
+  const domainUser = c.get('domainUser')
 
   let customerId: string | null = null
   let staffId: string | null = null
@@ -68,6 +69,13 @@ me.post('/elevate', async (c) => {
   const session = c.get('session')
   const user = c.get('user')
   if (!user || !session) throw new AppError('UNAUTHORIZED', 'Not authenticated')
+
+  // Only staff/managers may attempt the manager PIN — a customer knowing the
+  // PIN must not be able to elevate into the management surface.
+  const du = c.get('domainUser')
+  if (!du || (du.role !== 'staff' && du.role !== 'manager')) {
+    throw new AppError('FORBIDDEN', 'Only staff can elevate to manager')
+  }
 
   const now = Date.now()
   let attempts = pinAttempts.get(session.id)

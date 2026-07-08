@@ -22,9 +22,9 @@ petsRouter.get('/', async (c) => {
 
   let query = db.select().from(pets).$dynamic()
   if (customerId) query = query.where(eq(pets.customerId, customerId))
-  if (cursor) query = query.where(and(sql`${pets.id} > ${cursor}`))
+  if (cursor) query = query.where(sql`${pets.id} > ${cursor}`)
 
-  const rows = await query.orderBy(pets.createdAt).limit(limit + 1)
+  const rows = await query.orderBy(pets.id).limit(limit + 1)
   const hasMore = rows.length > limit
   const items = hasMore ? rows.slice(0, limit) : rows
 

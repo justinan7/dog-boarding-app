@@ -50,6 +50,23 @@ changes, update 1Password first, then re-encrypt. Never commit plaintext secrets
 PITR + nightly restic offsite + a **calendared, actually-executed restore drill** (see
 `infra/README.md` runbooks). Managed Postgres remains the fallback if operating it ever hurts.
 
+### ADR-011 · Auth↔domain-user link is by EMAIL; self-signups auto-provision as customers — *2026-07-08, accepted*
+Better Auth owns `user`/`session`/`account`/`verification`; our `users`/`customers` graph is joined to
+it by **email**. The session middleware provisions on first sign-in: an existing domain user (seeded or
+manager-created) is used as-is (role never downgraded); a brand-new signup becomes a `customer` and
+either links to a manager-pre-created `customers` row with that email (the invite flow) or gets a fresh
+one — so a real user can actually book. Consequence: email is the cross-boundary key; staff/managers
+must be pre-created in the domain `users` table (seed or manager action) before they sign in, or they'd
+provision as a customer.
+
+### ADR-012 · Authorization = role guards + PIN elevation, enforced as middleware — *2026-07-08, accepted*
+`requireRole(...)` and `requireElevation` (middleware/guards.ts) are applied to routes, not just implied.
+(M🔒) endpoints (reservation approve/deny/waitlist, thread oversight, shift post/approve/deny, care-task
+manager-override, reports summary + audit) require an active **elevation**, grantable only to staff/
+managers via the PIN (`/me/elevate` is role-gated). Elevation state is in-memory per session (single-VPS
+correct; move to session store for multi-node). Reviewed 2026-07-08 — this closed the gap where any
+authenticated user could hit privileged endpoints.
+
 ### ADR-010 · All-native NixOS modules — zero containers — *2026-07-07, accepted*
 The 2026-07-07 verification pass (13 topics, adversarially checked against nixpkgs 26.05)
 found first-class NixOS modules for the *entire* stack, so the design drops containers

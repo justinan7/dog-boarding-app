@@ -3,12 +3,13 @@ import { eq, desc, sql } from 'drizzle-orm'
 import { getDb } from '../db/client'
 import { auditEntries, invoices, users } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { requireElevation } from '../middleware/guards'
 import type { AppEnv } from '../lib/hono-env'
 
 export const reportsRouter = new Hono<AppEnv>()
 
-// GET /api/v1/reports/summary?month=2026-07 — contract §5.11
-reportsRouter.get('/summary', async (c) => {
+// GET /api/v1/reports/summary?month=2026-07 — contract §5.11 (M🔒)
+reportsRouter.get('/summary', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -68,8 +69,8 @@ reportsRouter.get('/summary', async (c) => {
   })
 })
 
-// GET /api/v1/audit?actor=&action=&subjectType=&cursor= — append-only feed
-reportsRouter.get('/audit', async (c) => {
+// GET /api/v1/audit?actor=&action=&subjectType=&cursor= — append-only feed (M🔒)
+reportsRouter.get('/audit', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()

@@ -32,6 +32,12 @@ beforeAll(async () => {
     body: JSON.stringify({ email: 'corry@zoomez.app', password: 'Test1234!' }),
   })
   cookie = res.headers.get('set-cookie') ?? ''
+  // Corry is a seeded manager; elevate so M🔒 endpoints (oversight) are reachable.
+  await app.request('/api/v1/me/elevate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: cookie },
+    body: JSON.stringify({ pin: '1234' }),
+  })
 })
 
 afterAll(async () => {

@@ -1,36 +1,30 @@
 import { createMiddleware } from 'hono/factory'
-import { eq } from 'drizzle-orm'
-import { getDb } from '../db/client'
-import { users, type Role } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { isElevated } from '../routes/me'
 import type { AppEnv } from '../lib/hono-env'
+import type { Role } from '../db/schema'
 
-// Re-export role type for route files.
 export type { Role }
 
 /** Reject unauthenticated requests. */
 export const requireAuth = createMiddleware<AppEnv>(async (c, next) => {
-  const user = c.get('user')
-  if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
+  if (!c.get('user')) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   await next()
 })
 
-/** Reject requests from users whose domain role is below the minimum. */
+/** Reject requests whose domain role is not in the allowed set. */
 export function requireRole(...allowed: Role[]) {
   return createMiddleware<AppEnv>(async (c, next) => {
-    const user = c.get('user')
-    if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
-    const db = getDb()
-    const [domainUser] = await db.select().from(users).where(eq(users.email, user.email)).limit(1)
-    if (!domainUser || !allowed.includes(domainUser.role as Role)) {
-      throw new AppError('FORBIDDEN', 'Insufficient role')
-    }
+    const du = c.get('domainUser')
+    if (!du) throw new AppError('UNAUTHORIZED', 'Not authenticated')
+    if (!allowed.includes(du.role)) throw new AppError('FORBIDDEN', 'Insufficient role')
     await next()
   })
 }
 
-/** Reject requests that lack an active manager elevation (the PIN gate). */
+/** Reject requests that lack an active manager elevation (the PIN gate).
+ *  Elevation is only grantable to staff/managers (see /me/elevate), so this
+ *  alone is sufficient to guard the (M🔒) manager surface. */
 export const requireElevation = createMiddleware<AppEnv>(async (c, next) => {
   const session = c.get('session')
   if (!session) throw new AppError('UNAUTHORIZED', 'Not authenticated')

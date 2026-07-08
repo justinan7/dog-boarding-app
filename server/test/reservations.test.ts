@@ -23,14 +23,20 @@ beforeAll(async () => {
   await app.request('/api/auth/sign-up/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'res-test@example.com', password: 'Test1234!', name: 'Res Tester' }),
+    body: JSON.stringify({ email: 'corry@zoomez.app', password: 'Test1234!', name: 'Corry' }),
   })
   const signInRes = await app.request('/api/auth/sign-in/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'res-test@example.com', password: 'Test1234!' }),
+    body: JSON.stringify({ email: 'corry@zoomez.app', password: 'Test1234!' }),
   })
   cookie = signInRes.headers.get('set-cookie') ?? ''
+  // Corry is a seeded manager; elevate for M🔒 approve/deny/waitlist.
+  await app.request('/api/v1/me/elevate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: cookie },
+    body: JSON.stringify({ pin: '1234' }),
+  })
 })
 
 afterAll(async () => {

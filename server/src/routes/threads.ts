@@ -7,6 +7,7 @@ import {
   users, auditEntries,
 } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { requireElevation } from '../middleware/guards'
 import type { AppEnv } from '../lib/hono-env'
 
 export const threadsRouter = new Hono<AppEnv>()
@@ -168,7 +169,7 @@ threadsRouter.post('/:id/read', async (c) => {
 // --- Oversight routes ---
 
 // GET /api/v1/oversight/threads — every thread + SLA timers
-threadsRouter.get('/oversight', async (c) => {
+threadsRouter.get('/oversight', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -192,7 +193,7 @@ const actionToDbEnum: Record<string, 'view' | 'join' | 'takeover' | 'handback'> 
   hand_back: 'handback',
 }
 
-threadsRouter.post('/:id/oversight', async (c) => {
+threadsRouter.post('/:id/oversight', requireElevation, async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()

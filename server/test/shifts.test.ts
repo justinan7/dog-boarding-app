@@ -35,6 +35,12 @@ beforeAll(async () => {
   app = await createApp()
   managerCookie = await signUpAndIn(app, 'corry@zoomez.app', 'Corry')
   staffCookie = await signUpAndIn(app, 'maria@zoomez.app', 'Maria')
+  // Elevate the manager session for M🔒 shift create/approve/deny.
+  await app.request('/api/v1/me/elevate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: managerCookie },
+    body: JSON.stringify({ pin: '1234' }),
+  })
 })
 afterAll(async () => { await resetDb() })
 

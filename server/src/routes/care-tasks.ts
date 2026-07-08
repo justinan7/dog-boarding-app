@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { getDb } from '../db/client'
 import { careTasks, careTaskEvents, users, auditEntries } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { zonedWallTimeToUtc } from '../lib/time'
+import { isElevated } from './me'
 import type { AppEnv } from '../lib/hono-env'
 
 export const careTasksRouter = new Hono<AppEnv>()
@@ -54,9 +56,7 @@ careTasksRouter.post('/', async (c) => {
   const actor = await resolveActor(db, user.email)
   if (!actor) throw new AppError('FORBIDDEN', 'User not found')
 
-  const fireDate = new Date(`${body.scheduledDate}T${body.scheduled.localTime}:00`)
-  const utcOffset = body.scheduled.timeZone === 'America/Los_Angeles' ? 7 : 0
-  const fireUtc = new Date(fireDate.getTime() + utcOffset * 60 * 60 * 1000)
+  const fireUtc = zonedWallTimeToUtc(body.scheduledDate, body.scheduled.localTime, body.scheduled.timeZone)
 
   const [task] = await db.insert(careTasks).values({
     reservationId: body.reservationId,
@@ -94,6 +94,12 @@ careTasksRouter.post('/:id/complete', async (c) => {
 
   const [task] = await db.select().from(careTasks).where(eq(careTasks.id, taskId)).limit(1)
   if (!task) throw new AppError('NOT_FOUND', 'Task not found')
+
+  // A manager "Mark done" override requires an active elevation (§5.5).
+  const session = c.get('session')
+  if (body.managerOverride && (!session || !isElevated(session.id))) {
+    throw new AppError('ELEVATION_REQUIRED', 'Manager PIN required to override a task')
+  }
 
   // refused/skipped require a note
   if ((body.outcome === 'refused' || body.outcome === 'skipped') && !body.note) {
