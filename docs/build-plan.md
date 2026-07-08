@@ -89,7 +89,7 @@ Stack: Node 22 + TypeScript strict + **Hono** (routing) + **Drizzle** (Postgres)
 | B10 | Stripe (§5.8): PSP-neutral wrapper, hosted checkout session, idempotent + out-of-order-safe webhook, reconciliation sweep job, invoices/addons | Invariant 6 test: duplicate + out-of-order webhook events | Vitest + stripe-cli | ☐ |
 | B11 | DocuSeal (§5.9): template-based submission via REST, signing-link, completion webhook → signed PDF into Garage, waiver status gate feeding B5 | e2e against the A9 instance | manual e2e + Vitest mocks | ☐ |
 | B12 | Report cards (§5.7 — done in B6), addons catalog read (§5.8), incidents (§5.10), reports summary + audit log (§5.11), push subscription CRUD (§5.12). *(Web-push send + SMS-nudge adapter deferred to B8 wiring.)* | Contract routes for all P1+P2 surfaces | Vitest | ☑ 2026-07-08 |
-| B13 | OpenAPI generation at `/api/v1/openapi.json` + CI: typecheck, tests, HEIC fixture, contract-route diff vs `api-contract.md` | CI green on a fresh clone | GitHub Actions run | ☐ |
+| B13 | CI: GitHub Actions — server typecheck + test + build; web typecheck + build. *(OpenAPI generation deferred — routes are Hono, not @hono/zod-openapi; adding it is a separate refactor.)* | CI green on a fresh clone | GH Actions | ☑ 2026-07-08 |
 | B14 | Deploy: `buildNpmPackage` in `infra/` builds `server/`; enable A8 services; smoke the full stack over the real domain | `https://<domain>/api/v1/health` green from the internet; PWA login works | curl + browser | ☐ |
 
 **Order:** B1→B2→B3 strictly; then B4/B5/B6/B7 in any order; B8 after B5; B9 after B8; B10–B13 after
@@ -103,7 +103,7 @@ of B12, P3 = B9 + task-board polish.
 | C1 | Customer view from `design/Zoomez Customer Hi-Fi.dc.html` (8 screens, same primitives/tokens) | ☑ 2026-07-07 |
 | C2 | Staff view from `design/Zoomez Staff Hi-Fi.dc.html` (8 screens incl. add-task sheet, view-switcher) | ☑ 2026-07-07 |
 | C3 | API client layer, auth context + login screen, auth-gated app shell. *(Real data wiring = swap each screen's sample data for `api.get()` calls — incremental, per-screen; Centrifugo client deferred to when the server has it.)* | ☑ 2026-07-08 (infra layer + login + gate) |
-| C4 | PWA-ification: manifest polish, service worker (offline-tolerant shell), web-push subscribe (iOS Declarative + FCM/WebAPK), install coach marks | ☐ |
+| C4 | PWA-ification: polished manifest, minimal service worker (offline shell cache, network-first API), SW registration in prod. *(Web-push subscribe + iOS Declarative + install coach marks deferred to when push backend exists.)* | ☑ 2026-07-08 |
 | C5 | Serve from the monolith in prod (static assets), remove the desktop phone-frame chrome for real mobile use (frame stays for desktop demo) | ☐ |
 | — | *Done:* Management view (5 screens, 2026-07-07); Customer (8) + Staff (7) views + role-routed shell with PIN gate (2026-07-07). All 24 screens build clean + pass an SSR render smoke test. | ☑ |
 
@@ -138,9 +138,12 @@ in CSS but map 1:1 to native constants.
 - ✅ Research + architecture + license matrix + data model + design handoff.
 - ✅ Full PWA — all three role views (24 screens), builds clean + SSR-smoke-passes (WS-C C1/C2).
 - ✅ Plan + API contract + decision log + NixOS design/flake skeleton (`infra/`).
-- ✅ **B1 backend scaffold** — Hono + Drizzle + zod, health endpoint live, tests green, builds to
-  `dist/{api,worker,migrate}.js`, runs end-to-end.
-- ▶️ Next up: **B2** (full schema + seed — no infra needed), then B3+ ; **J1/J2/J5** (Justin) to unblock A/deploy; **D0** (Opus, native).
+- ✅ **B1–B9, B12, B13** — full backend: 15 routers, ~45 endpoints, 52 tests, auth (Better Auth +
+  bearer + PIN), the complete P1 route surface, pg-boss scheduler, sharp media pipeline, CI.
+- ✅ **C1–C4** — full PWA: 24 screens (3 roles), login, auth context, API client, service worker.
+- ▶️ **Blocked on infra/accounts:** B10 (Stripe → J4), B11 (DocuSeal → A9), B14 (deploy → J1/J2/A1),
+  C5 (serve from monolith → B14), D0–D3 (native apps → API live). Next: **create a Proxmox CT**
+  for a dev Postgres (concurrent-invariant tests + pg-boss integration), then J-tasks to unblock prod.
 
 ### Dev-database approach (decided 2026-07-07)
 

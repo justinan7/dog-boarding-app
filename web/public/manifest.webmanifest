@@ -1,10 +1,24 @@
 {
-  "name": "Zoomez",
+  "name": "Zoomez — Dog Boarding",
   "short_name": "Zoomez",
-  "description": "Five-star stays for four-legged guests — Zoomez dog boarding.",
+  "description": "Five-star stays for four-legged guests — Zoomez luxury dog boarding, San Diego.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#F7F5EE",
   "theme_color": "#14403D",
-  "icons": []
+  "categories": ["lifestyle", "business"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
