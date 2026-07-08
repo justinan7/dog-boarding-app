@@ -88,7 +88,7 @@ Stack: Node 22 + TypeScript strict + **Hono** (routing) + **Drizzle** (Postgres)
 | B9 | Shifts (§5.6): open board, **race-safe first-come claim (partial unique index)**, approve/deny/withdraw, overlap detection + audit. `on_shift_now` view + concurrent-claim test deferred to real PG. | Claim lifecycle; overlap; audit | Vitest | ☑ 2026-07-08 |
 | B10 | Stripe (§5.8): PSP-neutral wrapper, hosted checkout session, idempotent + out-of-order-safe webhook, reconciliation sweep job, invoices/addons | Invariant 6 test: duplicate + out-of-order webhook events | Vitest + stripe-cli | ☐ |
 | B11 | DocuSeal (§5.9): template-based submission via REST, signing-link, completion webhook → signed PDF into Garage, waiver status gate feeding B5 | e2e against the A9 instance | manual e2e + Vitest mocks | ☐ |
-| B12 | Report cards (§5.7), incidents (§5.10), reports+audit read APIs (§5.11), push registration + web-push send, SMS-nudge adapter behind an interface (Twilio later) | Contract tests; a real web-push lands on a test browser | Vitest + manual | ☐ |
+| B12 | Report cards (§5.7 — done in B6), addons catalog read (§5.8), incidents (§5.10), reports summary + audit log (§5.11), push subscription CRUD (§5.12). *(Web-push send + SMS-nudge adapter deferred to B8 wiring.)* | Contract routes for all P1+P2 surfaces | Vitest | ☑ 2026-07-08 |
 | B13 | OpenAPI generation at `/api/v1/openapi.json` + CI: typecheck, tests, HEIC fixture, contract-route diff vs `api-contract.md` | CI green on a fresh clone | GitHub Actions run | ☐ |
 | B14 | Deploy: `buildNpmPackage` in `infra/` builds `server/`; enable A8 services; smoke the full stack over the real domain | `https://<domain>/api/v1/health` green from the internet; PWA login works | curl + browser | ☐ |
 
