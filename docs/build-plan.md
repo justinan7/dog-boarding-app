@@ -102,7 +102,7 @@ of B12, P3 = B9 + task-board polish.
 |---|---|---|
 | C1 | Customer view from `design/Zoomez Customer Hi-Fi.dc.html` (8 screens, same primitives/tokens) | ☑ 2026-07-07 |
 | C2 | Staff view from `design/Zoomez Staff Hi-Fi.dc.html` (8 screens incl. add-task sheet, view-switcher) | ☑ 2026-07-07 |
-| C3 | API client layer, auth context + login screen, auth-gated app shell. *(Real data wiring = swap each screen's sample data for `api.get()` calls — incremental, per-screen; Centrifugo client deferred to when the server has it.)* | ☑ 2026-07-08 (infra layer + login + gate) |
+| C3 | API client + auth context + login + auth-gated shell; TanStack Query data layer (`lib/queries.ts`); **Management view (all 5 screens: Dashboard, Calendar, Task board, Reports, + Inbox list) wired to live API** and verified against the real CT. *(Customer + Staff views still render sample data — same pattern to apply. Centrifugo client deferred.)* | ◑ 2026-07-08 — Management live; Customer/Staff pending |
 | C4 | PWA-ification: polished manifest, minimal service worker (offline shell cache, network-first API), SW registration in prod. *(Web-push subscribe + iOS Declarative + install coach marks deferred to when push backend exists.)* | ☑ 2026-07-08 |
 | C5 | Serve from the monolith in prod (static assets), remove the desktop phone-frame chrome for real mobile use (frame stays for desktop demo) | ☐ |
 | — | *Done:* Management view (5 screens, 2026-07-07); Customer (8) + Staff (7) views + role-routed shell with PIN gate (2026-07-07). All 24 screens build clean + pass an SSR render smoke test. | ☑ |
