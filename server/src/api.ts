@@ -1,18 +1,17 @@
 import { serve } from '@hono/node-server'
-import { app } from './app'
+import { createApp } from './app'
 import { initDb } from './db/client'
 import { runMigrations } from './db/migrate'
 import { env, isProd } from './env'
 import { log } from './lib/log'
 
-await initDb()
-// In dev/test the in-process PGlite starts empty, so auto-apply migrations.
-// In prod, migrations are a deliberate deploy step (`npm run db:migrate`) — not
-// run on every boot.
+const handle = await initDb()
 if (!isProd) await runMigrations()
 
+const app = await createApp()
+
 const server = serve({ fetch: app.fetch, port: env.PORT }, (info) => {
-  log.info(`zoomez-api listening on http://localhost:${info.port}`)
+  log.info({ port: info.port, driver: handle.kind }, 'zoomez-api listening')
 })
 
 for (const sig of ['SIGINT', 'SIGTERM'] as const) {

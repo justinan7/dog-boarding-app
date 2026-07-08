@@ -1,11 +1,14 @@
 import { beforeAll, afterAll, expect, test } from 'vitest'
-import { app } from '../src/app'
+import { createApp } from '../src/app'
 import { initDb, resetDb } from '../src/db/client'
 import { runMigrations } from '../src/db/migrate'
+
+let app: Awaited<ReturnType<typeof createApp>>
 
 beforeAll(async () => {
   await initDb('pglite://memory')
   await runMigrations()
+  app = await createApp()
 })
 afterAll(async () => {
   await resetDb()

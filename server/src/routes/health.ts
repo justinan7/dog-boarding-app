@@ -1,11 +1,10 @@
 import { Hono } from 'hono'
 import { sql } from 'drizzle-orm'
 import { getDb } from '../db/client'
+import type { AppEnv } from '../lib/hono-env'
 
-export const health = new Hono()
+export const health = new Hono<AppEnv>()
 
-// GET /api/v1/health — liveness + db connectivity. 200 when the db answers,
-// 503 when it doesn't (so uptime checks can distinguish "up" from "degraded").
 health.get('/', async (c) => {
   let dbOk = false
   try {

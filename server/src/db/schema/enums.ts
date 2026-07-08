@@ -5,6 +5,7 @@ import { pgEnum } from 'drizzle-orm/pg-core'
 // api-contract.md.
 
 export const roleEnum = pgEnum('role', ['customer', 'staff', 'manager'])
+export type Role = (typeof roleEnum.enumValues)[number]
 export const petSexEnum = pgEnum('pet_sex', ['male', 'female', 'unknown'])
 export const careKindEnum = pgEnum('care_kind', ['feeding', 'medication', 'task'])
 export const vaxStatusEnum = pgEnum('vax_status', ['valid', 'expiring', 'expired'])

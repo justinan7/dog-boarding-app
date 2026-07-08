@@ -11,6 +11,16 @@ export * from './money'
 export * from './compliance'
 export * from './platform'
 
+// Better Auth's own tables (user, session, account, verification) — included in
+// our migration so they exist in the same DB. The drizzle adapter + auth.ts
+// reference these for table discovery.
+export {
+  user as baUser,
+  session as baSession,
+  account as baAccount,
+  verification as baVerification,
+} from './better-auth'
+
 import * as identity from './identity'
 import * as crm from './crm'
 import * as booking from './booking'
@@ -20,6 +30,7 @@ import * as workforce from './workforce'
 import * as money from './money'
 import * as compliance from './compliance'
 import * as platform from './platform'
+import * as betterAuth from './better-auth'
 
 export const schema = {
   ...identity,
@@ -31,4 +42,5 @@ export const schema = {
   ...money,
   ...compliance,
   ...platform,
+  ...betterAuth,
 }

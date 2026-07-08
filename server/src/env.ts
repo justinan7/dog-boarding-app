@@ -7,6 +7,11 @@ const schema = z.object({
   // Driver auto-selected by scheme (see db/client.ts). Defaults to a persisted
   // in-process PGlite so `npm run dev` works with zero infrastructure.
   DATABASE_URL: z.string().default('pglite://.data/dev'),
+  // Better Auth session signing secret. In prod this comes from sops-nix; in
+  // dev/test a deterministic default keeps things working without a .env file.
+  BETTER_AUTH_SECRET: z.string().default('zoomez-dev-secret-not-for-production'),
+  // Public domain for CORS trustedOrigins (prod only; dev hardcodes localhost).
+  PUBLIC_DOMAIN: z.string().optional(),
 })
 
 export type Env = z.infer<typeof schema>

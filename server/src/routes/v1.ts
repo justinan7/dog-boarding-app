@@ -1,11 +1,12 @@
 import { Hono } from 'hono'
 import { health } from './health'
+import { me } from './me'
+import type { AppEnv } from '../lib/hono-env'
 
-// The /api/v1 surface. New resource routers mount here as they land
-// (customers/pets B4, reservations B5, threads B6, …) per api-contract.md §5.
-export const v1 = new Hono()
+export const v1 = new Hono<AppEnv>()
 
 v1.route('/health', health)
+v1.route('/me', me)
 
 v1.get('/', (c) =>
   c.json({
