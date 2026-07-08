@@ -4,7 +4,7 @@ import { initDb, getDb, resetDb } from '../src/db/client'
 import { runMigrations } from '../src/db/migrate'
 import { seed } from '../src/db/seed'
 import { eq } from 'drizzle-orm'
-import { threads, messages, takeoverEvents, auditEntries } from '../src/db/schema'
+import { threads, takeoverEvents, auditEntries } from '../src/db/schema'
 
 let app: Awaited<ReturnType<typeof createApp>>
 let cookie: string

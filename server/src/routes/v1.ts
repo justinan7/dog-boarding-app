@@ -8,6 +8,7 @@ import { reservationsRouter } from './reservations'
 import { threadsRouter } from './threads'
 import { careTasksRouter } from './care-tasks'
 import { reportCardsRouter } from './report-cards'
+import { shiftsRouter } from './shifts'
 import type { AppEnv } from '../lib/hono-env'
 
 export const v1 = new Hono<AppEnv>()
@@ -21,6 +22,7 @@ v1.route('/reservations', reservationsRouter)
 v1.route('/threads', threadsRouter)
 v1.route('/care-tasks', careTasksRouter)
 v1.route('/report-cards', reportCardsRouter)
+v1.route('/shifts', shiftsRouter)
 
 v1.get('/', (c) =>
   c.json({
