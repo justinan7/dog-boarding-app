@@ -447,6 +447,22 @@ CREATE TABLE "push_subscriptions" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "report_cards" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"reservation_id" uuid NOT NULL,
+	"pet_id" uuid NOT NULL,
+	"date" date NOT NULL,
+	"status" text DEFAULT 'draft' NOT NULL,
+	"mood" text,
+	"appetite" text,
+	"photo_object_keys" text[],
+	"best_moment" text,
+	"care_log_summary" text,
+	"sent_at" timestamp with time zone,
+	"hearted_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "users" ADD CONSTRAINT "users_org_id_organizations_id_fk" FOREIGN KEY ("org_id") REFERENCES "public"."organizations"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -504,6 +520,8 @@ ALTER TABLE "waiver_submissions" ADD CONSTRAINT "waiver_submissions_template_id_
 ALTER TABLE "waiver_templates" ADD CONSTRAINT "waiver_templates_org_id_organizations_id_fk" FOREIGN KEY ("org_id") REFERENCES "public"."organizations"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "notification_preferences" ADD CONSTRAINT "notification_preferences_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "push_subscriptions" ADD CONSTRAINT "push_subscriptions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "report_cards" ADD CONSTRAINT "report_cards_reservation_id_reservations_id_fk" FOREIGN KEY ("reservation_id") REFERENCES "public"."reservations"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "report_cards" ADD CONSTRAINT "report_cards_pet_id_pets_id_fk" FOREIGN KEY ("pet_id") REFERENCES "public"."pets"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "care_profile_pet_idx" ON "care_profile_items" USING btree ("pet_id");--> statement-breakpoint
 CREATE INDEX "customers_org_idx" ON "customers" USING btree ("org_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "do_not_pair_uq" ON "do_not_pair" USING btree ("pet_a_id","pet_b_id");--> statement-breakpoint
