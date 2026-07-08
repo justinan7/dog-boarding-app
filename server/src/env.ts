@@ -12,6 +12,11 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().default('zoomez-dev-secret-not-for-production'),
   // Public domain for CORS trustedOrigins (prod only; dev hardcodes localhost).
   PUBLIC_DOMAIN: z.string().optional(),
+  // S3-compatible object storage (Garage in prod). Optional in dev.
+  S3_ENDPOINT: z.string().optional(),
+  S3_REGION: z.string().default('garage'),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
 })
 
 export type Env = z.infer<typeof schema>
