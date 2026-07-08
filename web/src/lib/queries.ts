@@ -65,6 +65,16 @@ export const useReportsSummary = (month: string) =>
     queryFn: () => api.get<ReportsSummary>(`/api/v1/reports/summary?month=${month}`),
   })
 
+export interface AuditEntry {
+  id: string; occurredAt: string; actorDisplay?: string | null; actorRole?: string | null
+  action: string; subjectType: string; subjectId?: string | null
+}
+export const useAudit = () =>
+  useQuery({
+    queryKey: ['audit'],
+    queryFn: () => api.get<List<AuditEntry>>(`/api/v1/reports/audit`),
+  })
+
 export const useCustomers = (q?: string) =>
   useQuery({
     queryKey: ['customers', q ?? ''],

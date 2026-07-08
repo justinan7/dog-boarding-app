@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
-import { eq, desc, sql } from 'drizzle-orm'
+import { eq, and, desc, sql } from 'drizzle-orm'
 import { getDb } from '../db/client'
-import { auditEntries, invoices, users } from '../db/schema'
+import { auditEntries, invoices, invoiceLineItems, shiftClaims, careTaskEvents, users } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { requireElevation } from '../middleware/guards'
 import type { AppEnv } from '../lib/hono-env'
@@ -47,21 +47,27 @@ reportsRouter.get('/summary', requireElevation, async (c) => {
   const outstandingCents = allInvoices.filter((i) => i.status === 'open').reduce((s, i) => s + i.balanceCents, 0)
   const outstandingCount = allInvoices.filter((i) => i.status === 'open').length
 
-  // Staff stats (simplified for P1)
-  const allUsers = await db.select().from(users)
-  const staff = allUsers.filter((u) => u.role === 'staff').map((u) => ({
-    display: u.displayName,
-    shifts: 0, // would need a join; stubbed
-    tasks: 0,
-    onTimePct: 100,
+  // Upsells = addon line items across invoices.
+  const upsellRows = await db.select({ cents: invoiceLineItems.unitCents, qty: invoiceLineItems.qty })
+    .from(invoiceLineItems).where(eq(invoiceLineItems.kind, 'addon'))
+  const upsellsCents = upsellRows.reduce((s, r) => s + r.cents * r.qty, 0)
+
+  // Staff stats: approved shifts + completed task events per staff.
+  const staffUsers = (await db.select().from(users)).filter((u) => u.role === 'staff')
+  const staff = await Promise.all(staffUsers.map(async (u) => {
+    const shiftCount = (await db.select().from(shiftClaims)
+      .where(and(eq(shiftClaims.staffId, u.id), eq(shiftClaims.state, 'approved')))).length
+    const taskCount = (await db.select().from(careTaskEvents)
+      .where(eq(careTaskEvents.actorUserId, u.id))).length
+    return { display: u.displayName, shifts: shiftCount, tasks: taskCount, onTimePct: 100 }
   }))
 
   return c.json({
     occupancy: { avgPct, nights },
     revenue: {
       boardingCents,
-      upsellsCents: 0, // would need line-item aggregation
-      totalCents: boardingCents,
+      upsellsCents,
+      totalCents: boardingCents + upsellsCents,
       outstandingCents,
       outstandingCount,
     },
@@ -76,7 +82,15 @@ reportsRouter.get('/audit', requireElevation, async (c) => {
   const db = getDb()
 
   const limit = Math.min(Number(c.req.query('limit') ?? 25), 100)
-  let query = db.select().from(auditEntries).$dynamic()
+  let query = db
+    .select({
+      id: auditEntries.id, occurredAt: auditEntries.occurredAt,
+      actorDisplay: users.displayName, actorRole: auditEntries.actorRole,
+      action: auditEntries.action, subjectType: auditEntries.subjectType, subjectId: auditEntries.subjectId,
+    })
+    .from(auditEntries)
+    .leftJoin(users, eq(auditEntries.actorUserId, users.id))
+    .$dynamic()
 
   const action = c.req.query('action')
   if (action) query = query.where(eq(auditEntries.action, action))

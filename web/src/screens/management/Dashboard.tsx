@@ -2,6 +2,7 @@ import { Icon } from '../../components/Icon'
 import { Wordmark, Section, Card, Button, Chip, DogAvatar } from '../../components/primitives'
 import { useAuth } from '../../lib/auth-context'
 import { useReservations, useCareTasks, useThreads } from '../../lib/queries'
+import { fmtTime } from '../../lib/format'
 
 const CAPACITY = 8
 
@@ -15,14 +16,6 @@ function AccountChip({ name }: { name: string }) {
       <Icon name="chevron-down" size={13} style={{ color: 'var(--stone-400)' }} />
     </div>
   )
-}
-
-/** 'HH:MM' (24h) → '4:00 PM'. */
-function fmtTime(hhmm: string): string {
-  const [h, m] = hhmm.split(':').map(Number)
-  const period = (h ?? 0) >= 12 ? 'PM' : 'AM'
-  const h12 = ((h ?? 0) % 12) || 12
-  return `${h12}:${String(m ?? 0).padStart(2, '0')} ${period}`
 }
 
 const IN_RESIDENCE = ['in_stay', 'checked_in']
