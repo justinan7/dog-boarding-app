@@ -3,7 +3,7 @@ import { eq, and, sql, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
 import {
-  reservations, reservationDogs, users, customers,
+  reservations, reservationDogs, users, customers, pets,
   careProfileItems, careTasks, belongings, auditEntries,
 } from '../db/schema'
 import { AppError } from '../lib/errors'
@@ -98,11 +98,32 @@ reservationsRouter.get('/', async (c) => {
   const status = c.req.query('status')
   const limit = Math.min(Number(c.req.query('limit') ?? 25), 100)
 
-  let query = db.select().from(reservations).$dynamic()
+  let query = db
+    .select({
+      id: reservations.id, customerId: reservations.customerId, customerName: customers.name,
+      serviceType: reservations.serviceType, status: reservations.status,
+      startDate: reservations.startDate, endDate: reservations.endDate,
+      depositCents: reservations.depositCents, notes: reservations.notes,
+      timeZone: reservations.timeZone, createdAt: reservations.createdAt,
+    })
+    .from(reservations)
+    .innerJoin(customers, eq(reservations.customerId, customers.id))
+    .$dynamic()
   if (status) query = query.where(eq(reservations.status, status as never))
 
-  const rows = await query.orderBy(reservations.createdAt).limit(limit)
-  return c.json({ items: rows })
+  const base = await query.orderBy(reservations.createdAt).limit(limit)
+
+  // Attach the pet names for each reservation (from reservation_dogs → pets).
+  const items = await Promise.all(base.map(async (r) => {
+    const dogs = await db
+      .select({ name: pets.name })
+      .from(reservationDogs)
+      .innerJoin(pets, eq(reservationDogs.petId, pets.id))
+      .where(eq(reservationDogs.reservationId, r.id))
+    return { ...r, petNames: dogs.map((d) => d.name) }
+  }))
+
+  return c.json({ items })
 })
 
 // GET /api/v1/reservations/:id

@@ -1,12 +1,16 @@
 import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import { z } from 'zod'
 import { getDb } from '../db/client'
-import { careTasks, careTaskEvents, users, auditEntries } from '../db/schema'
+import { careTasks, careTaskEvents, users, pets, auditEntries } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { zonedWallTimeToUtc } from '../lib/time'
 import { isElevated } from './me'
 import type { AppEnv } from '../lib/hono-env'
+
+// Alias for the assignee join (the on-shift staffer resolved at fire time).
+const assignee = alias(users, 'assignee')
 
 export const careTasksRouter = new Hono<AppEnv>()
 
@@ -25,7 +29,21 @@ careTasksRouter.get('/', async (c) => {
   const petId = c.req.query('petId')
   const state = c.req.query('state')
 
-  let query = db.select().from(careTasks).$dynamic()
+  // Join pet name + assignee display so the UI doesn't need extra round-trips
+  // (contract §3: CareTask.petName). assignee is nullable (resolved at fire time).
+  let query = db
+    .select({
+      id: careTasks.id, reservationId: careTasks.reservationId, petId: careTasks.petId,
+      petName: pets.name, kind: careTasks.kind, label: careTasks.label, dose: careTasks.dose,
+      scheduledDate: careTasks.scheduledDate, scheduledLocalTime: careTasks.scheduledLocalTime,
+      timeZone: careTasks.timeZone, nextFireUtc: careTasks.nextFireUtc,
+      assignedStaffId: careTasks.assignedStaffId, assigneeDisplay: assignee.displayName,
+      state: careTasks.state,
+    })
+    .from(careTasks)
+    .innerJoin(pets, eq(careTasks.petId, pets.id))
+    .leftJoin(assignee, eq(careTasks.assignedStaffId, assignee.id))
+    .$dynamic()
   if (date) query = query.where(eq(careTasks.scheduledDate, date))
   if (petId) query = query.where(eq(careTasks.petId, petId))
   if (state) query = query.where(eq(careTasks.state, state as never))
