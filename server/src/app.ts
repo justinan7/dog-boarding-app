@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+import { join, relative } from 'node:path'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { v1 } from './routes/v1'
@@ -32,9 +34,24 @@ export async function createApp() {
 
   app.route('/api/v1', v1)
 
-  app.notFound((c) =>
-    c.json({ error: { code: 'NOT_FOUND', message: 'Not found' } }, 404),
-  )
+  // Production monolith mode: serve the built PWA + SPA fallback. Static files
+  // are matched first; anything unknown that isn't /api/* gets index.html so
+  // client-side routes deep-link correctly.
+  if (env.WEB_DIST) {
+    const { serveStatic } = await import('@hono/node-server/serve-static')
+    const indexHtml = await readFile(join(env.WEB_DIST, 'index.html'), 'utf8')
+    // @hono/node-server resolves `root` relative to cwd.
+    app.use('*', serveStatic({ root: relative(process.cwd(), env.WEB_DIST) }))
+    app.notFound((c) =>
+      c.req.path.startsWith('/api/')
+        ? c.json({ error: { code: 'NOT_FOUND', message: 'Not found' } }, 404)
+        : c.html(indexHtml),
+    )
+  } else {
+    app.notFound((c) =>
+      c.json({ error: { code: 'NOT_FOUND', message: 'Not found' } }, 404),
+    )
+  }
   app.onError((err, c) => renderError(c, err))
 
   return app

@@ -13,6 +13,15 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().default('zoomez-dev-secret-not-for-production'),
   // Public domain for CORS trustedOrigins (prod only; dev hardcodes localhost).
   PUBLIC_DOMAIN: z.string().optional(),
+  // Manager PIN for elevation (real value from secrets in prod; 1234 = demo).
+  MANAGER_PIN: z.string().min(4).default('1234'),
+  // Demo mode: PWA shows the demo role bar / sign-up hints / PIN hint.
+  // Defaults ON (dev + the demo-world prod phase); flip to 'false' when the
+  // business goes live with real data.
+  DEMO_MODE: z.string().default('true').transform((v) => v === 'true' || v === '1'),
+  // Absolute path to the built PWA (web/dist). When set, the API serves it
+  // with an SPA fallback — the production monolith mode.
+  WEB_DIST: z.string().optional(),
   // S3-compatible object storage (Garage in prod). Optional in dev.
   S3_ENDPOINT: z.string().optional(),
   S3_REGION: z.string().default('garage'),

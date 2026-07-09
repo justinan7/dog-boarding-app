@@ -10,7 +10,7 @@
 # the script prints. SIGN UP (accounts are matched to a role by email — the API
 # enforces the real role, the demo bar only swaps the view):
 #   corey@zoomez.app   → Manager (all seeded data)   password: any 8+ chars
-#   jack@zoomez.app    → Staff
+#   tyler@zoomez.app    → Staff
 #   sarah@example.com  → Customer with dogs, a stay, messages, a report card
 #   anything else      → Customer (auto-provisioned, empty)
 # PIN-gated manager actions (approvals, Reports) use demo PIN 1234.
@@ -52,7 +52,7 @@ FRESH=0
 echo "→ applying migrations…"
 npm run db:migrate
 if [ "$FRESH" = "1" ] || [ "$RESEED" = "1" ]; then
-  echo "→ loading demo data (Biscuit, Bella, the Jul stays, Diaz↔Jack thread…)…"
+  echo "→ loading demo data (Rusty, Jag, the Jul stays, Diaz↔Jack thread…)…"
   npm run db:seed
 fi
 
@@ -77,7 +77,7 @@ if [ -n "${LAN_IP:-}" ]; then
 fi
 echo "  API:    http://localhost:3000/api/v1/health"
 echo "  SIGN UP to log in (role is matched by email):"
-echo "    corey@zoomez.app  → Manager    jack@zoomez.app → Staff"
+echo "    corey@zoomez.app  → Manager    tyler@zoomez.app → Staff"
 echo "    sarah@example.com → Customer with dogs & a stay"
 echo "    (password: any 8+ chars)"
 echo "  Approvals/Reports are PIN-gated · demo PIN 1234."

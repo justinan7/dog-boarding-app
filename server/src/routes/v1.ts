@@ -15,9 +15,13 @@ import { incidentsRouter } from './incidents'
 import { reportsRouter } from './reports'
 import { pushRouter } from './push'
 import { uploadsRouter } from './uploads'
+import { env } from '../env'
 import type { AppEnv } from '../lib/hono-env'
 
 export const v1 = new Hono<AppEnv>()
+
+// Public client config (no auth — the login screen needs it before sign-in).
+v1.get('/config', (c) => c.json({ demoMode: env.DEMO_MODE }))
 
 v1.route('/health', health)
 v1.route('/me', me)

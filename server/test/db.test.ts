@@ -32,7 +32,7 @@ test('migrations create the schema; a customer + pet round-trips through FKs', a
 
   await db.insert(pets).values({
     customerId: customer!.id,
-    name: 'Biscuit',
+    name: 'Rusty',
     breed: 'Beagle',
     weightLb: 24,
     sex: 'male',
@@ -43,7 +43,7 @@ test('migrations create the schema; a customer + pet round-trips through FKs', a
     .from(pets)
     .innerJoin(customers, eq(pets.customerId, customers.id))
 
-  expect(rows).toEqual([{ pet: 'Biscuit', breed: 'Beagle', owner: 'Sarah Mitchell' }])
+  expect(rows).toEqual([{ pet: 'Rusty', breed: 'Beagle', owner: 'Sarah Mitchell' }])
 })
 
 test('the role enum rejects an invalid value', async () => {

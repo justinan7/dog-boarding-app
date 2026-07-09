@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Wordmark, Button } from '../components/primitives'
 import { useAuth } from '../lib/auth-context'
+import { useAppConfig } from '../lib/queries'
 
 export function Login() {
   const { signIn, signUp, error } = useAuth()
+  const config = useAppConfig()
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -98,25 +100,27 @@ export function Login() {
           </button>
 
           {/* Demo world: role is matched by email at sign-UP (any 8+ char password) */}
-          <div
-            style={{
-              marginTop: 8,
-              background: 'var(--surface-tint)',
-              borderRadius: 'var(--radius-md)',
-              padding: '10px 14px',
-              fontSize: 11.5,
-              lineHeight: 1.7,
-              color: 'var(--text-muted)',
-            }}
-          >
-            <span style={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: 10 }}>
-              Demo — sign up as
-            </span>
-            <br />
-            <b>corey@zoomez.app</b> → manager · <b>jack@zoomez.app</b> → staff
-            <br />
-            <b>sarah@example.com</b> → customer with dogs &amp; a stay
-          </div>
+          {config.data?.demoMode && (
+            <div
+              style={{
+                marginTop: 8,
+                background: 'var(--surface-tint)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 14px',
+                fontSize: 11.5,
+                lineHeight: 1.7,
+                color: 'var(--text-muted)',
+              }}
+            >
+              <span style={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: 10 }}>
+                Demo — sign up as
+              </span>
+              <br />
+              <b>corey@zoomez.app</b> → manager · <b>tyler@zoomez.app</b> → staff
+              <br />
+              <b>sarah@example.com</b> → customer with dogs &amp; a stay
+            </div>
+          )}
         </div>
       </div>
 

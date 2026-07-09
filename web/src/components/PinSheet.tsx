@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Sheet } from './primitives'
 import { Icon } from './Icon'
 import { auth as authApi } from '../lib/api'
+import { useAppConfig } from '../lib/queries'
 
 // Manager view is PIN-gated (design: gold PIN lock badge on the Manager card)
 // so a shared phone can't wander into approvals. The PIN is checked SERVER-side
@@ -16,6 +17,7 @@ export function PinSheet({
   onClose: () => void
   onUnlock: () => void
 }) {
+  const config = useAppConfig()
   const [pin, setPin] = useState('')
   const [error, setError] = useState(false)
   const [checking, setChecking] = useState(false)
@@ -60,7 +62,11 @@ export function PinSheet({
             Manager PIN
           </div>
           <div style={{ marginTop: 4, fontSize: 12.5, color: errorText ? 'var(--red-error)' : 'var(--text-muted)' }}>
-            {errorText ?? (checking ? 'Checking…' : 'Approvals and oversight are PIN-locked · demo PIN 1234')}
+            {errorText ?? (checking
+              ? 'Checking…'
+              : config.data?.demoMode
+                ? 'Approvals and oversight are PIN-locked · demo PIN 1234'
+                : 'Approvals and oversight are PIN-locked')}
           </div>
         </div>
 

@@ -38,6 +38,7 @@ import {
   customerTab, staffTab, managerTab,
   type Role, type CustomerRoute, type StaffRoute, type ManagerRoute,
 } from './lib/nav'
+import { useAppConfig } from './lib/queries'
 
 // The hi-fi content frame: 64px top clears the notch, 16px section rhythm.
 const SCROLL_STYLE: CSSProperties = {
@@ -301,6 +302,7 @@ function DemoRoleBar({ role, onChange }: { role: Role; onChange: (r: Role) => vo
 
 export default function App() {
   const { user, loading } = useAuth()
+  const config = useAppConfig()
   // Default role from the auth context; demo bar can override.
   const [role, setRole] = useState<Role>('customer')
 
@@ -334,7 +336,8 @@ export default function App() {
         {role === 'staff' && <StaffView onSwitchToManager={() => setRole('manager')} />}
         {role === 'manager' && <ManagerView onSwitchToStaff={() => setRole('staff')} />}
       </PhoneFrame>
-      <DemoRoleBar role={role} onChange={setRole} />
+      {/* Demo chrome only while the server says we're in demo mode. */}
+      {config.data?.demoMode && <DemoRoleBar role={role} onChange={setRole} />}
     </>
   )
 }

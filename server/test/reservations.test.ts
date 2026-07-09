@@ -103,16 +103,16 @@ describe('reservation lifecycle: approve, deny, check-in/out', () => {
 
   test('approving when FULL without overrideCapacity returns 409 CAPACITY_FULL', async () => {
     const db = getDb()
-    // Rocky's request overlaps Jul 4–6, which the seed fills to capacity.
+    // Gus's request overlaps Jul 4–6, which the seed fills to capacity.
     // Find the remaining requested reservation that overlaps full nights.
     const requested = await db.select().from(reservations).where(eq(reservations.status, 'requested'))
-    const rockyReq = requested[0]
-    if (!rockyReq) {
+    const gusReq = requested[0]
+    if (!gusReq) {
       // Already approved in the previous test; skip this assertion
       return
     }
 
-    const res = await authed(`/api/v1/reservations/${rockyReq.id}/approve`, {
+    const res = await authed(`/api/v1/reservations/${gusReq.id}/approve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
@@ -147,7 +147,7 @@ describe('reservation lifecycle: approve, deny, check-in/out', () => {
 
   test('check-in and check-out lifecycle', async () => {
     const db = getDb()
-    // Use Biscuit's approved reservation (Jul 4–6)
+    // Use Rusty's approved reservation (Jul 4–6)
     const approved = await db.select().from(reservations).where(eq(reservations.status, 'approved'))
     const res1 = approved[0]
     if (!res1) return // might have been used

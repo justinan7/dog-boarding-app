@@ -17,7 +17,7 @@ afterAll(async () => {
 test('seed loads the design world', async () => {
   const db = getDb()
   const allPets = await db.select().from(pets)
-  expect(allPets.map((p) => p.name).sort()).toEqual(['Bella', 'Biscuit', 'Cooper', 'Luna', 'Max', 'Rocky'])
+  expect(allPets.map((p) => p.name).sort()).toEqual(['Cooper', 'Gus', 'Jack', 'Jag', 'Luna', 'Rusty'])
 })
 
 test('two booking requests are pending approval', async () => {
@@ -33,14 +33,14 @@ test('seed is idempotent — re-running does not duplicate', async () => {
   expect(rows).toHaveLength(6) // still six, not twelve
 })
 
-test("Biscuit's owner and an overdue insulin task resolve through the graph", async () => {
+test("Rusty's owner and an overdue insulin task resolve through the graph", async () => {
   const db = getDb()
-  const [biscuit] = await db
+  const [rusty] = await db
     .select({ pet: pets.name, owner: customers.name })
     .from(pets)
     .innerJoin(customers, eq(pets.customerId, customers.id))
-    .where(eq(pets.name, 'Biscuit'))
-  expect(biscuit).toEqual({ pet: 'Biscuit', owner: 'Sarah Mitchell' })
+    .where(eq(pets.name, 'Rusty'))
+  expect(rusty).toEqual({ pet: 'Rusty', owner: 'Sarah Mitchell' })
 
   const overdue = await db.select().from(careTasks).where(eq(careTasks.state, 'overdue'))
   expect(overdue).toHaveLength(1)

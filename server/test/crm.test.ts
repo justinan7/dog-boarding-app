@@ -23,12 +23,12 @@ beforeAll(async () => {
   await app.request('/api/auth/sign-up/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'jack@zoomez.app', password: 'Test1234!', name: 'Jack Torres' }),
+    body: JSON.stringify({ email: 'tyler@zoomez.app', password: 'Test1234!', name: 'Tyler Torres' }),
   })
   const signInRes = await app.request('/api/auth/sign-in/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'jack@zoomez.app', password: 'Test1234!' }),
+    body: JSON.stringify({ email: 'tyler@zoomez.app', password: 'Test1234!' }),
   })
   cookie = signInRes.headers.get('set-cookie') ?? ''
 
@@ -103,7 +103,7 @@ describe('pets CRUD', () => {
     expect(res.status).toBe(200)
     const body = (await json(res)) as { items: Array<{ name: string }> }
     const names = body.items.map((p) => p.name).sort()
-    expect(names).toEqual(['Bella', 'Biscuit'])
+    expect(names).toEqual(['Jag', 'Rusty'])
   })
 
   test('a customer sees only their OWN pets, whatever they query', async () => {
@@ -111,15 +111,15 @@ describe('pets CRUD', () => {
     const res = await app.request('/api/v1/pets', { headers: { Cookie: sarahCookie } })
     expect(res.status).toBe(200)
     const body = (await json(res)) as { items: Array<{ name: string }> }
-    expect(body.items.map((p) => p.name).sort()).toEqual(['Bella', 'Biscuit'])
+    expect(body.items.map((p) => p.name).sort()).toEqual(['Jag', 'Rusty'])
   })
 
   test('GET /api/v1/pets/:id returns full profile with care items + vaccinations + flags', async () => {
     const allRes = await authed('/api/v1/pets')
     const { items } = (await json(allRes)) as { items: Array<{ id: string; name: string }> }
-    const biscuit = items.find((p) => p.name === 'Biscuit')!
+    const rusty = items.find((p) => p.name === 'Rusty')!
 
-    const res = await authed(`/api/v1/pets/${biscuit.id}`)
+    const res = await authed(`/api/v1/pets/${rusty.id}`)
     expect(res.status).toBe(200)
     const body = (await json(res)) as {
       name: string
@@ -127,7 +127,7 @@ describe('pets CRUD', () => {
       vaccinations: Array<{ type: string; status: string }>
       safetyFlags: string[]
     }
-    expect(body.name).toBe('Biscuit')
+    expect(body.name).toBe('Rusty')
     expect(body.careProfile.length).toBeGreaterThanOrEqual(2) // Rimadyl + Breakfast + Dinner
     expect(body.vaccinations.find((v) => v.type === 'bordetella')?.status).toBe('expired')
   })
@@ -135,12 +135,12 @@ describe('pets CRUD', () => {
   test('PUT /api/v1/pets/:id/care-profile replaces all items', async () => {
     const allRes = await authed('/api/v1/pets')
     const { items } = (await json(allRes)) as { items: Array<{ id: string; name: string }> }
-    const biscuit = items.find((p) => p.name === 'Biscuit')!
+    const rusty = items.find((p) => p.name === 'Rusty')!
 
     const newProfile = [
       { kind: 'feeding', label: 'Breakfast', dose: '2 cups', localTime: '07:00', timeZone: 'America/Los_Angeles' },
     ]
-    const res = await authed(`/api/v1/pets/${biscuit.id}/care-profile`, {
+    const res = await authed(`/api/v1/pets/${rusty.id}/care-profile`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newProfile),

@@ -38,7 +38,7 @@ enforces the real role server-side, while the on-screen *demo bar* just swaps wh
 | Sign up with | Role you get |
 |---|---|
 | `corey@zoomez.app` (or `brette@zoomez.app`) | **Manager** — approvals, task board, oversight, reports |
-| `jack@zoomez.app` (or `maria@zoomez.app`) | **Staff** — today rail, checklists, shift claiming, threads |
+| `tyler@zoomez.app` (or `maria@zoomez.app`) | **Staff** — today rail, checklists, shift claiming, threads |
 | `sarah@example.com` | **Customer with data** — two dogs, a live stay, messages, a report card |
 | any other email | Customer (auto-provisioned, empty) |
 

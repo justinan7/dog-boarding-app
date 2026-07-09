@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { getDb } from '../db/client'
 import { customers } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { env } from '../env'
 import type { AppEnv } from '../lib/hono-env'
 
 // Manager PIN elevation state — stored in-memory keyed by session id. On a
@@ -14,7 +15,8 @@ const pinAttempts = new Map<string, { count: number; windowStart: number }>()
 const ELEVATION_DURATION_MS = 15 * 60 * 1000
 const MAX_PIN_ATTEMPTS = 5
 const PIN_WINDOW_MS = 15 * 60 * 1000
-const MANAGER_PIN = '1234'
+// Real PIN comes from secrets in prod; '1234' is the dev/demo default.
+const MANAGER_PIN = env.MANAGER_PIN
 
 export function isElevated(sessionId: string): Date | null {
   const e = elevations.get(sessionId)

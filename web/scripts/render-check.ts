@@ -56,11 +56,11 @@ async function main() {
   sQC.setQueryData(['thread-messages', threadId], await get(sc, `/api/v1/threads/${threadId}/messages`))
   const pets = (await get(sc, '/api/v1/pets')) as any
   sQC.setQueryData(['pets', 'all'], pets)
-  const biscuit = pets.items.find((p: any) => p.name === 'Biscuit')
-  sQC.setQueryData(['pet', biscuit.id], await get(sc, `/api/v1/pets/${biscuit.id}`))
+  const rusty = pets.items.find((p: any) => p.name === 'Rusty')
+  sQC.setQueryData(['pet', rusty.id], await get(sc, `/api/v1/pets/${rusty.id}`))
   const stays = (reservations as any).items
-  const biscuitStay = stays.find((r: any) => r.petNames.includes('Biscuit') && r.startDate === '2026-07-04')
-  sQC.setQueryData(['invoice', biscuitStay.id], await get(sc, `/api/v1/invoices?reservationId=${biscuitStay.id}`))
+  const rustyStay = stays.find((r: any) => r.petNames.includes('Rusty') && r.startDate === '2026-07-04')
+  sQC.setQueryData(['invoice', rustyStay.id], await get(sc, `/api/v1/invoices?reservationId=${rustyStay.id}`))
   sQC.setQueryData(['addons'], await get(sc, '/api/v1/addons'))
   sQC.setQueryData(['capacity', '2026-07-01', '2026-08-01'], await get(sc, '/api/v1/capacity?from=2026-07-01&to=2026-08-01'))
 
@@ -75,30 +75,30 @@ async function main() {
   const noop = () => {}
   console.log('— Customer —')
   check('Home', render(h(CustomerHome, { go: noop }), sQC, AuthProvider),
-    ["Bella's stay", 'Jul 3 – 7', 'In residence', 'Book a stay'])
-  check('StayDetail', render(h(StayDetail, { stayId: biscuitStay.id, go: noop, onBack: noop }), sQC, AuthProvider),
-    ["Biscuit's stay", 'Jul 4 – 6', 'Boarding · 2 nights', '$110', 'Bath before pick-up', '$95'])
+    ["Jag's stay", 'Jul 3 – 7', 'In residence', 'Book a stay'])
+  check('StayDetail', render(h(StayDetail, { stayId: rustyStay.id, go: noop, onBack: noop }), sQC, AuthProvider),
+    ["Rusty's stay", 'Jul 4 – 6', 'Boarding · 2 nights', '$110', 'Bath before pick-up', '$95'])
   check('Book', render(h(BookStay, {}), sQC, AuthProvider),
-    ['Biscuit', 'Bella', 'July 2026', 'Bath before pick-up', 'Extra playtime'])
+    ['Rusty', 'Jag', 'July 2026', 'Bath before pick-up', 'Extra playtime'])
   check('Messages', render(h(CustomerMessages, { onBack: noop }), sQC, AuthProvider),
     ['blue blanket', 'settling in beautifully', 'Zoomez concierge'])
   check('PetProfile', render(h(PetProfile, {}), sQC, AuthProvider),
-    ['Biscuit', 'Rimadyl 75 mg', '8:00 AM', 'Rabies', 'Bordetella', 'Expired'])
+    ['Rusty', 'Rimadyl 75 mg', '8:00 AM', 'Rabies', 'Bordetella', 'Expired'])
   check('ReportCard', render(h(ReportCardPostcard, { cardId: null, go: noop, onBack: noop }), sQC, AuthProvider),
     ["'s day", 'made a friend today', 'Playful', 'Ate everything'])
-  check('Payment', render(h(Payment, { stayId: biscuitStay.id, onBack: noop }), sQC, AuthProvider),
+  check('Payment', render(h(Payment, { stayId: rustyStay.id, onBack: noop }), sQC, AuthProvider),
     ['Boarding · 2 nights', 'Deposit, paid', '$40', '$95'])
 
   // ---- staff world (jack) ----
-  const jc = await signIn('jack@zoomez.app')
+  const jc = await signIn('tyler@zoomez.app')
   const jQC = new QueryClient()
   const jRes = await get(jc, '/api/v1/reservations')
   jQC.setQueryData(['reservations', 'all'], jRes)
   const tasks = (await get(jc, '/api/v1/care-tasks')) as any
   jQC.setQueryData(['care-tasks', {}], tasks)
-  const bella = tasks.items.find((t: any) => t.petName === 'Bella')
-  jQC.setQueryData(['care-tasks', { petId: bella.petId }], await get(jc, `/api/v1/care-tasks?petId=${bella.petId}`))
-  jQC.setQueryData(['pet', bella.petId], await get(jc, `/api/v1/pets/${bella.petId}`))
+  const jag = tasks.items.find((t: any) => t.petName === 'Jag')
+  jQC.setQueryData(['care-tasks', { petId: jag.petId }], await get(jc, `/api/v1/care-tasks?petId=${jag.petId}`))
+  jQC.setQueryData(['pet', jag.petId], await get(jc, `/api/v1/pets/${jag.petId}`))
   jQC.setQueryData(['shifts', 'all'], await get(jc, '/api/v1/shifts'))
   jQC.setQueryData(['shifts-mine'], await get(jc, '/api/v1/shifts/mine'))
   jQC.setQueryData(['threads', 'all'], await get(jc, '/api/v1/threads'))
@@ -114,19 +114,19 @@ async function main() {
 
   console.log('— Staff —')
   check('Today', render(h(StaffToday, { go: noop }), jQC, AuthProvider),
-    ['Friday, Jul 3', 'in residence', 'Bella', 'Cooper', 'Max', "Today's progress"])
+    ['Friday, Jul 3', 'in residence', 'Jag', 'Cooper', 'Jack', "Today's progress"])
   check('Roster', render(h(DogRoster, { go: noop }), jQC, AuthProvider),
-    ['Dogs here now', 'Bella · Golden Retriever', 'Cooper · Lab mix', 'Max · Boxer'])
-  check('Checklist', render(h(DogChecklist, { petId: bella.petId, onBack: noop, go: noop }), jQC, AuthProvider),
-    ['Bella', 'Insulin 4u', 'Arthritis', 'Add task'])
+    ['Dogs here now', 'Jag · Golden Retriever', 'Cooper · Lab mix', 'Jack · Boxer'])
+  check('Checklist', render(h(DogChecklist, { petId: jag.petId, onBack: noop, go: noop }), jQC, AuthProvider),
+    ['Jag', 'Insulin 4u', 'Arthritis', 'Add task'])
   check('ShiftBoard', render(h(ShiftBoard, {}), jQC, AuthProvider),
     ['Monday, Jul 6', '7:00a – 3:00p', '6 dogs', 'Claim shift', 'Maria'])
   check('StaffMessages', render(h(StaffMessages, {}), jQC, AuthProvider),
     ['Sarah Mitchell', 'Marcus Diaz', 'extra walk added'])
   check('Incident', render(h(IncidentReport, { onBack: noop }), jQC, AuthProvider),
-    ['Report an incident', 'Bella', 'Cooper', 'Max', 'Severity'])
-  check('CardBuilder', render(h(ReportCardBuilder, { petId: bella.petId, onBack: noop }), jQC, AuthProvider),
-    ["Bella's card", 'Mood today', 'Send to owner', 'Care log auto-added'])
+    ['Report an incident', 'Jag', 'Cooper', 'Jack', 'Severity'])
+  check('CardBuilder', render(h(ReportCardBuilder, { petId: jag.petId, onBack: noop }), jQC, AuthProvider),
+    ["Jag's card", 'Mood today', 'Send to owner', 'Care log auto-added'])
 
   console.log(failures === 0 ? '\nALL RENDER CHECKS PASSED' : `\n${failures} FAILURES`)
   process.exit(failures === 0 ? 0 : 1)
