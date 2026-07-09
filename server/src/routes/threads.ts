@@ -9,6 +9,7 @@ import {
 import { AppError } from '../lib/errors'
 import { requireElevation } from '../middleware/guards'
 import { ownCustomerId } from '../lib/domain-user'
+import { pushToUsers, pushToStaff } from '../lib/push-sender'
 import type { AppEnv } from '../lib/hono-env'
 
 export const threadsRouter = new Hono<AppEnv>()
@@ -174,6 +175,19 @@ threadsRouter.post('/:id/messages', async (c) => {
       ? sql`array_append(COALESCE(${threads.flags}, '{}'), 'unanswered')`
       : sql`array_remove(COALESCE(${threads.flags}, '{}'), 'unanswered')`,
   }).where(eq(threads.id, threadId))
+
+  // Notify the other side (fire-and-forget; push is a no-op without VAPID).
+  const preview = input.body?.slice(0, 90) ?? '📷 Photo'
+  if (actor.role === 'customer') {
+    const payload = { title: `${actor.displayName}`, body: preview, tag: `thread-${threadId}`, url: '/' }
+    if (thread.assignedStaffId) void pushToUsers([thread.assignedStaffId], payload)
+    else void pushToStaff(payload)
+  } else {
+    const [cust] = await db.select().from(customers).where(eq(customers.id, thread.customerId)).limit(1)
+    if (cust?.userId) {
+      void pushToUsers([cust.userId], { title: 'Zoomez', body: preview, tag: `thread-${threadId}`, url: '/' })
+    }
+  }
 
   return c.json(msg, 201)
 })

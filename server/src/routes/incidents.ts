@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { getDb } from '../db/client'
 import { incidentReports, users, auditEntries } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { pushToManagers } from '../lib/push-sender'
 import type { AppEnv } from '../lib/hono-env'
 
 export const incidentsRouter = new Hono<AppEnv>()
@@ -55,6 +56,14 @@ incidentsRouter.post('/', async (c) => {
       subjectId: incident!.id,
     })
   }
+
+  // "Submit — alerts management": every incident pushes the managers.
+  void pushToManagers({
+    title: `Incident: ${body.type} (${body.severity})`,
+    body: body.description.slice(0, 110),
+    tag: `incident-${incident!.id}`,
+    url: '/',
+  })
 
   return c.json(incident, 201)
 })

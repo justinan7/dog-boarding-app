@@ -1,8 +1,16 @@
 import type PgBoss from 'pg-boss'
 import { eq, and, lte, inArray } from 'drizzle-orm'
 import { getDb } from '../db/client'
-import { careTasks, shifts, shiftClaims } from '../db/schema'
+import { careTasks, shifts, shiftClaims, pets } from '../db/schema'
+import { pushToUsers, pushToStaff } from '../lib/push-sender'
 import { log } from '../lib/log'
+
+/** 'HH:MM' → '4:00 PM' (worker-side copy of the client formatter). */
+function fmtTime(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map(Number)
+  const period = (h ?? 0) >= 12 ? 'PM' : 'AM'
+  return `${((h ?? 0) % 12) || 12}:${String(m ?? 0).padStart(2, '0')} ${period}`
+}
 
 const JOB_NAME = 'care-alert'
 
@@ -51,8 +59,17 @@ export function registerCareAlertHandler(boss: PgBoss) {
 
     log.info({ taskId: task.id, label: task.label, assignee }, 'care-alert fired')
 
-    // TODO: push notification to the assignee (web-push / APNs / FCM)
-    // TODO: ping the Uptime Kuma push monitor (dead-man's-switch heartbeat)
+    // Push the alert: to the on-shift assignee, else every staffer — a med
+    // alert must never fire into the void (data-model invariant 3).
+    const [pet] = await db.select({ name: pets.name }).from(pets).where(eq(pets.id, task.petId)).limit(1)
+    const payload = {
+      title: `${task.label} — ${pet?.name ?? 'guest'}`,
+      body: `Due ${fmtTime(task.scheduledLocalTime)} · tap to open the checklist`,
+      tag: `care-task-${task.id}`,
+      url: '/',
+    }
+    if (assignee) await pushToUsers([assignee], payload)
+    else await pushToStaff(payload)
     } // end for
   })
 }

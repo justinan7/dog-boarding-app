@@ -84,7 +84,7 @@ export const useAppConfig = () =>
   useQuery({
     queryKey: ['app-config'],
     staleTime: Infinity,
-    queryFn: () => api.get<{ demoMode: boolean }>('/api/v1/config'),
+    queryFn: () => api.get<{ demoMode: boolean; vapidPublicKey: string | null }>('/api/v1/config'),
   })
 
 export const useReservations = (status?: string) =>

@@ -22,7 +22,11 @@ import type { AppEnv } from '../lib/hono-env'
 export const v1 = new Hono<AppEnv>()
 
 // Public client config (no auth — the login screen needs it before sign-in).
-v1.get('/config', (c) => c.json({ demoMode: env.DEMO_MODE }))
+// The VAPID public key is public by design (it goes into pushManager.subscribe).
+v1.get('/config', (c) => c.json({
+  demoMode: env.DEMO_MODE,
+  vapidPublicKey: env.VAPID_PUBLIC_KEY ?? null,
+}))
 
 v1.route('/health', health)
 v1.route('/me', me)

@@ -39,6 +39,7 @@ import {
   type Role, type CustomerRoute, type StaffRoute, type ManagerRoute,
 } from './lib/nav'
 import { useAppConfig } from './lib/queries'
+import { PushToggle } from './components/PushToggle'
 
 // The hi-fi content frame: 64px top clears the notch, 16px section rhythm.
 const SCROLL_STYLE: CSSProperties = {
@@ -140,6 +141,7 @@ function StaffMe({ onOpenAccount }: { onOpenAccount: () => void }) {
       <Button variant="secondary" fullWidth icon="user-round" onClick={onOpenAccount}>
         Account &amp; view options
       </Button>
+      <PushToggle />
     </>
   )
 }

@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Icon, type IconName } from '../../components/Icon'
 import { Card } from '../../components/primitives'
 import { useAuth } from '../../lib/auth-context'
+import { useAppConfig } from '../../lib/queries'
+import { enablePush, isPushEnabled, pushSupported } from '../../lib/push-client'
 
 // Account tab — not part of the hi-fi screen set. Per the design README,
 // customers get Profile / Payments / Sign out (no role switch). Kept to the
@@ -27,6 +30,31 @@ function Row({ icon, label, last, onClick }: { icon: IconName; label: string; la
 
 export function CustomerAccount() {
   const { user, signOut } = useAuth()
+  const config = useAppConfig()
+  const [pushState, setPushState] = useState<'off' | 'on' | 'busy' | 'error'>('off')
+  const [pushError, setPushError] = useState<string | null>(null)
+
+  useEffect(() => {
+    void isPushEnabled().then((on) => setPushState(on ? 'on' : 'off'))
+  }, [])
+
+  const togglePush = async () => {
+    if (pushState === 'on' || pushState === 'busy') return
+    const key = config.data?.vapidPublicKey
+    if (!key) {
+      setPushError('Notifications are not configured on this server yet.')
+      return
+    }
+    setPushState('busy')
+    setPushError(null)
+    try {
+      await enablePush(key)
+      setPushState('on')
+    } catch (e) {
+      setPushState('error')
+      setPushError(e instanceof Error ? e.message : 'Could not enable notifications.')
+    }
+  }
 
   return (
     <>
@@ -45,9 +73,22 @@ export function CustomerAccount() {
       <Card style={{ padding: '4px 16px' }}>
         <Row icon="user-round" label="Profile" />
         <Row icon="credit-card" label="Payment methods" />
-        <Row icon="bell" label="Notifications" />
+        <Row
+          icon="bell"
+          label={
+            pushState === 'on' ? 'Notifications · on'
+              : pushState === 'busy' ? 'Enabling notifications…'
+                : pushSupported() ? 'Enable notifications' : 'Notifications'
+          }
+          onClick={() => void togglePush()}
+        />
         <Row icon="log-out" label="Sign out" last onClick={() => void signOut()} />
       </Card>
+      {pushError && (
+        <div style={{ fontSize: 12.5, color: 'var(--biscuit-700)', background: 'var(--biscuit-200)', borderRadius: 'var(--radius-md)', padding: '10px 14px' }}>
+          {pushError}
+        </div>
+      )}
     </>
   )
 }

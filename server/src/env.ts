@@ -29,6 +29,11 @@ const schema = z.object({
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   MEDIA_DIR: z.string().default('.data/media'),
+  // Web-push VAPID keys (generate once: npx web-push generate-vapid-keys).
+  // Push is silently disabled when unset (dev default).
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default('mailto:justinan7@gmail.com'),
 })
 
 export type Env = z.infer<typeof schema>
