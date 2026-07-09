@@ -22,12 +22,12 @@ beforeAll(async () => {
   await app.request('/api/auth/sign-up/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'corry@zoomez.app', password: 'Test1234!', name: 'Corry' }),
+    body: JSON.stringify({ email: 'corey@zoomez.app', password: 'Test1234!', name: 'Corey' }),
   })
   const res = await app.request('/api/auth/sign-in/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'corry@zoomez.app', password: 'Test1234!' }),
+    body: JSON.stringify({ email: 'corey@zoomez.app', password: 'Test1234!' }),
   })
   cookie = res.headers.get('set-cookie') ?? ''
 })

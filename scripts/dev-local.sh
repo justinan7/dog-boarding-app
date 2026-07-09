@@ -9,7 +9,7 @@
 # Then open http://localhost:5173 — or on your PHONE (same Wi-Fi), the LAN URL
 # the script prints. SIGN UP (accounts are matched to a role by email — the API
 # enforces the real role, the demo bar only swaps the view):
-#   corry@zoomez.app   → Manager (all seeded data)   password: any 8+ chars
+#   corey@zoomez.app   → Manager (all seeded data)   password: any 8+ chars
 #   jack@zoomez.app    → Staff
 #   sarah@example.com  → Customer with dogs, a stay, messages, a report card
 #   anything else      → Customer (auto-provisioned, empty)
@@ -77,7 +77,7 @@ if [ -n "${LAN_IP:-}" ]; then
 fi
 echo "  API:    http://localhost:3000/api/v1/health"
 echo "  SIGN UP to log in (role is matched by email):"
-echo "    corry@zoomez.app  → Manager    jack@zoomez.app → Staff"
+echo "    corey@zoomez.app  → Manager    jack@zoomez.app → Staff"
 echo "    sarah@example.com → Customer with dogs & a stay"
 echo "    (password: any 8+ chars)"
 echo "  Approvals/Reports are PIN-gated · demo PIN 1234."

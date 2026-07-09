@@ -73,6 +73,11 @@ export function Login() {
           {error && (
             <div style={{ fontSize: 13, color: 'var(--red-error)', textAlign: 'center' }}>
               {error}
+              {mode === 'signin' && (
+                <div style={{ marginTop: 4, color: 'var(--text-muted)' }}>
+                  First time here? Accounts are created at <b>sign-up</b> — tap "Sign up" below.
+                </div>
+              )}
             </div>
           )}
 
@@ -108,7 +113,7 @@ export function Login() {
               Demo — sign up as
             </span>
             <br />
-            <b>corry@zoomez.app</b> → manager · <b>jack@zoomez.app</b> → staff
+            <b>corey@zoomez.app</b> → manager · <b>jack@zoomez.app</b> → staff
             <br />
             <b>sarah@example.com</b> → customer with dogs &amp; a stay
           </div>

@@ -37,7 +37,7 @@ enforces the real role server-side, while the on-screen *demo bar* just swaps wh
 
 | Sign up with | Role you get |
 |---|---|
-| `corry@zoomez.app` (or `brette@zoomez.app`) | **Manager** — approvals, task board, oversight, reports |
+| `corey@zoomez.app` (or `brette@zoomez.app`) | **Manager** — approvals, task board, oversight, reports |
 | `jack@zoomez.app` (or `maria@zoomez.app`) | **Staff** — today rail, checklists, shift claiming, threads |
 | `sarah@example.com` | **Customer with data** — two dogs, a live stay, messages, a report card |
 | any other email | Customer (auto-provisioned, empty) |
@@ -48,7 +48,7 @@ PIN `1234`** (checked server-side; customers can't elevate even with the PIN). R
 
 **What's stubbed:** paying an invoice (Stripe account pending — invoices render read-only), waiver
 e-signing (DocuSeal pending), and photo uploads (object storage pending). Everything else is real:
-book a stay as Sarah, approve it as Corry, and the care tasks materialize on Jack's board.
+book a stay as Sarah, approve it as Corey, and the care tasks materialize on Jack's board.
 
 > This local database is a throwaway demo (PGlite, persisted under `server/.data/`, gitignored). It
 > holds only the sample world above — never real customer data.

@@ -21,8 +21,8 @@ test('migrations create the schema; a customer + pet round-trips through FKs', a
   await db.insert(users).values({
     orgId: org!.id,
     role: 'manager',
-    email: 'corry@zoomez.app',
-    displayName: 'Corry',
+    email: 'corey@zoomez.app',
+    displayName: 'Corey',
   })
 
   const [customer] = await db

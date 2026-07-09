@@ -100,13 +100,13 @@ describe('manager PIN elevation (§2.3)', () => {
   let cookie: string
 
   beforeAll(async () => {
-    // Elevation requires a staff/manager role — use the seeded manager Corry.
+    // Elevation requires a staff/manager role — use the seeded manager Corey.
     await app.request('/api/auth/sign-up/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'corry@zoomez.app', password: 'SecureP@ss123', name: 'Corry' }),
+      body: JSON.stringify({ email: 'corey@zoomez.app', password: 'SecureP@ss123', name: 'Corey' }),
     })
-    const result = await signIn('corry@zoomez.app', 'SecureP@ss123')
+    const result = await signIn('corey@zoomez.app', 'SecureP@ss123')
     cookie = result.cookie
   })
 

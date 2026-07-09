@@ -15,15 +15,28 @@ class ApiClientError extends Error {
   readonly code: string
   readonly status: number
   readonly details?: unknown
-  constructor(status: number, body: { error: ApiError }) {
-    super(body.error.message)
-    this.code = body.error.code
+  constructor(status: number, error: ApiError) {
+    super(error.message)
+    this.code = error.code
     this.status = status
-    this.details = body.error.details
+    this.details = error.details
   }
 }
 
 export { ApiClientError }
+
+/** Two error shapes reach us: our API envelope `{error:{code,message}}` and
+ *  Better Auth's flat `{code,message}` (e.g. failed sign-in). Normalize both —
+ *  assuming the envelope crashed the login screen on auth errors. */
+function normalizeError(status: number, raw: unknown, statusText: string): ApiError {
+  const o = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const inner = (o.error && typeof o.error === 'object' ? o.error : o) as Record<string, unknown>
+  return {
+    code: typeof inner.code === 'string' ? inner.code : 'UNKNOWN',
+    message: typeof inner.message === 'string' ? inner.message : (statusText || `Request failed (${status})`),
+    details: inner.details,
+  }
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
@@ -35,8 +48,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     },
   })
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: { code: 'UNKNOWN', message: res.statusText } }))
-    throw new ApiClientError(res.status, body as { error: ApiError })
+    const raw = await res.json().catch(() => null)
+    throw new ApiClientError(res.status, normalizeError(res.status, raw, res.statusText))
   }
   if (res.status === 204) return undefined as T
   return res.json() as T

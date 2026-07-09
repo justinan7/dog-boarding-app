@@ -44,7 +44,7 @@ status column when a task lands.
 | J1 | Provision the VPS (DigitalOcean droplet, **4 GB / 2 vCPU / 80 GB**, region SFO; or Hetzner equivalent). Record IP. | A1 | ☐ |
 | J2 | Pick + register the app domain (e.g. `zoomez.app`); point `A`/`AAAA` at the VPS, plus `sign.` and `status.` subdomains. | A5 | ☐ |
 | J3 | Create offsite backup bucket (Backblaze B2 or similar S3, separate provider from the VPS) + key. Store in 1Password. | A10 | ☐ |
-| J4 | Stripe account for the business (Corry/Brette as owners); restricted API key + webhook secret → 1Password. | B10 | ☐ |
+| J4 | Stripe account for the business (Corey/Brette as owners); restricted API key + webhook secret → 1Password. | B10 | ☐ |
 | J5 | Tailscale auth key (tagged, pre-authorized) for the VPS → 1Password. | A2 | ☐ |
 | J6 | Apple Developer + Google Play accounts (for Workstream D, later). | D1/D2 | ☐ |
 
@@ -160,8 +160,8 @@ can't test). Run: `set -a; source .env; set +a; npx tsx scripts/concurrency-chec
 
 ## Open questions
 
-- Domain name / final product branding confirmation with Corry & Brette (design says "Zoomez").
+- Domain name / final product branding confirmation with Corey & Brette (design says "Zoomez").
 - Twilio SMS nudges: defer to P2 (interface stubbed in B12) — confirm toll-free verification timing.
 - DocuSeal "Powered by" attribution acceptable, or budget Pro? (default: accept attribution)
-- **Everything above is built on unconfirmed assumptions** — Corry hasn't confirmed requirements yet;
+- **Everything above is built on unconfirmed assumptions** — Corey hasn't confirmed requirements yet;
   no VPS provisioned, no spend. Current work is deliberately all local/reversible.

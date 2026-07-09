@@ -60,7 +60,7 @@ staff/manager session — the design's PIN-locked account switch:
 
 ### 2.4 `GET /api/v1/me` (any) [P1]
 ```json
-{ "id": "…", "role": "manager", "name": "Corry", "email": "…",
+{ "id": "…", "role": "manager", "name": "Corey", "email": "…",
   "customerId": null, "staffId": "…",
   "managerElevatedUntil": "2026-07-07T21:19:00Z" | null }
 ```

@@ -33,12 +33,12 @@ export async function seed(): Promise<void> {
 
   // --- Staff / management ---
   const staff = await db.insert(users).values([
-    { orgId: org.id, role: 'manager', email: 'corry@zoomez.app', displayName: 'Corry' },
+    { orgId: org.id, role: 'manager', email: 'corey@zoomez.app', displayName: 'Corey' },
     { orgId: org.id, role: 'manager', email: 'brette@zoomez.app', displayName: 'Brette' },
     { orgId: org.id, role: 'staff', email: 'jack@zoomez.app', displayName: 'Jack Torres' },
     { orgId: org.id, role: 'staff', email: 'maria@zoomez.app', displayName: 'Maria Reyes' },
   ]).returning()
-  const corry = staff[0]!, brette = staff[1]!, jack = staff[2]!, maria = staff[3]!
+  const corey = staff[0]!, brette = staff[1]!, jack = staff[2]!, maria = staff[3]!
 
   // --- Customers (+ their login users) ---
   async function customer(name: string, email: string) {
@@ -235,9 +235,9 @@ export async function seed(): Promise<void> {
 
   // --- Audit trail (reports screen) ---
   await db.insert(auditEntries).values([
-    { orgId: org.id, occurredAt: at('2026-07-03T21:48:00Z'), tz: TZ, actorUserId: corry!.id, actorRole: 'manager', action: 'reservation.approve', subjectType: 'reservation', subjectId: rockyReq.id, after: { status: 'approved' } },
+    { orgId: org.id, occurredAt: at('2026-07-03T21:48:00Z'), tz: TZ, actorUserId: corey!.id, actorRole: 'manager', action: 'reservation.approve', subjectType: 'reservation', subjectId: rockyReq.id, after: { status: 'approved' } },
     { orgId: org.id, occurredAt: at('2026-07-03T21:41:00Z'), tz: TZ, actorUserId: brette!.id, actorRole: 'manager', action: 'thread.takeover', subjectType: 'thread', subjectId: thread.id },
-    { orgId: org.id, occurredAt: at('2026-07-03T21:38:00Z'), tz: TZ, actorUserId: corry!.id, actorRole: 'manager', action: 'care_task.override', subjectType: 'care_task', subjectId: doneBellaAm.id, after: { outcome: 'given', override: true } },
+    { orgId: org.id, occurredAt: at('2026-07-03T21:38:00Z'), tz: TZ, actorUserId: corey!.id, actorRole: 'manager', action: 'care_task.override', subjectType: 'care_task', subjectId: doneBellaAm.id, after: { outcome: 'given', override: true } },
   ])
 
   log.info('seed complete')

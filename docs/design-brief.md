@@ -54,7 +54,7 @@ calendar. See [`architecture-and-components.md`](architecture-and-components.md)
 
 ```
 +------------------------------------------+
-|  Corry & Brette's Dog Boarding      (o) |
+|  Corey & Brette's Dog Boarding      (o) |
 +------------------------------------------+
 |                                          |
 |  Hi Sarah! Biscuit's stay is coming up.  |
@@ -216,7 +216,7 @@ calendar. See [`architecture-and-components.md`](architecture-and-components.md)
 
 ```
 +------------------------------------------+
-|  <  Corry & Brette's Team        (i)     |
+|  <  Corey & Brette's Team        (i)     |
 |     Biscuit - Jul 4-6 stay               |
 +------------------------------------------+
 |                                          |
@@ -526,7 +526,7 @@ Global: floating "+ Log" affordance on Today/Dogs for fast task completion + pho
 ```
 +------------------------------------------+
 | < Sarah M  (Bella)        [dog profile] |
-| ~ Oversight: Corry may view this thread |
+| ~ Oversight: Corey may view this thread |
 +------------------------------------------+
 |                    Any update on Bella's |
 |                    limp today?  10:02a   |
@@ -548,7 +548,7 @@ Global: floating "+ Log" affordance on Today/Dogs for fast task completion + pho
 ```
 
 - **Key elements:** Owner + dog context header + quick jump to dog profile; persistent oversight banner (management may view/take over); message bubbles with read receipts + typing indicator; full-res inline photos; quick actions (attach report card, photo, canned templates); composer that sends as the business identity, not the staffer.
-- **Interactions:** Send writes to Postgres thread (owned messaging); delivery + read receipts sync; typing indicators over websocket. Photos attach full-res. Templates insert canned replies. If management 'takes over', a system line appears ('Corry joined this conversation') and the composer may lock for the staffer. SMS/email to the owner are only nudge links back into the portal.
+- **Interactions:** Send writes to Postgres thread (owned messaging); delivery + read receipts sync; typing indicators over websocket. Photos attach full-res. Templates insert canned replies. If management 'takes over', a system line appears ('Corey joined this conversation') and the composer may lock for the staffer. SMS/email to the owner are only nudge links back into the portal.
 - **Backed by:** in-app messaging (Postgres threads, websocket presence/typing/receipts) + management oversight/takeover layer + media pipeline + push/email nudge service.
 
 
@@ -590,7 +590,7 @@ Global: floating "+ Log" affordance on Today/Dogs for fast task completion + pho
 ---
 
 
-## Management — Corry / Brette / mom (oversight)
+## Management — Corey / Brette / mom (oversight)
 
 **Information architecture / navigation.** Bottom tab bar (5 primary, control-dense) + top context bar. Tabs: [Dashboard] [Calendar] [Inbox*] [Photos] [More]. The "More" tab opens a management drawer: Approvals (bookings + shift claims), Reports, Staff Schedule, Audit Log, Customers & Pets, Rates & Upsell Catalog, Settings. A persistent top bar shows current occupancy (e.g. "6/8 dogs") and a red badge counter that aggregates everything needing a human decision (pending booking requests + pending shift claims + flagged/unanswered customer messages). Inbox has an "oversight mode" toggle so a manager can watch all staff<->customer threads, not just their own. Management role sees every object; staff-scoping filters are OFF by default but available as chips.
 
@@ -841,10 +841,10 @@ Global: floating "+ Log" affordance on Today/Dogs for fast task completion + pho
 |  Maria 11 shifts  33 tasks 100% on-time    |
 +--------------------------------------------+
 |  AUDIT LOG                        [filter] |
-| 2:48p Corry APPROVED booking Rocky Jul4-6  |
+| 2:48p Corey APPROVED booking Rocky Jul4-6  |
 | 2:41p Brette TOOK OVER thread Diaz<->Jack  |
 | 2:38p Mom   OVERRIDE med done Bella insulin|
-| 1:10p Corry APPROVED claim Maria Jul4 7-3  |
+| 1:10p Corey APPROVED claim Maria Jul4 7-3  |
 | 12:0p Jack  SENT report card Biscuit       |
 |   [load more]                              |
 +--------------------------------------------+

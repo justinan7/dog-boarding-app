@@ -33,7 +33,7 @@ beforeAll(async () => {
   await runMigrations()
   await seed()
   app = await createApp()
-  managerCookie = await signUpAndIn(app, 'corry@zoomez.app', 'Corry')
+  managerCookie = await signUpAndIn(app, 'corey@zoomez.app', 'Corey')
   staffCookie = await signUpAndIn(app, 'maria@zoomez.app', 'Maria')
   // Elevate the manager session for M🔒 shift create/approve/deny.
   await app.request('/api/v1/me/elevate', {

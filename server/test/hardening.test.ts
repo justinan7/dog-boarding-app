@@ -46,7 +46,7 @@ describe('authorization enforcement', () => {
     }
 
     customerCookie = await signIn('newcustomer@example.com', 'New Customer') // self-provisioned customer
-    managerCookieUnelevated = await signIn('corry@zoomez.app', 'Corry') // seeded manager, NOT elevated
+    managerCookieUnelevated = await signIn('corey@zoomez.app', 'Corey') // seeded manager, NOT elevated
   })
   afterAll(async () => { await resetDb() })
 
