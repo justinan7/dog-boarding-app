@@ -6,11 +6,13 @@
 #   ./scripts/dev-local.sh          # start API + PWA (seeds demo data on first run)
 #   ./scripts/dev-local.sh --reseed # wipe + reload the design's demo data, then start
 #
-# Then open http://localhost:5173 and SIGN UP (accounts are matched to a role by
-# email — the API enforces the real role, the demo bar only swaps the view):
-#   corry@zoomez.app  → Manager (all seeded data)   password: any 8+ chars
-#   jack@zoomez.app   → Staff
-#   anything else     → Customer (auto-provisioned)
+# Then open http://localhost:5173 — or on your PHONE (same Wi-Fi), the LAN URL
+# the script prints. SIGN UP (accounts are matched to a role by email — the API
+# enforces the real role, the demo bar only swaps the view):
+#   corry@zoomez.app   → Manager (all seeded data)   password: any 8+ chars
+#   jack@zoomez.app    → Staff
+#   sarah@example.com  → Customer with dogs, a stay, messages, a report card
+#   anything else      → Customer (auto-provisioned, empty)
 # PIN-gated manager actions (approvals, Reports) use demo PIN 1234.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -63,14 +65,21 @@ trap 'echo; echo "stopping…"; kill $API_PID 2>/dev/null || true' EXIT INT TERM
 cd "$ROOT/web"
 [ -d node_modules ] || { echo "→ installing web deps…"; npm install --no-fund --no-audit; }
 
+# LAN IP for phone access (macOS first, then Linux).
+LAN_IP="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}' || true)"
+
 echo
 echo "════════════════════════════════════════════════════════════"
 echo "  Zoomez running locally"
-echo "  PWA:  http://localhost:5173"
-echo "  API:  http://localhost:3000/api/v1/health"
+echo "  Mac:    http://localhost:5173"
+if [ -n "${LAN_IP:-}" ]; then
+  echo "  Phone:  http://${LAN_IP}:5173   (same Wi-Fi)"
+fi
+echo "  API:    http://localhost:3000/api/v1/health"
 echo "  SIGN UP to log in (role is matched by email):"
-echo "    corry@zoomez.app → Manager   jack@zoomez.app → Staff"
-echo "    any other email  → Customer  (password: any 8+ chars)"
+echo "    corry@zoomez.app  → Manager    jack@zoomez.app → Staff"
+echo "    sarah@example.com → Customer with dogs & a stay"
+echo "    (password: any 8+ chars)"
 echo "  Approvals/Reports are PIN-gated · demo PIN 1234."
 echo "  Demo bar (bottom of screen) swaps between the 3 views."
 echo "  Ctrl-C to stop both."

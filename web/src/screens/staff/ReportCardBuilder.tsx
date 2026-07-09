@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Icon, type IconName } from '../../components/Icon'
 import { Button, Section } from '../../components/primitives'
+import { useCareTasks, usePetDetail, useReservations, useCreateReportCard } from '../../lib/queries'
+import { seedToday } from '../../lib/roster'
+import { fmtWeekday, fmtTimeCompact } from '../../lib/format'
 
 /* ---------- Tag (local — matches DS Tag: selectable pill chip) ---------- */
 function Tag({
@@ -34,7 +37,7 @@ function Tag({
   )
 }
 
-/* ---------- Photo tile (placeholder art per the design) ---------- */
+/* ---------- Photo tile (placeholder art until uploads land) ---------- */
 function PhotoTile({ icon, bg }: { icon: IconName; bg: string }) {
   return (
     <div
@@ -56,11 +59,46 @@ function PhotoTile({ icon, bg }: { icon: IconName; bg: string }) {
 const MOODS = ['Sleepy', 'Calm', 'Playful', 'Anxious']
 const APPETITES = ['Ate everything', 'Some', 'None']
 
-export function ReportCardBuilder({ onBack }: { onBack: () => void }) {
+export function ReportCardBuilder({ petId, onBack }: { petId: string | null; onBack: () => void }) {
+  const detail = usePetDetail(petId)
+  const allTasks = useCareTasks({})
+  const reservationsQ = useReservations()
+  const create = useCreateReportCard()
+
   const [mood, setMood] = useState('Playful')
   const [appetite, setAppetite] = useState('Ate everything')
-  const [moment, setMoment] = useState('Made a new friend with Luna at the fence — total zoomies.')
-  const [sent, setSent] = useState(false)
+  const [moment, setMoment] = useState('')
+  const [saved, setSaved] = useState<'draft' | 'sent' | null>(null)
+
+  const pet = detail.data
+  const today = seedToday(allTasks.data?.items)
+  const reservation = (reservationsQ.data?.items ?? []).find(
+    (r) => r.pets.some((p) => p.id === petId) && r.status !== 'cancelled' && r.status !== 'denied',
+  )
+
+  // The day's completed tasks become the auto care log line.
+  const doneToday = (allTasks.data?.items ?? [])
+    .filter((t) => t.petId === petId && t.scheduledDate === today && t.state === 'done')
+    .sort((a, b) => a.scheduledLocalTime.localeCompare(b.scheduledLocalTime))
+  const careLogLine = doneToday.map((t) => `${t.label} ${fmtTimeCompact(t.scheduledLocalTime)}`).join(' · ')
+
+  const submit = (send: boolean) => {
+    if (!petId || !reservation || create.isPending || saved === 'sent') return
+    create.mutate(
+      {
+        draft: {
+          reservationId: reservation.id,
+          petId,
+          date: today,
+          mood,
+          appetite,
+          bestMoment: moment.trim() || undefined,
+        },
+        send,
+      },
+      { onSuccess: () => setSaved(send ? 'sent' : 'draft') },
+    )
+  }
 
   return (
     <>
@@ -85,14 +123,14 @@ export function ReportCardBuilder({ onBack }: { onBack: () => void }) {
             <Icon name="dog" size={18} />
           </span>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--text-heading)' }}>
-            Biscuit's card
+            {pet?.name ?? '…'}'s card
           </span>
         </div>
-        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Sat</span>
+        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{fmtWeekday(today).slice(0, 3)}</span>
       </div>
 
       {/* Photos */}
-      <Section label="Photos · tap to add, drag to reorder">
+      <Section label="Photos · uploads land with object storage">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
           <PhotoTile icon="sun" bg="var(--seaglass-200)" />
           <PhotoTile icon="waves" bg="var(--seaglass-100)" />
@@ -162,6 +200,7 @@ export function ReportCardBuilder({ onBack }: { onBack: () => void }) {
           value={moment}
           onChange={(e) => setMoment(e.target.value)}
           rows={2}
+          placeholder={`What made ${pet?.name ?? 'their'} day?`}
           style={{
             border: 0,
             outline: 'none',
@@ -177,34 +216,55 @@ export function ReportCardBuilder({ onBack }: { onBack: () => void }) {
       </label>
 
       {/* Care log strip */}
-      <div
-        style={{
-          background: 'var(--surface-tint)',
-          borderRadius: 'var(--radius-md)',
-          padding: '12px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          fontSize: 13,
-          color: 'var(--text-body)',
-        }}
-      >
-        <Icon name="check" size={16} style={{ color: 'var(--green-success)' }} />
-        Care log auto-added: Breakfast 6:04a · Walk 10a
-      </div>
+      {careLogLine && (
+        <div
+          style={{
+            background: 'var(--surface-tint)',
+            borderRadius: 'var(--radius-md)',
+            padding: '12px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: 13,
+            color: 'var(--text-body)',
+          }}
+        >
+          <Icon name="check" size={16} style={{ color: 'var(--green-success)', flex: 'none' }} />
+          Care log auto-added: {careLogLine}
+        </div>
+      )}
+
+      {create.isError && (
+        <div style={{ fontSize: 13, color: 'var(--red-error)', textAlign: 'center' }}>
+          {create.error instanceof Error ? create.error.message : 'Something went wrong.'}
+        </div>
+      )}
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: 10 }}>
-        <Button variant="secondary" size="md" style={{ flex: 1 }}>
-          Save draft
+        <Button
+          variant="secondary"
+          size="md"
+          style={{ flex: 1 }}
+          disabled={!reservation || create.isPending || saved === 'sent'}
+          onClick={() => submit(false)}
+        >
+          {saved === 'draft' ? 'Draft saved ✓' : 'Save draft'}
         </Button>
-        {sent ? (
+        {saved === 'sent' ? (
           <Button variant="primary" size="md" disabled style={{ flex: 1 }}>
             Sent ✓
           </Button>
         ) : (
-          <Button variant="primary" size="md" icon="send" style={{ flex: 1 }} onClick={() => setSent(true)}>
-            Send to owner
+          <Button
+            variant="primary"
+            size="md"
+            icon="send"
+            style={{ flex: 1 }}
+            disabled={!reservation || create.isPending}
+            onClick={() => submit(true)}
+          >
+            {create.isPending ? 'Sending…' : 'Send to owner'}
           </Button>
         )}
       </div>

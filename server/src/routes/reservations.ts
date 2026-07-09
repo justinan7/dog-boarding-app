@@ -10,6 +10,7 @@ import { AppError } from '../lib/errors'
 import { CAPACITY } from './capacity'
 import { requireElevation } from '../middleware/guards'
 import { zonedWallTimeToUtc } from '../lib/time'
+import { ownCustomerId } from '../lib/domain-user'
 import type { AppEnv } from '../lib/hono-env'
 
 export const reservationsRouter = new Hono<AppEnv>()
@@ -103,24 +104,35 @@ reservationsRouter.get('/', async (c) => {
       id: reservations.id, customerId: reservations.customerId, customerName: customers.name,
       serviceType: reservations.serviceType, status: reservations.status,
       startDate: reservations.startDate, endDate: reservations.endDate,
+      dropoffLocalTime: reservations.dropoffLocalTime, pickupLocalTime: reservations.pickupLocalTime,
       depositCents: reservations.depositCents, notes: reservations.notes,
       timeZone: reservations.timeZone, createdAt: reservations.createdAt,
     })
     .from(reservations)
     .innerJoin(customers, eq(reservations.customerId, customers.id))
     .$dynamic()
-  if (status) query = query.where(eq(reservations.status, status as never))
+
+  // Customers only ever see their own reservations (contract: "(C) own").
+  const du = c.get('domainUser')
+  const filters = []
+  if (du?.role === 'customer') {
+    const custId = await ownCustomerId(du)
+    if (!custId) return c.json({ items: [] })
+    filters.push(eq(reservations.customerId, custId))
+  }
+  if (status) filters.push(eq(reservations.status, status as never))
+  if (filters.length > 0) query = query.where(and(...filters))
 
   const base = await query.orderBy(reservations.createdAt).limit(limit)
 
-  // Attach the pet names for each reservation (from reservation_dogs → pets).
+  // Attach the pets for each reservation (from reservation_dogs → pets).
   const items = await Promise.all(base.map(async (r) => {
     const dogs = await db
-      .select({ name: pets.name })
+      .select({ id: pets.id, name: pets.name, breed: pets.breed })
       .from(reservationDogs)
       .innerJoin(pets, eq(reservationDogs.petId, pets.id))
       .where(eq(reservationDogs.reservationId, r.id))
-    return { ...r, petNames: dogs.map((d) => d.name) }
+    return { ...r, petNames: dogs.map((d) => d.name), pets: dogs }
   }))
 
   return c.json({ items })

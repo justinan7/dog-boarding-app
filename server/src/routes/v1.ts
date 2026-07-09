@@ -10,6 +10,7 @@ import { careTasksRouter } from './care-tasks'
 import { reportCardsRouter } from './report-cards'
 import { shiftsRouter } from './shifts'
 import { addonsRouter } from './addons'
+import { invoicesRouter } from './invoices'
 import { incidentsRouter } from './incidents'
 import { reportsRouter } from './reports'
 import { pushRouter } from './push'
@@ -29,6 +30,7 @@ v1.route('/care-tasks', careTasksRouter)
 v1.route('/report-cards', reportCardsRouter)
 v1.route('/shifts', shiftsRouter)
 v1.route('/addons', addonsRouter)
+v1.route('/invoices', invoicesRouter)
 v1.route('/incidents', incidentsRouter)
 v1.route('/reports', reportsRouter)
 v1.route('/push', pushRouter)

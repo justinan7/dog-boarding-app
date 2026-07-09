@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
 import { shifts, shiftClaims, users, auditEntries } from '../db/schema'
@@ -25,7 +25,23 @@ shiftsRouter.get('/', async (c) => {
   let query = db.select().from(shifts).$dynamic()
   if (status) query = query.where(eq(shifts.status, status as never))
   const rows = await query.orderBy(shifts.windowStartUtc).limit(50)
-  return c.json({ items: rows })
+
+  // Enrich with the active (pending/approved) claim so the board can show
+  // "Pending · you" / "assigned Brette" without extra round-trips.
+  const items = await Promise.all(rows.map(async (s) => {
+    const [claim] = await db
+      .select({ staffId: shiftClaims.staffId, staffDisplay: users.displayName, state: shiftClaims.state })
+      .from(shiftClaims)
+      .innerJoin(users, eq(shiftClaims.staffId, users.id))
+      .where(and(
+        eq(shiftClaims.shiftId, s.id),
+        inArray(shiftClaims.state, ['pending', 'approved']),
+      ))
+      .limit(1)
+    return { ...s, activeClaim: claim ?? null }
+  }))
+
+  return c.json({ items })
 })
 
 // GET /api/v1/shifts/mine — my assigned/claimed shifts

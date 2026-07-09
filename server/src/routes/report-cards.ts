@@ -1,9 +1,10 @@
 import { Hono } from 'hono'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, desc } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
-import { reportCards } from '../db/schema'
+import { reportCards, pets } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { ownCustomerId } from '../lib/domain-user'
 import type { AppEnv } from '../lib/hono-env'
 
 export const reportCardsRouter = new Hono<AppEnv>()
@@ -17,11 +18,33 @@ reportCardsRouter.get('/', async (c) => {
   const petId = c.req.query('petId')
   const reservationId = c.req.query('reservationId')
 
-  let query = db.select().from(reportCards).$dynamic()
-  if (petId) query = query.where(eq(reportCards.petId, petId))
-  if (reservationId) query = query.where(eq(reportCards.reservationId, reservationId))
+  let query = db
+    .select({
+      id: reportCards.id, reservationId: reportCards.reservationId, petId: reportCards.petId,
+      petName: pets.name, date: reportCards.date, status: reportCards.status,
+      mood: reportCards.mood, appetite: reportCards.appetite,
+      photoObjectKeys: reportCards.photoObjectKeys, bestMoment: reportCards.bestMoment,
+      careLogSummary: reportCards.careLogSummary, sentAt: reportCards.sentAt,
+      heartedAt: reportCards.heartedAt,
+    })
+    .from(reportCards)
+    .innerJoin(pets, eq(reportCards.petId, pets.id))
+    .$dynamic()
 
-  const rows = await query.limit(50)
+  // Customers only see cards for their own pets — and only SENT ones (drafts
+  // are staff work-in-progress).
+  const du = c.get('domainUser')
+  const conds = []
+  if (du?.role === 'customer') {
+    const custId = await ownCustomerId(du)
+    if (!custId) return c.json({ items: [] })
+    conds.push(eq(pets.customerId, custId), eq(reportCards.status, 'sent'))
+  }
+  if (petId) conds.push(eq(reportCards.petId, petId))
+  if (reservationId) conds.push(eq(reportCards.reservationId, reservationId))
+  if (conds.length > 0) query = query.where(and(...conds))
+
+  const rows = await query.orderBy(desc(reportCards.date)).limit(50)
   return c.json({ items: rows })
 })
 

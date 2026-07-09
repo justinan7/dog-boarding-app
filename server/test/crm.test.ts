@@ -6,6 +6,7 @@ import { seed } from '../src/db/seed'
 
 let app: Awaited<ReturnType<typeof createApp>>
 let cookie: string
+let sarahCookie: string
 
 async function json(res: Response) {
   return (await res.json()) as Record<string, unknown>
@@ -17,18 +18,32 @@ beforeAll(async () => {
   await seed()
   app = await createApp()
 
-  // Sign up + sign in to get an auth cookie
+  // Sign up + sign in as seeded STAFF (jack) — the CRM surface is staff-facing,
+  // and customer-role sessions are scoped to their own records.
   await app.request('/api/auth/sign-up/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'crm-test@example.com', password: 'Test1234!', name: 'CRM Tester' }),
+    body: JSON.stringify({ email: 'jack@zoomez.app', password: 'Test1234!', name: 'Jack Torres' }),
   })
   const signInRes = await app.request('/api/auth/sign-in/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'crm-test@example.com', password: 'Test1234!' }),
+    body: JSON.stringify({ email: 'jack@zoomez.app', password: 'Test1234!' }),
   })
   cookie = signInRes.headers.get('set-cookie') ?? ''
+
+  // And a customer session (sarah) to assert "(C) own" scoping.
+  await app.request('/api/auth/sign-up/email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'sarah@example.com', password: 'Test1234!', name: 'Sarah Mitchell' }),
+  })
+  const sarahRes = await app.request('/api/auth/sign-in/email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'sarah@example.com', password: 'Test1234!' }),
+  })
+  sarahCookie = sarahRes.headers.get('set-cookie') ?? ''
 })
 
 afterAll(async () => {
@@ -89,6 +104,14 @@ describe('pets CRUD', () => {
     const body = (await json(res)) as { items: Array<{ name: string }> }
     const names = body.items.map((p) => p.name).sort()
     expect(names).toEqual(['Bella', 'Biscuit'])
+  })
+
+  test('a customer sees only their OWN pets, whatever they query', async () => {
+    // sarah asks for ALL pets — the server forces the scope to her own two.
+    const res = await app.request('/api/v1/pets', { headers: { Cookie: sarahCookie } })
+    expect(res.status).toBe(200)
+    const body = (await json(res)) as { items: Array<{ name: string }> }
+    expect(body.items.map((p) => p.name).sort()).toEqual(['Bella', 'Biscuit'])
   })
 
   test('GET /api/v1/pets/:id returns full profile with care items + vaccinations + flags', async () => {

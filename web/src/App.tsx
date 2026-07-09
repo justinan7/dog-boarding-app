@@ -83,9 +83,18 @@ function FullWithTabs<R extends string>({
 
 // ---------------------------------------------------------------------------
 function CustomerView() {
-  const [route, go] = useState<CustomerRoute>('home')
+  const [route, setRoute] = useState<CustomerRoute>('home')
+  // Which stay / report card a detail screen is looking at (set on navigation).
+  const [stayId, setStayId] = useState<string | null>(null)
+  const [cardId, setCardId] = useState<string | null>(null)
 
-  if (route === 'story') return <ReportCardStory onClose={() => go('report-card')} />
+  const go = (r: CustomerRoute, id?: string) => {
+    if ((r === 'stay' || r === 'pay') && id) setStayId(id)
+    if ((r === 'report-card' || r === 'story') && id) setCardId(id)
+    setRoute(r)
+  }
+
+  if (route === 'story') return <ReportCardStory cardId={cardId} onClose={() => go('report-card')} />
 
   if (route === 'messages') {
     return (
@@ -100,10 +109,10 @@ function CustomerView() {
     case 'book': content = <BookStay />; break
     case 'pets': content = <PetProfile />; break
     case 'account': content = <CustomerAccount />; break
-    case 'report-card': content = <ReportCardPostcard go={(r) => go(r)} onBack={() => go('home')} />; break
-    case 'stay': content = <StayDetail go={(r) => go(r)} onBack={() => go('home')} />; break
-    case 'pay': content = <Payment onBack={() => go('home')} />; break
-    default: content = <CustomerHome go={(r) => go(r)} />
+    case 'report-card': content = <ReportCardPostcard cardId={cardId} go={go} onBack={() => go('home')} />; break
+    case 'stay': content = <StayDetail stayId={stayId} go={go} onBack={() => go('home')} />; break
+    case 'pay': content = <Payment stayId={stayId} onBack={() => go('home')} />; break
+    default: content = <CustomerHome go={go} />
   }
   return (
     <TabScreen tabs={CUSTOMER_TABS} active={customerTab(route)} onNavigate={go}>
@@ -114,6 +123,7 @@ function CustomerView() {
 
 // ---------------------------------------------------------------------------
 function StaffMe({ onOpenAccount }: { onOpenAccount: () => void }) {
+  const { user } = useAuth()
   return (
     <>
       <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>Me</span>
@@ -122,8 +132,8 @@ function StaffMe({ onOpenAccount }: { onOpenAccount: () => void }) {
           <Icon name="user-round" size={22} />
         </span>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--text-heading)' }}>Jack Torres</span>
-          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>On shift today · 7a – 3p</span>
+          <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--text-heading)' }}>{user?.name ?? '—'}</span>
+          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>{user?.email ?? ''}</span>
         </div>
       </Card>
       <Button variant="secondary" fullWidth icon="user-round" onClick={onOpenAccount}>
@@ -134,20 +144,36 @@ function StaffMe({ onOpenAccount }: { onOpenAccount: () => void }) {
 }
 
 function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
-  const [route, go] = useState<StaffRoute>('today')
+  const { refresh } = useAuth()
+  const [route, setRoute] = useState<StaffRoute>('today')
+  // Which dog the checklist / report-card builder is working on.
+  const [petId, setPetId] = useState<string | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
   const [pinOpen, setPinOpen] = useState(false)
+
+  const go = (r: StaffRoute, id?: string) => {
+    if ((r === 'checklist' || r === 'report-builder') && id) setPetId(id)
+    setRoute(r)
+  }
+
+  // Messages owns its full frame (list + thread view, like customer messages).
+  if (route === 'messages') {
+    return (
+      <FullWithTabs tabs={STAFF_TABS} active={staffTab(route)} onNavigate={go}>
+        <StaffMessages />
+      </FullWithTabs>
+    )
+  }
 
   let content: ReactNode
   switch (route) {
     case 'shifts': content = <ShiftBoard />; break
-    case 'roster': content = <DogRoster go={(r) => go(r)} />; break
-    case 'messages': content = <StaffMessages />; break
+    case 'roster': content = <DogRoster go={go} />; break
     case 'me': content = <StaffMe onOpenAccount={() => setAccountOpen(true)} />; break
-    case 'checklist': content = <DogChecklist onBack={() => go('roster')} go={(r) => go(r)} />; break
-    case 'report-builder': content = <ReportCardBuilder onBack={() => go('checklist')} />; break
+    case 'checklist': content = <DogChecklist petId={petId} onBack={() => go('roster')} go={go} />; break
+    case 'report-builder': content = <ReportCardBuilder petId={petId} onBack={() => go('checklist')} />; break
     case 'incident': content = <IncidentReport onBack={() => go('today')} />; break
-    default: content = <StaffToday go={(r) => go(r)} />
+    default: content = <StaffToday go={go} />
   }
 
   return (
@@ -167,7 +193,13 @@ function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
       <PinSheet
         open={pinOpen}
         onClose={() => setPinOpen(false)}
-        onUnlock={() => { setPinOpen(false); onSwitchToManager() }}
+        onUnlock={() => {
+          setPinOpen(false)
+          // Pull the fresh elevation state (managerElevatedUntil) before the
+          // manager view mounts, so it doesn't re-prompt.
+          void refresh()
+          onSwitchToManager()
+        }}
       />
     </>
   )
@@ -176,12 +208,38 @@ function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
 // ---------------------------------------------------------------------------
 function ManagerView({ onSwitchToStaff }: { onSwitchToStaff: () => void }) {
   const [route, go] = useState<ManagerRoute>('dash')
+  const { user, refresh } = useAuth()
+
+  // The M🔒 endpoints (approvals, reports, oversight) need a live server-side
+  // elevation. Prompt for the PIN once when a staff/manager lands here without
+  // one. Customers can dismiss it — they get the view, not the powers.
+  const elevated = !!user?.managerElevatedUntil && new Date(user.managerElevatedUntil) > new Date()
+  const canElevate = user?.role === 'staff' || user?.role === 'manager'
+  const [pinOpen, setPinOpen] = useState(false)
+  const [prompted, setPrompted] = useState(false)
+  useEffect(() => {
+    if (user && canElevate && !elevated && !prompted) {
+      setPinOpen(true)
+      setPrompted(true)
+    }
+  }, [user, canElevate, elevated, prompted])
+
+  const pinSheet = (
+    <PinSheet
+      open={pinOpen}
+      onClose={() => setPinOpen(false)}
+      onUnlock={() => { setPinOpen(false); void refresh() }}
+    />
+  )
 
   if (route === 'inbox') {
     return (
-      <FullWithTabs tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
-        <Inbox onBack={() => go('dash')} />
-      </FullWithTabs>
+      <>
+        <FullWithTabs tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
+          <Inbox onBack={() => go('dash')} />
+        </FullWithTabs>
+        {pinSheet}
+      </>
     )
   }
 
@@ -195,9 +253,12 @@ function ManagerView({ onSwitchToStaff }: { onSwitchToStaff: () => void }) {
     default: content = <Dashboard />
   }
   return (
-    <TabScreen tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
-      {content}
-    </TabScreen>
+    <>
+      <TabScreen tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
+        {content}
+      </TabScreen>
+      {pinSheet}
+    </>
   )
 }
 

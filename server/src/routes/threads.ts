@@ -4,10 +4,11 @@ import { z } from 'zod'
 import { getDb } from '../db/client'
 import {
   threads, messages, attachments, takeoverEvents,
-  users, auditEntries,
+  users, customers, auditEntries,
 } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { requireElevation } from '../middleware/guards'
+import { ownCustomerId } from '../lib/domain-user'
 import type { AppEnv } from '../lib/hono-env'
 
 export const threadsRouter = new Hono<AppEnv>()
@@ -24,14 +25,38 @@ threadsRouter.get('/', async (c) => {
   const db = getDb()
   const filter = c.req.query('filter')
 
-  let query = db.select().from(threads).$dynamic()
+  let query = db
+    .select({
+      id: threads.id, customerId: threads.customerId, customerName: customers.name,
+      reservationId: threads.reservationId, assignedStaffId: threads.assignedStaffId,
+      flags: threads.flags, lastMessageAt: threads.lastMessageAt, slaDueAt: threads.slaDueAt,
+    })
+    .from(threads)
+    .innerJoin(customers, eq(threads.customerId, customers.id))
+    .$dynamic()
 
-  if (filter) {
-    query = query.where(sql`${filter} = ANY(${threads.flags})`)
+  // Customers only ever see their own threads (contract: "(C) own").
+  const du = c.get('domainUser')
+  const conds = []
+  if (du?.role === 'customer') {
+    const custId = await ownCustomerId(du)
+    if (!custId) return c.json({ items: [] })
+    conds.push(eq(threads.customerId, custId))
   }
+  if (filter) conds.push(sql`${filter} = ANY(${threads.flags})`)
+  if (conds.length > 0) query = query.where(and(...conds))
 
   const rows = await query.orderBy(desc(threads.lastMessageAt)).limit(50)
-  return c.json({ items: rows })
+
+  // Enrich with a last-message preview (staff/manager inbox rows show it).
+  const items = await Promise.all(rows.map(async (t) => {
+    const [last] = await db.select({ body: messages.body, senderRole: messages.senderRole })
+      .from(messages).where(eq(messages.threadId, t.id))
+      .orderBy(desc(messages.sentAt)).limit(1)
+    return { ...t, lastBody: last?.body ?? null, lastSenderRole: last?.senderRole ?? null }
+  }))
+
+  return c.json({ items })
 })
 
 // GET /api/v1/threads/:id/messages — paginated oldest-cursor.

@@ -71,3 +71,14 @@ export async function resolveOrProvisionDomainUser(
   log.info({ email: baUser.email, userId: created!.id }, 'provisioned domain user (customer)')
   return created!
 }
+
+/**
+ * The customer record id owned by this domain user, or null for staff/managers
+ * (or an unlinked customer). Routes use this to scope "(C) own" reads.
+ */
+export async function ownCustomerId(du: DomainUser): Promise<string | null> {
+  if (du.role !== 'customer') return null
+  const db = getDb()
+  const [cust] = await db.select({ id: customers.id }).from(customers).where(eq(customers.userId, du.id)).limit(1)
+  return cust?.id ?? null
+}

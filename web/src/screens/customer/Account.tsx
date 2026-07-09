@@ -1,13 +1,15 @@
 import { Icon, type IconName } from '../../components/Icon'
 import { Card } from '../../components/primitives'
+import { useAuth } from '../../lib/auth-context'
 
 // Account tab — not part of the hi-fi screen set. Per the design README,
 // customers get Profile / Payments / Sign out (no role switch). Kept to the
 // management "More" menu idiom until a hi-fi lands.
-function Row({ icon, label, last }: { icon: IconName; label: string; last?: boolean }) {
+function Row({ icon, label, last, onClick }: { icon: IconName; label: string; last?: boolean; onClick?: () => void }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       style={{
         width: '100%', border: 0, background: 'none', cursor: 'pointer', textAlign: 'left',
         display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0',
@@ -24,6 +26,8 @@ function Row({ icon, label, last }: { icon: IconName; label: string; last?: bool
 }
 
 export function CustomerAccount() {
+  const { user, signOut } = useAuth()
+
   return (
     <>
       <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>Account</span>
@@ -33,8 +37,8 @@ export function CustomerAccount() {
           <Icon name="user-round" size={22} />
         </span>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--text-heading)' }}>Sarah Mitchell</span>
-          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>sarah@example.com</span>
+          <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--text-heading)' }}>{user?.name ?? '—'}</span>
+          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>{user?.email ?? ''}</span>
         </div>
       </Card>
 
@@ -42,7 +46,7 @@ export function CustomerAccount() {
         <Row icon="user-round" label="Profile" />
         <Row icon="credit-card" label="Payment methods" />
         <Row icon="bell" label="Notifications" />
-        <Row icon="log-out" label="Sign out" last />
+        <Row icon="log-out" label="Sign out" last onClick={() => void signOut()} />
       </Card>
     </>
   )

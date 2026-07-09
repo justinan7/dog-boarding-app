@@ -49,9 +49,17 @@ export async function createAuth() {
       }),
     ],
 
+    // In prod only the public domain is trusted. In dev, trust the request's
+    // own origin: the PWA is opened from a phone via the Mac's LAN IP
+    // (http://192.168.x.x:5173) and Vite proxies /api same-origin, so the
+    // Origin header varies by device — a fixed localhost list would block
+    // phone sign-in with a CSRF origin-check failure. Dev only, never prod.
     trustedOrigins: isProd
       ? [`https://${env.PUBLIC_DOMAIN ?? 'localhost'}`]
-      : ['http://localhost:5173', 'http://localhost:3000'],
+      : (request?: Request) => {
+          const origin = request?.headers.get('origin')
+          return origin ? [origin] : ['http://localhost:5173']
+        },
   })
 }
 

@@ -91,6 +91,27 @@ export function Login() {
           >
             {mode === 'signin' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
+
+          {/* Demo world: role is matched by email at sign-UP (any 8+ char password) */}
+          <div
+            style={{
+              marginTop: 8,
+              background: 'var(--surface-tint)',
+              borderRadius: 'var(--radius-md)',
+              padding: '10px 14px',
+              fontSize: 11.5,
+              lineHeight: 1.7,
+              color: 'var(--text-muted)',
+            }}
+          >
+            <span style={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: 10 }}>
+              Demo — sign up as
+            </span>
+            <br />
+            <b>corry@zoomez.app</b> → manager · <b>jack@zoomez.app</b> → staff
+            <br />
+            <b>sarah@example.com</b> → customer with dogs &amp; a stay
+          </div>
         </div>
       </div>
 

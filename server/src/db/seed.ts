@@ -9,7 +9,7 @@ import {
   schema, organizations, users, customers, pets, careProfileItems, vaccinationRecords,
   petSafetyFlags, reservations, reservationDogs, careTasks, careTaskEvents, threads, messages,
   shifts, shiftClaims, addonCatalogItems, invoices, invoiceLineItems, waiverTemplates,
-  waiverSubmissions, auditEntries,
+  waiverSubmissions, auditEntries, reportCards,
 } from './schema'
 
 const one = <T>(rows: T[]): T => rows[0]!
@@ -150,6 +150,26 @@ export async function seed(): Promise<void> {
     { careTaskId: doneBellaAm.id, actorUserId: jack!.id, occurredAt: at('2026-07-03T15:00:00Z'), outcome: 'given' },
   ])
 
+  // --- Thread: Sarah ↔ Brette about Biscuit's stay (customer messages screen) ---
+  const sarahThread = one(await db.insert(threads).values({
+    orgId: org.id, customerId: sarah.id, reservationId: biscuitStay.id, assignedStaffId: brette!.id,
+    lastMessageAt: at('2026-07-03T16:31:00Z'),
+  }).returning())
+  await db.insert(messages).values([
+    { threadId: sarahThread.id, senderUserId: sarah.userId!, senderRole: 'customer', senderDisplay: 'Sarah Mitchell', body: 'Just dropped Biscuit off — his blue blanket is in the bag.', sentAt: at('2026-07-03T16:12:00Z'), readAt: at('2026-07-03T16:13:00Z') },
+    { threadId: sarahThread.id, senderUserId: brette!.id, senderRole: 'staff', senderDisplay: 'Zoomez concierge', body: 'Blanket’s already in his suite. He’s sniffing every corner — settling in beautifully.', sentAt: at('2026-07-03T16:15:00Z'), readAt: at('2026-07-03T16:16:00Z') },
+    { threadId: sarahThread.id, senderUserId: sarah.userId!, senderRole: 'customer', senderDisplay: 'Sarah Mitchell', body: 'Oh he looks so happy. Thank you.', sentAt: at('2026-07-03T16:31:00Z'), readAt: at('2026-07-03T16:32:00Z') },
+  ])
+
+  // --- Report card: Biscuit's sent postcard (customer report-card screen) ---
+  await db.insert(reportCards).values({
+    reservationId: biscuitStay.id, petId: biscuit.id, date: '2026-07-04', status: 'sent',
+    mood: 'Playful', appetite: 'Ate everything',
+    bestMoment: 'Biscuit made a friend today — he and Bella napped in the sunny spot after a morning of zoomies.',
+    careLogSummary: 'Breakfast 6:04a · Rimadyl 8:07a · Walk 10a · Dinner 5:31p',
+    sentAt: at('2026-07-04T23:12:00Z'),
+  })
+
   // --- Thread: Diaz ↔ Jack about Rocky's request (inbox oversight screen) ---
   const thread = one(await db.insert(threads).values({
     orgId: org.id, customerId: diaz.id, reservationId: rockyReq.id, assignedStaffId: jack!.id,
@@ -174,6 +194,19 @@ export async function seed(): Promise<void> {
     status: 'claimed', dogCount: 6, medRoundCount: 3,
   }).returning())
   await db.insert(shiftClaims).values({ shiftId: jul4Shift.id, staffId: maria!.id, state: 'pending' })
+  // Two OPEN shifts for the claim board (staff shift-board screen):
+  await db.insert(shifts).values([
+    {
+      orgId: org.id, windowDate: '2026-07-06', windowStartLocal: '07:00', windowEndLocal: '15:00', timeZone: TZ,
+      windowStartUtc: at('2026-07-06T14:00:00Z'), windowEndUtc: at('2026-07-06T22:00:00Z'),
+      status: 'open', dogCount: 6, medRoundCount: 2,
+    },
+    {
+      orgId: org.id, windowDate: '2026-07-07', windowStartLocal: '15:00', windowEndLocal: '21:00', timeZone: TZ,
+      windowStartUtc: at('2026-07-07T22:00:00Z'), windowEndUtc: at('2026-07-08T04:00:00Z'),
+      status: 'open', dogCount: 6, medRoundCount: 2,
+    },
+  ])
 
   // --- Upsell catalog ---
   await db.insert(addonCatalogItems).values([

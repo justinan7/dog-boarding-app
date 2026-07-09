@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { Section, Card, Badge, Button, DogAvatar } from '../../components/primitives'
+import { usePets, usePetDetail } from '../../lib/queries'
+import { fmtTime, parseDate } from '../../lib/format'
 
 function ScheduleRow({
   icon,
@@ -8,7 +11,7 @@ function ScheduleRow({
   time,
   last,
 }: {
-  icon: 'utensils' | 'pill'
+  icon: 'utensils' | 'pill' | 'clipboard-check'
   iconColor: string
   label: string
   time: string
@@ -31,36 +34,61 @@ function ScheduleRow({
   )
 }
 
-function VaccineRow({
-  name,
-  through,
-  last,
-}: {
-  name: string
-  through: string
-  last?: boolean
-}) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '11px 0',
-        borderBottom: last ? undefined : '1px solid var(--border-subtle)',
-      }}
-    >
-      <span style={{ fontSize: 14.5, color: 'var(--text-body)' }}>{name}</span>
-      <Badge tone="success">{through}</Badge>
-    </div>
-  )
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const monthYear = (ymd: string) => {
+  const d = parseDate(ymd)
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`
 }
+const cap = (s: string) => (s === 'dhpp' ? 'DHPP' : s.charAt(0).toUpperCase() + s.slice(1))
+const kindIcon = (kind: string): 'utensils' | 'pill' | 'clipboard-check' =>
+  kind === 'medication' ? 'pill' : kind === 'feeding' ? 'utensils' : 'clipboard-check'
+const kindColor = (kind: string) =>
+  kind === 'medication' ? 'var(--biscuit-700)' : 'var(--stone-600)'
 
 export function PetProfile() {
+  const petsQ = usePets()
+  const pets = petsQ.data?.items ?? []
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const pet = pets.find((p) => p.id === selectedId) ?? pets[0]
+  const detail = usePetDetail(pet?.id ?? null)
+
+  if (!pet) {
+    return (
+      <div style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+        {petsQ.isLoading ? 'Loading…' : 'No dogs on file yet.'}
+      </div>
+    )
+  }
+
+  const careProfile = [...(detail.data?.careProfile ?? [])].sort((a, b) => a.localTime.localeCompare(b.localTime))
+  const vaccinations = detail.data?.vaccinations ?? []
+
   return (
     <>
-      {/* Title row (back chevron omitted — Pets tab root) */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+      {/* Pet switcher + edit */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {pets.length > 1 && pets.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setSelectedId(p.id)}
+              style={{
+                cursor: 'pointer',
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
+                fontWeight: 600,
+                padding: '6px 14px',
+                borderRadius: 999,
+                background: p.id === pet.id ? 'var(--lagoon-700)' : 'var(--surface-card)',
+                color: p.id === pet.id ? 'var(--foam-50)' : 'var(--text-heading)',
+                border: p.id === pet.id ? '1px solid var(--lagoon-700)' : '1px solid var(--border-subtle)',
+              }}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
         <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--lagoon-700)' }}>Edit</span>
       </div>
 
@@ -69,19 +97,34 @@ export function PetProfile() {
         <DogAvatar size={72} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 32, color: 'var(--text-heading)' }}>
-            Biscuit
+            {pet.name}
           </span>
-          <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>Beagle · 24 lb · 4 years</span>
-          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Vet: Elm Street Animal Hospital</span>
+          <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+            {[pet.breed, pet.weightLb ? `${pet.weightLb} lb` : null].filter(Boolean).join(' · ')}
+          </span>
+          {pet.behaviorNotes && (
+            <span style={{ fontSize: 12.5, color: 'var(--biscuit-700)' }}>{pet.behaviorNotes}</span>
+          )}
         </div>
       </div>
 
       {/* Feeding & medication */}
       <Section label="Feeding & medication">
         <Card style={{ padding: '4px 16px' }}>
-          <ScheduleRow icon="utensils" iconColor="var(--stone-600)" label="Breakfast, one cup" time="8:00 AM" />
-          <ScheduleRow icon="pill" iconColor="var(--biscuit-700)" label="Rimadyl 75 mg, with food" time="8:00 AM" />
-          <ScheduleRow icon="utensils" iconColor="var(--stone-600)" label="Dinner, one cup" time="5:30 PM" />
+          {careProfile.map((item) => (
+            <ScheduleRow
+              key={item.id}
+              icon={kindIcon(item.kind)}
+              iconColor={kindColor(item.kind)}
+              label={item.dose && !item.label.includes(item.dose) ? `${item.label}, ${item.dose}` : item.label}
+              time={fmtTime(item.localTime)}
+            />
+          ))}
+          {careProfile.length === 0 && !detail.isLoading && (
+            <div style={{ padding: '11px 0', fontSize: 13.5, color: 'var(--text-muted)' }}>
+              No feeding or medication schedule yet.
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 0' }}>
             <Icon name="plus" size={16} style={{ color: 'var(--lagoon-700)' }} />
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--lagoon-700)' }}>
@@ -94,18 +137,38 @@ export function PetProfile() {
       {/* Vaccinations */}
       <Section label="Vaccinations">
         <Card style={{ padding: '4px 16px' }}>
-          <VaccineRow name="Rabies" through="Through Mar 2027" />
-          <VaccineRow name="DHPP" through="Through Jan 2027" />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 0' }}>
-            <span style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--text-heading)' }}>Bordetella</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Badge tone="error">Expired</Badge>
-              <Button variant="secondary" size="sm">Update</Button>
+          {vaccinations.map((v, i) => (
+            <div
+              key={v.id}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '11px 0',
+                borderBottom: i < vaccinations.length - 1 ? '1px solid var(--border-subtle)' : undefined,
+              }}
+            >
+              <span style={{ fontSize: 14.5, color: 'var(--text-body)', fontWeight: v.status === 'expired' ? 600 : undefined }}>
+                {cap(v.type)}
+              </span>
+              {v.status === 'expired' ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Badge tone="error">Expired</Badge>
+                  <Button variant="secondary" size="sm">Update</Button>
+                </div>
+              ) : (
+                <Badge tone="success">{v.expiresOn ? `Through ${monthYear(v.expiresOn)}` : 'Valid'}</Badge>
+              )}
             </div>
-          </div>
+          ))}
+          {vaccinations.length === 0 && !detail.isLoading && (
+            <div style={{ padding: '11px 0', fontSize: 13.5, color: 'var(--text-muted)' }}>
+              No vaccination records yet.
+            </div>
+          )}
         </Card>
-        <Button variant="ghost" size="md" fullWidth icon="upload">
-          Upload vaccination record
+        <Button variant="ghost" size="md" fullWidth icon="upload" disabled>
+          Upload vaccination record — coming with photo uploads
         </Button>
       </Section>
 
@@ -121,10 +184,9 @@ export function PetProfile() {
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--text-body)' }}>
-          <Icon name="file-check" size={17} style={{ color: 'var(--green-success)' }} />
-          Boarding waiver · signed Jun 28
+          <Icon name="file-check" size={17} style={{ color: 'var(--stone-400)' }} />
+          Boarding waiver · e-signature launches soon
         </span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--lagoon-700)' }}>View</span>
       </div>
     </>
   )

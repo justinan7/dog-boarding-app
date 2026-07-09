@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../../components/Icon'
-
-const SEGMENTS = 6
+import { useReportCards } from '../../lib/queries'
 
 function PillIconCircle({ size, icon, iconSize }: { size: number; icon: 'x' | 'heart' | 'download'; iconSize: number }) {
   return (
@@ -39,9 +38,14 @@ function MoodChip({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function ReportCardStory({ onClose }: { onClose: () => void }) {
-  // 0-based index of the active segment; design shows segment 2 of 6 active.
-  const [active, setActive] = useState(1)
+export function ReportCardStory({ cardId, onClose }: { cardId: string | null; onClose: () => void }) {
+  const cards = useReportCards()
+  const card = (cards.data?.items ?? []).find((c) => c.id === cardId)
+    ?? (cards.data?.items ?? []).find((c) => c.status === 'sent')
+
+  // One segment per photo; placeholder art fills in until uploads land.
+  const SEGMENTS = Math.max(card?.photoObjectKeys?.length ?? 0, 4)
+  const [active, setActive] = useState(0)
 
   const back = () => setActive((i) => Math.max(0, i - 1))
   const forward = () => setActive((i) => Math.min(SEGMENTS - 1, i + 1))
@@ -110,7 +114,7 @@ export function ReportCardStory({ onClose }: { onClose: () => void }) {
             >
               <Icon name="dog" size={14} />
             </div>
-            <span style={{ fontSize: 13, fontWeight: 600 }}>Biscuit · {active + 1} of {SEGMENTS}</span>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{card?.petName ?? 'Your dog'} · {active + 1} of {SEGMENTS}</span>
           </div>
           <button
             type="button"
@@ -141,8 +145,8 @@ export function ReportCardStory({ onClose }: { onClose: () => void }) {
 
         {/* Mood chips */}
         <div style={{ display: 'flex', gap: 8 }}>
-          <MoodChip>Playful</MoodChip>
-          <MoodChip>Zoomies</MoodChip>
+          {card?.mood && <MoodChip>{card.mood}</MoodChip>}
+          {card?.appetite && <MoodChip>{card.appetite}</MoodChip>}
         </div>
 
         {/* Caption */}
@@ -155,7 +159,7 @@ export function ReportCardStory({ onClose }: { onClose: () => void }) {
           }}
         >
           <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18, lineHeight: 1.3 }}>
-            Yard play with Luna, 10:15 AM
+            {card?.bestMoment ?? 'A very good day.'}
           </span>
         </div>
 

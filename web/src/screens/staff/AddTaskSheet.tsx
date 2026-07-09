@@ -101,21 +101,25 @@ function Field({
   )
 }
 
-const TYPES: { label: string; icon: IconName }[] = [
-  { label: 'Med', icon: 'pill' },
-  { label: 'Feed', icon: 'utensils' },
-  { label: 'Walk', icon: 'paw-print' },
-  { label: 'Check', icon: 'clipboard-check' },
+const TYPES: { label: string; icon: IconName; kind: 'feeding' | 'medication' | 'task' }[] = [
+  { label: 'Med', icon: 'pill', kind: 'medication' },
+  { label: 'Feed', icon: 'utensils', kind: 'feeding' },
+  { label: 'Walk', icon: 'paw-print', kind: 'task' },
+  { label: 'Check', icon: 'clipboard-check', kind: 'task' },
 ]
 
 export function AddTaskSheet({
   open,
+  petName,
+  pending,
   onClose,
   onAdd,
 }: {
   open: boolean
+  petName: string
+  pending?: boolean
   onClose: () => void
-  onAdd: (label: string, time: string) => void
+  onAdd: (label: string, whenText: string, kind: 'feeding' | 'medication' | 'task') => void
 }) {
   const [repeats, setRepeats] = useState('One time')
   const [task, setTask] = useState('Recheck hot spot on paw')
@@ -138,7 +142,7 @@ export function AddTaskSheet({
             <Icon name="dog" size={17} />
           </span>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--text-heading)' }}>
-            Add a task for Bella
+            Add a task for {petName}
           </span>
         </div>
 
@@ -182,15 +186,16 @@ export function AddTaskSheet({
           variant="primary"
           size="lg"
           fullWidth
+          disabled={pending || !task.trim()}
           onClick={() => {
-            onAdd(task, when)
-            onClose()
+            const kind = TYPES.find((t) => t.label === type)?.kind ?? 'task'
+            onAdd(task.trim(), when, kind)
           }}
         >
-          Add to checklist
+          {pending ? 'Adding…' : 'Add to checklist'}
         </Button>
         <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>
-          Logged as “added by Jack, 11:42 AM” — visible to management.
+          Logged with your name and time — visible to management.
         </div>
       </div>
     </Sheet>

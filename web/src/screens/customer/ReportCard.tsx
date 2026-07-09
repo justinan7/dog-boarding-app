@@ -1,6 +1,7 @@
-import { useState } from 'react'
 import { Icon, type IconName } from '../../components/Icon'
 import { Badge, Button } from '../../components/primitives'
+import { useReportCards, useReservations, useHeartReportCard } from '../../lib/queries'
+import { fmtWeekday, fmtDate, nightsBetween, parseDate } from '../../lib/format'
 
 function PhotoTile({
   icon,
@@ -35,13 +36,43 @@ function PhotoTile({
 }
 
 export function ReportCardPostcard({
+  cardId,
   go,
   onBack,
 }: {
-  go: (r: 'story' | 'messages') => void
+  cardId: string | null
+  go: (r: 'story' | 'messages', id?: string) => void
   onBack: () => void
 }) {
-  const [hearted, setHearted] = useState(false)
+  const cards = useReportCards()
+  const reservations = useReservations()
+  const heart = useHeartReportCard()
+
+  const card = (cards.data?.items ?? []).find((c) => c.id === cardId)
+    ?? (cards.data?.items ?? []).find((c) => c.status === 'sent')
+
+  if (!card) {
+    return (
+      <div style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+        {cards.isLoading ? 'Loading…' : 'No report cards yet — they arrive during a stay.'}
+      </div>
+    )
+  }
+
+  const stay = (reservations.data?.items ?? []).find((r) => r.id === card.reservationId)
+  const dayN = stay
+    ? Math.min(
+        nightsBetween(stay.startDate, card.date) + 1,
+        Math.max(nightsBetween(stay.startDate, stay.endDate), 1),
+      )
+    : null
+  const totalDays = stay ? Math.max(nightsBetween(stay.startDate, stay.endDate), 1) : null
+  // Guard: card date before the stay window renders as day 1.
+  const dayLabel = dayN !== null && totalDays !== null && parseDate(card.date) >= parseDate(stay!.startDate)
+    ? ` · Day ${dayN} of ${totalDays}`
+    : ''
+
+  const hearted = !!card.heartedAt
 
   return (
     <>
@@ -57,9 +88,11 @@ export function ReportCardPostcard({
         </button>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--text-heading)' }}>
-            Biscuit's day
+            {card.petName}'s day
           </span>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Friday, Jul 4 · Day 1 of 2</span>
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            {fmtWeekday(card.date)}, {fmtDate(card.date)}{dayLabel}
+          </span>
         </div>
       </div>
 
@@ -80,7 +113,7 @@ export function ReportCardPostcard({
             textTransform: 'uppercase', color: 'var(--accent-gold)',
           }}
         >
-          From Brette at Zoomez
+          From your Zoomez team
         </span>
         <span
           style={{
@@ -88,26 +121,27 @@ export function ReportCardPostcard({
             fontSize: 21, lineHeight: 1.3, color: 'var(--text-inverse)',
           }}
         >
-          "Biscuit made a friend today — he and Bella napped in the sunny spot after a morning of zoomies."
+          "{card.bestMoment ?? `${card.petName} had a great day.`}"
         </span>
-        <span style={{ fontSize: 14, color: 'var(--seaglass-200)' }}>— Brette</span>
       </div>
 
-      {/* Photo grid */}
+      {/* Photo grid — placeholder art until photo uploads land (object storage) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <PhotoTile icon="sun" bg="var(--seaglass-100)" onClick={() => go('story')} />
-        <PhotoTile icon="waves" bg="var(--seaglass-200)" onClick={() => go('story')} />
-        <PhotoTile icon="bone" bg="var(--seaglass-200)" onClick={() => go('story')} />
-        <PhotoTile icon="heart" bg="var(--seaglass-100)" onClick={() => go('story')}>
-          <span
-            style={{
-              position: 'absolute', right: 12, bottom: 10,
-              background: 'var(--lagoon-900)', color: 'var(--foam-50)',
-              borderRadius: 999, padding: '3px 10px', fontSize: 12, fontWeight: 600,
-            }}
-          >
-            +2
-          </span>
+        <PhotoTile icon="sun" bg="var(--seaglass-100)" onClick={() => go('story', card.id)} />
+        <PhotoTile icon="waves" bg="var(--seaglass-200)" onClick={() => go('story', card.id)} />
+        <PhotoTile icon="bone" bg="var(--seaglass-200)" onClick={() => go('story', card.id)} />
+        <PhotoTile icon="heart" bg="var(--seaglass-100)" onClick={() => go('story', card.id)}>
+          {(card.photoObjectKeys?.length ?? 0) > 4 && (
+            <span
+              style={{
+                position: 'absolute', right: 12, bottom: 10,
+                background: 'var(--lagoon-900)', color: 'var(--foam-50)',
+                borderRadius: 999, padding: '3px 10px', fontSize: 12, fontWeight: 600,
+              }}
+            >
+              +{(card.photoObjectKeys?.length ?? 0) - 4}
+            </span>
+          )}
         </PhotoTile>
       </div>
       <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
@@ -116,30 +150,31 @@ export function ReportCardPostcard({
 
       {/* Day badges */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <Badge tone="lagoon">Playful</Badge>
-        <Badge tone="lagoon">Ate everything</Badge>
-        <Badge tone="lagoon">Three walks</Badge>
+        {card.mood && <Badge tone="lagoon">{card.mood}</Badge>}
+        {card.appetite && <Badge tone="lagoon">{card.appetite}</Badge>}
       </div>
 
       {/* Care log */}
-      <div
-        style={{
-          background: 'var(--surface-card)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-card)',
-          padding: '14px 16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--text-body)' }}>
-          <Icon name="clipboard-check" size={17} style={{ color: 'var(--green-success)' }} />
-          Care log · 4 of 4 complete
-        </span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--lagoon-700)' }}>Details</span>
-      </div>
+      {card.careLogSummary && (
+        <div
+          style={{
+            background: 'var(--surface-card)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: 'var(--shadow-card)',
+            padding: '14px 16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, color: 'var(--text-body)' }}>
+            <Icon name="clipboard-check" size={17} style={{ color: 'var(--green-success)', flex: 'none' }} />
+            {card.careLogSummary}
+          </span>
+        </div>
+      )}
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: 10 }}>
@@ -148,9 +183,10 @@ export function ReportCardPostcard({
           size="md"
           icon="heart"
           style={{ flex: 1 }}
-          onClick={() => setHearted((h) => !h)}
+          disabled={hearted || heart.isPending}
+          onClick={() => heart.mutate(card.id)}
         >
-          {hearted ? 'Hearted' : 'Heart'}
+          {hearted ? 'Hearted' : heart.isPending ? 'Hearting…' : 'Heart'}
         </Button>
         <Button variant="primary" size="md" icon="message-circle" style={{ flex: 1 }} onClick={() => go('messages')}>
           Reply

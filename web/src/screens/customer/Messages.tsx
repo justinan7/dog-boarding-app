@@ -1,17 +1,8 @@
 import { Fragment, useState } from 'react'
 import { Icon } from '../../components/Icon'
-
-type Msg =
-  | { kind: 'own'; text: string; read?: string }
-  | { kind: 'staff'; who: string; text: string }
-  | { kind: 'photo' }
-
-const SEED: Msg[] = [
-  { kind: 'own', text: 'Just dropped Biscuit off — his blue blanket is in the bag.', read: 'Read 9:13 AM' },
-  { kind: 'staff', who: 'Brette', text: 'Blanket’s already in his suite. He’s sniffing every corner — settling in beautifully.' },
-  { kind: 'photo' },
-  { kind: 'own', text: 'Oh he looks so happy. Thank you.' },
-]
+import { useThreads, useThreadMessages, useSendMessage, useReservations, type Message } from '../../lib/queries'
+import { fmtDateRange, fmtStamp, fmtClock } from '../../lib/format'
+import { petLine } from '../../lib/stays'
 
 function OwnBubble({ text }: { text: string }) {
   return (
@@ -33,14 +24,24 @@ function OwnBubble({ text }: { text: string }) {
 }
 
 export function CustomerMessages({ onBack }: { onBack?: () => void }) {
-  const [messages, setMessages] = useState<Msg[]>(SEED)
+  const threads = useThreads()
+  const thread = threads.data?.items[0] ?? null
+  const messagesQ = useThreadMessages(thread?.id ?? null)
+  const send = useSendMessage(thread?.id ?? null)
+  const reservations = useReservations()
   const [draft, setDraft] = useState('')
 
-  const send = () => {
+  const stay = thread?.reservationId
+    ? (reservations.data?.items ?? []).find((r) => r.id === thread.reservationId)
+    : undefined
+
+  const messages: Message[] = messagesQ.data?.items ?? []
+  const lastOwnRead = [...messages].reverse().find((m) => m.senderRole === 'customer' && m.readAt)
+
+  const doSend = () => {
     const text = draft.trim()
-    if (!text) return
-    setMessages((m) => [...m, { kind: 'own', text }])
-    setDraft('')
+    if (!text || !thread || send.isPending) return
+    send.mutate(text, { onSuccess: () => setDraft('') })
   }
 
   return (
@@ -75,7 +76,9 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
         </button>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: 'var(--text-heading)' }}>Zoomez concierge</span>
-          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Biscuit · Jul 4 – 6</span>
+          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>
+            {stay ? `${petLine(stay.petNames)} · ${fmtDateRange(stay.startDate, stay.endDate)}` : 'Your Zoomez team'}
+          </span>
         </div>
         <div
           style={{
@@ -91,64 +94,48 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
 
       {/* Thread */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--stone-400)' }}>
-          Friday, Jul 4 · 9:12 AM
-        </div>
-        {messages.map((m, i) => {
-          if (m.kind === 'own') {
+        {!thread && !threads.isLoading && (
+          <div style={{ textAlign: 'center', fontSize: 13.5, color: 'var(--text-muted)', padding: '40px 20px' }}>
+            No conversation yet — the team opens your thread when a stay is booked.
+          </div>
+        )}
+        {messages.length > 0 && messages[0] && (
+          <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--stone-400)' }}>
+            {fmtStamp(messages[0].sentAt)}
+          </div>
+        )}
+        {messages.map((m) => {
+          if (m.senderRole === 'customer') {
             return (
-              <Fragment key={`m-${i}`}>
-                <OwnBubble text={m.text} />
-                {m.read && (
+              <Fragment key={m.id}>
+                <OwnBubble text={m.body ?? ''} />
+                {lastOwnRead?.id === m.id && m.readAt && (
                   <div style={{ alignSelf: 'flex-end', fontSize: 11.5, color: 'var(--stone-400)' }}>
-                    {m.read}
+                    Read {fmtClock(m.readAt)}
                   </div>
                 )}
               </Fragment>
             )
           }
-          if (m.kind === 'staff') {
-            return (
-              <div key={`m-${i}`} style={{ alignSelf: 'flex-start', maxWidth: '78%', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--stone-400)', paddingLeft: 6 }}>{m.who}</span>
-                <div
-                  style={{
-                    background: 'var(--surface-card)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: '18px 18px 18px 4px',
-                    padding: '10px 15px',
-                    fontSize: 14.5,
-                    lineHeight: 1.45,
-                    boxShadow: 'var(--shadow-card)',
-                  }}
-                >
-                  {m.text}
-                </div>
-              </div>
-            )
-          }
           return (
-            <div key={`m-${i}`} style={{ alignSelf: 'flex-start', maxWidth: '66%', width: '66%' }}>
+            <div key={m.id} style={{ alignSelf: 'flex-start', maxWidth: '78%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--stone-400)', paddingLeft: 6 }}>{m.senderDisplay}</span>
               <div
                 style={{
-                  aspectRatio: '4/3',
-                  borderRadius: 'var(--radius-lg)',
-                  background: 'var(--seaglass-100)',
+                  background: 'var(--surface-card)',
                   border: '1px solid var(--border-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--lagoon-300)',
+                  borderRadius: '18px 18px 18px 4px',
+                  padding: '10px 15px',
+                  fontSize: 14.5,
+                  lineHeight: 1.45,
+                  boxShadow: 'var(--shadow-card)',
                 }}
               >
-                <Icon name="image" size={30} />
+                {m.body}
               </div>
             </div>
           )
         })}
-        <div style={{ alignSelf: 'flex-start', fontSize: 12.5, color: 'var(--stone-400)', paddingLeft: 6 }}>
-          Brette is typing…
-        </div>
       </div>
 
       {/* Composer */}
@@ -178,9 +165,10 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') send()
+            if (e.key === 'Enter') doSend()
           }}
-          placeholder="Message the team…"
+          placeholder={thread ? 'Message the team…' : 'No thread yet'}
+          disabled={!thread}
           style={{
             flex: 1,
             minWidth: 0,
@@ -196,13 +184,15 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
         />
         <button
           type="button"
-          onClick={send}
+          onClick={doSend}
           aria-label="Send"
+          disabled={!thread || send.isPending}
           style={{
             width: 38, height: 38, borderRadius: 999, border: 0, cursor: 'pointer',
             background: 'var(--lagoon-700)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--foam-50)', flex: 'none', padding: 0,
+            opacity: !thread || send.isPending ? 0.5 : 1,
           }}
         >
           <Icon name="arrow-up" size={18} />

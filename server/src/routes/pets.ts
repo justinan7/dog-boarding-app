@@ -6,6 +6,7 @@ import {
   pets, careProfileItems, vaccinationRecords, petSafetyFlags, doNotPair,
 } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { ownCustomerId } from '../lib/domain-user'
 import type { AppEnv } from '../lib/hono-env'
 
 export const petsRouter = new Hono<AppEnv>()
@@ -16,9 +17,17 @@ petsRouter.get('/', async (c) => {
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
 
   const db = getDb()
-  const customerId = c.req.query('customerId')
+  let customerId = c.req.query('customerId')
   const limit = Math.min(Number(c.req.query('limit') ?? 25), 100)
   const cursor = c.req.query('cursor')
+
+  // Customers only ever see their own pets, whatever they pass.
+  const du = c.get('domainUser')
+  if (du?.role === 'customer') {
+    const own = await ownCustomerId(du)
+    if (!own) return c.json({ items: [], nextCursor: null })
+    customerId = own
+  }
 
   let query = db.select().from(pets).$dynamic()
   if (customerId) query = query.where(eq(pets.customerId, customerId))

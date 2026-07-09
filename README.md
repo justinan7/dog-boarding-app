@@ -4,12 +4,15 @@ An open-source, self-hostable web app for a small home-based **dog boarding busi
 owned in-app messaging with photo report cards, per-dog timed medication/feeding alerts, and
 Uber-style open-shift claiming for staff, all under management oversight.
 
-> **Status: build phase.** Architecture, license analysis, data model, API contract, NixOS server
-> design, and the hi-fi visual design ("Zoomez") are done. The **API monolith is implemented**
-> (Hono + Drizzle + Better Auth, 60 passing tests) and the **Management PWA view is wired to it
-> live**; the Customer and Staff views still render design sample data. **The master task list is
-> [`docs/build-plan.md`](docs/build-plan.md)** — implementers (human or model) start there. Conflicts
-> between docs are resolved by [`docs/decisions.md`](docs/decisions.md).
+> **Status: build phase — full demo runs end-to-end.** Architecture, license analysis, data model,
+> API contract, NixOS server design, and the hi-fi visual design ("Zoomez") are done. The **API
+> monolith is implemented** (Hono + Drizzle + Better Auth, 61 passing tests) and **all three PWA
+> role views (Customer, Staff, Management) are wired to it live** — booking, messaging, care tasks,
+> shift claiming, report cards, approvals, and reports all round-trip through the real API. Pending
+> third-party accounts are honestly stubbed: payments (Stripe), e-signature (DocuSeal), and photo
+> uploads (object storage). **The master task list is [`docs/build-plan.md`](docs/build-plan.md)** —
+> implementers (human or model) start there. Conflicts between docs are resolved by
+> [`docs/decisions.md`](docs/decisions.md).
 
 ## Run it locally (Mac/Linux)
 
@@ -23,21 +26,29 @@ cd dog-boarding-app
 ./scripts/dev-local.sh          # installs deps, migrates + seeds demo data, starts everything
 ```
 
-Then open **http://localhost:5173**. The script runs the API on `:3000`, the PWA on `:5173` (Vite
-proxies `/api` to the API, so it's all same-origin), and loads the design's demo world (six
-in-residence dogs, the July stays, a customer↔staff message thread).
+Then open **http://localhost:5173** — or, **on your phone** (same Wi-Fi), the LAN URL the script
+prints (`http://<your-mac-ip>:5173`). The script runs the API on `:3000`, the PWA on `:5173` (Vite
+proxies `/api` to the API, so it's all same-origin — cookies and auth just work, phone included),
+and loads the design's demo world (the in-residence dogs, the July stays, message threads, a sent
+report card, open shifts to claim).
 
 **Logging in** — hit **Sign up** (not sign in) and your role is matched by the email you use; the API
 enforces the real role server-side, while the on-screen *demo bar* just swaps which view is rendered:
 
 | Sign up with | Role you get |
 |---|---|
-| `corry@zoomez.app` (or `brette@zoomez.app`) | **Manager** — all seeded data, the wired-up view |
-| `jack@zoomez.app` (or `maria@zoomez.app`) | Staff |
-| any other email | Customer (auto-provisioned) |
+| `corry@zoomez.app` (or `brette@zoomez.app`) | **Manager** — approvals, task board, oversight, reports |
+| `jack@zoomez.app` (or `maria@zoomez.app`) | **Staff** — today rail, checklists, shift claiming, threads |
+| `sarah@example.com` | **Customer with data** — two dogs, a live stay, messages, a report card |
+| any other email | Customer (auto-provisioned, empty) |
 
 Password is anything 8+ characters. Manager approvals and the Reports screen are PIN-gated — **demo
-PIN `1234`**. Re-run with `./scripts/dev-local.sh --reseed` to wipe and reload the demo data.
+PIN `1234`** (checked server-side; customers can't elevate even with the PIN). Re-run with
+`./scripts/dev-local.sh --reseed` to wipe and reload the demo data.
+
+**What's stubbed:** paying an invoice (Stripe account pending — invoices render read-only), waiver
+e-signing (DocuSeal pending), and photo uploads (object storage pending). Everything else is real:
+book a stay as Sarah, approve it as Corry, and the care tasks materialize on Jack's board.
 
 > This local database is a throwaway demo (PGlite, persisted under `server/.data/`, gitignored). It
 > holds only the sample world above — never real customer data.

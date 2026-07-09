@@ -1,5 +1,6 @@
 import { Sheet, Badge } from '../../components/primitives'
 import { Icon } from '../../components/Icon'
+import { useAuth } from '../../lib/auth-context'
 
 type Role = 'staff' | 'manager'
 
@@ -52,10 +53,11 @@ function RoleCard({
   )
 }
 
-function LinkRow({ icon, label }: { icon: 'settings' | 'log-out'; label: string }) {
+function LinkRow({ icon, label, onClick }: { icon: 'settings' | 'log-out'; label: string; onClick?: () => void }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       style={{
         width: '100%', border: 0, background: 'none', cursor: 'pointer', textAlign: 'left',
         display: 'flex', alignItems: 'center', gap: 12, color: 'var(--text-body)', padding: 0,
@@ -79,6 +81,7 @@ export function AccountSheet({
   role: Role
   onSwitchRole: (r: Role) => void
 }) {
+  const { user, signOut } = useAuth()
   return (
     <Sheet open={open} onClose={onClose}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -94,8 +97,8 @@ export function AccountSheet({
             <Icon name="user-round" size={24} />
           </span>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--text-heading)' }}>Jack Torres</span>
-            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>jack@zoomez.app</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--text-heading)' }}>{user?.name ?? '—'}</span>
+            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{user?.email ?? ''}</span>
           </div>
         </div>
 
@@ -118,7 +121,7 @@ export function AccountSheet({
 
         <div className="z-divider" />
         <LinkRow icon="settings" label="Profile & settings" />
-        <LinkRow icon="log-out" label="Sign out" />
+        <LinkRow icon="log-out" label="Sign out" onClick={() => void signOut()} />
       </div>
     </Sheet>
   )

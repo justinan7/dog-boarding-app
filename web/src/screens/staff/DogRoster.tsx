@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 import { Icon } from '../../components/Icon'
 import { Badge, Button, Card } from '../../components/primitives'
+import { useCareTasks, useReservations } from '../../lib/queries'
+import { seedToday, rosterDogs } from '../../lib/roster'
+import { fmtDateRange, fmtTimeCompact } from '../../lib/format'
 
 function DogGlyph() {
   return (
@@ -49,7 +52,14 @@ function DogCard({
   )
 }
 
-export function DogRoster({ go }: { go: (r: 'checklist' | 'report-builder') => void }) {
+const COUNT_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight']
+
+export function DogRoster({ go }: { go: (r: 'checklist' | 'report-builder', petId?: string) => void }) {
+  const tasksQ = useCareTasks({})
+  const reservationsQ = useReservations()
+  const today = seedToday(tasksQ.data?.items)
+  const dogs = rosterDogs(reservationsQ.data?.items, tasksQ.data?.items, today)
+
   return (
     <>
       {/* Header */}
@@ -58,11 +68,13 @@ export function DogRoster({ go }: { go: (r: 'checklist' | 'report-builder') => v
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>
             Dogs here now
           </span>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Five in residence</span>
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            {COUNT_WORDS[dogs.length] ?? dogs.length} in residence
+          </span>
         </div>
         <button
           type="button"
-          onClick={() => go('report-builder')}
+          onClick={() => go('report-builder', dogs[0]?.petId)}
           aria-label="Camera"
           style={{
             width: 40,
@@ -106,57 +118,47 @@ export function DogRoster({ go }: { go: (r: 'checklist' | 'report-builder') => v
       </div>
 
       {/* Roster */}
-      <DogCard
-        accent="coral"
-        title="Bella · Golden"
-        subtitle="Jul 3 – 7 · Rimadyl 8:00a · feed 5:30p"
-        trailing={<Badge tone="error">Overdue 3m</Badge>}
-        onClick={() => go('checklist')}
-      />
-
-      <DogCard
-        title="Biscuit · Beagle"
-        subtitle={
-          <>
-            Next: lunch 12:00p ·{' '}
-            <span style={{ color: 'var(--red-error)', fontWeight: 600 }}>allergy: chicken</span>
-          </>
-        }
-        trailing={<Badge tone="gold">2 due</Badge>}
-        onClick={() => go('checklist')}
-      />
-
-      <DogCard
-        title="Max · Boxer"
-        subtitle={
-          <>
-            <span style={{ color: 'var(--red-error)', fontWeight: 600 }}>Separate at feeding</span> · Jul 5 – 8
-          </>
-        }
-        trailing={<Badge tone="lagoon">Insulin 6p</Badge>}
-        onClick={() => go('checklist')}
-      />
-
-      <DogCard
-        title="Cooper · Lab mix"
-        subtitle="Jul 5 · all tasks complete"
-        trailing={
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              fontSize: 13,
-              color: 'var(--green-success)',
-              fontWeight: 600,
-            }}
-          >
-            <Icon name="check" size={15} />
-            Done
-          </span>
-        }
-        onClick={() => go('checklist')}
-      />
+      {dogs.map((d) => {
+        const dates = fmtDateRange(d.reservation.startDate, d.reservation.endDate)
+        const next = d.nextTask
+        return (
+          <DogCard
+            key={d.petId}
+            accent={d.overdue > 0 ? 'coral' : undefined}
+            title={d.breed ? `${d.name} · ${d.breed}` : d.name}
+            subtitle={
+              next
+                ? `${dates} · next: ${next.label} ${fmtTimeCompact(next.scheduledLocalTime)}`
+                : `${dates} · all tasks complete`
+            }
+            trailing={
+              d.overdue > 0 ? (
+                <Badge tone="error">Overdue</Badge>
+              ) : d.due > 0 ? (
+                <Badge tone="gold">{d.due} due</Badge>
+              ) : (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    fontSize: 13,
+                    color: 'var(--green-success)',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Icon name="check" size={15} />
+                  Done
+                </span>
+              )
+            }
+            onClick={() => go('checklist', d.petId)}
+          />
+        )
+      })}
+      {dogs.length === 0 && !reservationsQ.isLoading && (
+        <div style={{ fontSize: 14, color: 'var(--text-muted)' }}>No dogs in residence right now.</div>
+      )}
     </>
   )
 }

@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Icon, type IconName } from '../../components/Icon'
 import { Section, Switch, Button } from '../../components/primitives'
+import { useCareTasks, useReservations, useCreateIncident } from '../../lib/queries'
+import { seedToday, rosterDogs, parseTimeText } from '../../lib/roster'
+import { fmtClock, fmtDate } from '../../lib/format'
 
 /* ---------- Tag (local — matches DS Tag: 34px pill, selected = lagoon fill) ---------- */
 function Tag({
@@ -203,25 +206,47 @@ function CheckRow({
 
 const TYPES = ['Injury', 'Bite', 'Escape', 'Illness', 'Other']
 const SEVERITIES = ['Minor', 'Moderate', 'Severe']
-const DOGS = ['Max', 'Cooper']
 const ACTIONS = ['Separated the dogs', 'First aid given', 'Vet contacted']
 
 export function IncidentReport({ onBack }: { onBack: () => void }) {
+  const tasksQ = useCareTasks({})
+  const reservationsQ = useReservations()
+  const createIncident = useCreateIncident()
+
+  const today = seedToday(tasksQ.data?.items)
+  const roster = rosterDogs(reservationsQ.data?.items, tasksQ.data?.items, today)
+
   const [type, setType] = useState('Bite')
-  const [dogs, setDogs] = useState<string[]>(['Max'])
-  const [when, setWhen] = useState('1:42 PM today')
+  const [dogIds, setDogIds] = useState<string[]>([])
+  const [when, setWhen] = useState(fmtClock(new Date().toISOString()))
   const [severity, setSeverity] = useState('Moderate')
-  const [description, setDescription] = useState(
-    'Max nipped at Cooper during feeding. No broken skin. Separated both immediately.',
-  )
+  const [description, setDescription] = useState('')
   const [actions, setActions] = useState<string[]>(['Separated the dogs'])
   const [notifyOwner, setNotifyOwner] = useState(true)
-  const [submitted, setSubmitted] = useState(false)
 
-  const toggleDog = (name: string) =>
-    setDogs((d) => (d.includes(name) ? d.filter((x) => x !== name) : [...d, name]))
+  const submitted = createIncident.isSuccess
+
+  const toggleDog = (id: string) =>
+    setDogIds((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]))
   const toggleAction = (label: string) =>
     setActions((a) => (a.includes(label) ? a.filter((x) => x !== label) : [...a, label]))
+
+  const submit = () => {
+    if (dogIds.length === 0 || !description.trim() || createIncident.isPending) return
+    // "When": parse a clock time onto the demo day; fall back to now.
+    const hhmm = parseTimeText(when)
+    const occurredAt = hhmm ? new Date(`${today}T${hhmm}:00`).toISOString() : new Date().toISOString()
+    createIncident.mutate({
+      type: type.toLowerCase(),
+      severity: severity.toLowerCase(),
+      petIds: dogIds,
+      occurredAt,
+      description: description.trim(),
+      actionsTaken: actions,
+      notifyOwnerNow: notifyOwner,
+      reservationId: roster.find((d) => d.petId === dogIds[0])?.reservation.id,
+    })
+  }
 
   return (
     <>
@@ -239,7 +264,7 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, color: 'var(--text-heading)' }}>
             Report an incident
           </span>
-          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Autosaving · Sat Jul 5</span>
+          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>{fmtDate(today)}</span>
         </div>
       </div>
 
@@ -256,15 +281,15 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
 
       {/* Dogs involved */}
       <Section label="Dogs involved">
-        <div style={{ display: 'flex', gap: 8 }}>
-          {DOGS.map((d) => (
-            <Tag key={d} icon="dog" selected={dogs.includes(d)} onClick={() => toggleDog(d)}>
-              {d}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {roster.map((d) => (
+            <Tag key={d.petId} icon="dog" selected={dogIds.includes(d.petId)} onClick={() => toggleDog(d.petId)}>
+              {d.name}
             </Tag>
           ))}
-          <Tag icon="plus" selected={false} onClick={() => {}}>
-            Add
-          </Tag>
+          {roster.length === 0 && (
+            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>No dogs in residence.</span>
+          )}
         </div>
       </Section>
 
@@ -286,6 +311,11 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
 
       {/* What happened */}
       <TextAreaField label="What happened" value={description} onChange={setDescription} />
+      {createIncident.isError && (
+        <div style={{ fontSize: 13, color: 'var(--red-error)' }}>
+          {createIncident.error instanceof Error ? createIncident.error.message : 'Submit failed — try again.'}
+        </div>
+      )}
 
       {/* Photos */}
       <div style={{ display: 'flex', gap: 8 }}>
@@ -353,9 +383,10 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
           size="lg"
           fullWidth
           style={{ background: 'var(--coral-500)' }}
-          onClick={() => setSubmitted(true)}
+          disabled={dogIds.length === 0 || !description.trim() || createIncident.isPending}
+          onClick={submit}
         >
-          Submit — alerts management
+          {createIncident.isPending ? 'Submitting…' : 'Submit — alerts management'}
         </Button>
       )}
     </>

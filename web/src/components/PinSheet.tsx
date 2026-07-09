@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Sheet } from './primitives'
 import { Icon } from './Icon'
+import { auth as authApi } from '../lib/api'
 
 // Manager view is PIN-gated (design: gold PIN lock badge on the Manager card)
-// so a shared phone can't wander into approvals. Prototype PIN: 1234.
+// so a shared phone can't wander into approvals. The PIN is checked SERVER-side
+// (POST /me/elevate) — success grants a 15-min manager elevation the M🔒
+// endpoints require. Demo PIN: 1234 (staff/manager accounts only).
 export function PinSheet({
   open,
   onClose,
@@ -15,20 +18,28 @@ export function PinSheet({
 }) {
   const [pin, setPin] = useState('')
   const [error, setError] = useState(false)
+  const [checking, setChecking] = useState(false)
+  const [errorText, setErrorText] = useState<string | null>(null)
 
   const press = (d: string) => {
-    if (pin.length >= 4) return
+    if (pin.length >= 4 || checking) return
     const next = pin + d
     setPin(next)
     setError(false)
+    setErrorText(null)
     if (next.length === 4) {
-      if (next === '1234') {
-        setPin('')
-        onUnlock()
-      } else {
-        setError(true)
-        setTimeout(() => { setPin(''); setError(false) }, 600)
-      }
+      setChecking(true)
+      authApi.elevate(next)
+        .then(() => {
+          setPin('')
+          onUnlock()
+        })
+        .catch((e: unknown) => {
+          setError(true)
+          setErrorText(e instanceof Error ? e.message : 'Wrong PIN')
+          setTimeout(() => { setPin(''); setError(false) }, 600)
+        })
+        .finally(() => setChecking(false))
     }
   }
 
@@ -48,8 +59,8 @@ export function PinSheet({
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: 'var(--text-heading)' }}>
             Manager PIN
           </div>
-          <div style={{ marginTop: 4, fontSize: 12.5, color: 'var(--text-muted)' }}>
-            Approvals and oversight are PIN-locked · demo PIN 1234
+          <div style={{ marginTop: 4, fontSize: 12.5, color: errorText ? 'var(--red-error)' : 'var(--text-muted)' }}>
+            {errorText ?? (checking ? 'Checking…' : 'Approvals and oversight are PIN-locked · demo PIN 1234')}
           </div>
         </div>
 
