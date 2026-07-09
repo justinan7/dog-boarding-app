@@ -1,6 +1,7 @@
 import { Icon, type IconName } from '../../components/Icon'
 import { Badge, Button } from '../../components/primitives'
 import { useReportCards, useReservations, useHeartReportCard } from '../../lib/queries'
+import { mediaUrl } from '../../lib/upload'
 import { fmtWeekday, fmtDate, nightsBetween, parseDate } from '../../lib/format'
 
 function PhotoTile({
@@ -125,25 +126,48 @@ export function ReportCardPostcard({
         </span>
       </div>
 
-      {/* Photo grid — placeholder art until photo uploads land (object storage) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <PhotoTile icon="sun" bg="var(--seaglass-100)" onClick={() => go('story', card.id)} />
-        <PhotoTile icon="waves" bg="var(--seaglass-200)" onClick={() => go('story', card.id)} />
-        <PhotoTile icon="bone" bg="var(--seaglass-200)" onClick={() => go('story', card.id)} />
-        <PhotoTile icon="heart" bg="var(--seaglass-100)" onClick={() => go('story', card.id)}>
-          {(card.photoObjectKeys?.length ?? 0) > 4 && (
-            <span
+      {/* Photo grid — real photos when the card has them, placeholder art otherwise */}
+      {(card.photoObjectKeys?.length ?? 0) > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {card.photoObjectKeys!.slice(0, 4).map((key, i) => (
+            <div
+              key={key}
+              onClick={() => go('story', card.id)}
               style={{
-                position: 'absolute', right: 12, bottom: 10,
-                background: 'var(--lagoon-900)', color: 'var(--foam-50)',
-                borderRadius: 999, padding: '3px 10px', fontSize: 12, fontWeight: 600,
+                aspectRatio: '4 / 3.4',
+                borderRadius: 'var(--radius-xl)',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                position: 'relative',
               }}
             >
-              +{(card.photoObjectKeys?.length ?? 0) - 4}
-            </span>
-          )}
-        </PhotoTile>
-      </div>
+              <img
+                src={mediaUrl(key)}
+                alt={`${card.petName} photo`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+              {i === 3 && card.photoObjectKeys!.length > 4 && (
+                <span
+                  style={{
+                    position: 'absolute', right: 12, bottom: 10,
+                    background: 'var(--lagoon-900)', color: 'var(--foam-50)',
+                    borderRadius: 999, padding: '3px 10px', fontSize: 12, fontWeight: 600,
+                  }}
+                >
+                  +{card.photoObjectKeys!.length - 4}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <PhotoTile icon="sun" bg="var(--seaglass-100)" onClick={() => go('story', card.id)} />
+          <PhotoTile icon="waves" bg="var(--seaglass-200)" onClick={() => go('story', card.id)} />
+          <PhotoTile icon="bone" bg="var(--seaglass-200)" onClick={() => go('story', card.id)} />
+          <PhotoTile icon="heart" bg="var(--seaglass-100)" onClick={() => go('story', card.id)} />
+        </div>
+      )}
       <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
         Tap any photo for the full story
       </div>

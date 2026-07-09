@@ -22,10 +22,12 @@ export interface Thread {
   assignedStaffId?: string | null; flags?: string[] | null; lastMessageAt?: string | null
   lastBody?: string | null; lastSenderRole?: string | null
 }
+export interface MessageAttachment { id: string; kind: string; objectKey: string }
 export interface Message {
   id: string; threadId: string; senderUserId: string
   senderRole: 'customer' | 'staff' | 'manager'; senderDisplay: string
   body?: string | null; sentAt: string; readAt?: string | null
+  attachments?: MessageAttachment[]
 }
 export interface ReportCard {
   id: string; reservationId: string; petId: string; petName?: string
@@ -194,7 +196,8 @@ export const useMyShifts = () =>
 export function useSendMessage(threadId: string | null) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (body: string) => api.post(`/api/v1/threads/${threadId}/messages`, { body }),
+    mutationFn: (msg: { body?: string; attachmentKeys?: string[] }) =>
+      api.post(`/api/v1/threads/${threadId}/messages`, msg),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['thread-messages', threadId] })
       qc.invalidateQueries({ queryKey: ['threads'] })
@@ -213,6 +216,7 @@ export function useHeartReportCard() {
 export interface ReportCardDraft {
   reservationId: string; petId: string; date: string
   mood?: string; appetite?: string; bestMoment?: string
+  photoKeys?: string[]
 }
 export function useCreateReportCard() {
   const qc = useQueryClient()
@@ -275,8 +279,18 @@ export function useCreateIncident() {
     mutationFn: (body: {
       type: string; severity: string; petIds: string[]
       occurredAt: string; description: string
+      photoObjectKeys?: string[]
       actionsTaken?: string[]; notifyOwnerNow?: boolean; reservationId?: string
     }) => api.post('/api/v1/incidents', body),
+  })
+}
+
+export function useAddVaccinationRecord() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ petId, body }: { petId: string; body: { type: string; expiresOn?: string; documentObjectKey?: string } }) =>
+      api.post(`/api/v1/pets/${petId}/vaccinations`, body),
+    onSuccess: (_d, { petId }) => qc.invalidateQueries({ queryKey: ['pet', petId] }),
   })
 }
 

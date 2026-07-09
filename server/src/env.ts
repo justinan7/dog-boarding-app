@@ -22,11 +22,13 @@ const schema = z.object({
   // Absolute path to the built PWA (web/dist). When set, the API serves it
   // with an SPA fallback — the production monolith mode.
   WEB_DIST: z.string().optional(),
-  // S3-compatible object storage (Garage in prod). Optional in dev.
+  // S3-compatible object storage (Garage in prod). Optional in dev — media
+  // falls back to local disk under MEDIA_DIR (ADR-013).
   S3_ENDPOINT: z.string().optional(),
   S3_REGION: z.string().default('garage'),
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
+  MEDIA_DIR: z.string().default('.data/media'),
 })
 
 export type Env = z.infer<typeof schema>

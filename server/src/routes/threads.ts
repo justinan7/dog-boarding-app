@@ -98,7 +98,15 @@ threadsRouter.get('/:id/messages', async (c) => {
   }
   const rows = await query.orderBy(asc(messages.sentAt)).limit(limit + 1)
   const hasMore = rows.length > limit
-  const items = hasMore ? rows.slice(0, limit) : rows
+  const page = hasMore ? rows.slice(0, limit) : rows
+
+  // Attach photo/doc attachments so bubbles can render them inline.
+  const items = await Promise.all(page.map(async (m) => {
+    const atts = await db.select({
+      id: attachments.id, kind: attachments.kind, objectKey: attachments.objectKey,
+    }).from(attachments).where(eq(attachments.messageId, m.id))
+    return { ...m, attachments: atts }
+  }))
 
   return c.json({
     items,

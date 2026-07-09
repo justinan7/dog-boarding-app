@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { Badge, Card } from '../../components/primitives'
 import {
   useThreads, useThreadMessages, useSendMessage, useReservations,
   type Thread, type Message,
 } from '../../lib/queries'
+import { uploadMedia, pickFile } from '../../lib/upload'
+import { AttachmentImgs } from '../customer/Messages'
 import { fmtClock, fmtStamp } from '../../lib/format'
 import { petLine } from '../../lib/stays'
 
@@ -74,11 +76,25 @@ function ThreadView({ thread, petNames, onBack }: { thread: Thread; petNames: st
   const [draft, setDraft] = useState('')
 
   const messages: Message[] = messagesQ.data?.items ?? []
+  const [uploading, setUploading] = useState(false)
 
   const doSend = () => {
     const text = draft.trim()
     if (!text || send.isPending) return
-    send.mutate(text, { onSuccess: () => setDraft('') })
+    send.mutate({ body: text }, { onSuccess: () => setDraft('') })
+  }
+
+  const attachPhoto = async () => {
+    if (uploading) return
+    const file = await pickFile('image/*')
+    if (!file) return
+    setUploading(true)
+    try {
+      const { objectKey } = await uploadMedia(file, 'photo')
+      send.mutate({ attachmentKeys: [objectKey] })
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
@@ -130,38 +146,47 @@ function ThreadView({ thread, petNames, onBack }: { thread: Thread; petNames: st
         )}
         {messages.map((m) =>
           m.senderRole === 'customer' ? (
-            <div key={m.id} style={{ alignSelf: 'flex-start', maxWidth: '78%', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--stone-400)', paddingLeft: 6 }}>{m.senderDisplay}</span>
-              <div
-                style={{
-                  background: 'var(--surface-card)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '18px 18px 18px 4px',
-                  padding: '10px 15px',
-                  fontSize: 14.5,
-                  lineHeight: 1.45,
-                  boxShadow: 'var(--shadow-card)',
-                }}
-              >
-                {m.body}
-              </div>
-            </div>
+            <Fragment key={m.id}>
+              <AttachmentImgs message={m} align="flex-start" />
+              {m.body && (
+                <div style={{ alignSelf: 'flex-start', maxWidth: '78%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--stone-400)', paddingLeft: 6 }}>{m.senderDisplay}</span>
+                  <div
+                    style={{
+                      background: 'var(--surface-card)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '18px 18px 18px 4px',
+                      padding: '10px 15px',
+                      fontSize: 14.5,
+                      lineHeight: 1.45,
+                      boxShadow: 'var(--shadow-card)',
+                    }}
+                  >
+                    {m.body}
+                  </div>
+                </div>
+              )}
+            </Fragment>
           ) : (
-            <div
-              key={m.id}
-              style={{
-                alignSelf: 'flex-end',
-                maxWidth: '78%',
-                background: 'var(--lagoon-700)',
-                color: 'var(--foam-50)',
-                borderRadius: '18px 18px 4px 18px',
-                padding: '10px 15px',
-                fontSize: 14.5,
-                lineHeight: 1.45,
-              }}
-            >
-              {m.body}
-            </div>
+            <Fragment key={m.id}>
+              <AttachmentImgs message={m} align="flex-end" />
+              {m.body && (
+                <div
+                  style={{
+                    alignSelf: 'flex-end',
+                    maxWidth: '78%',
+                    background: 'var(--lagoon-700)',
+                    color: 'var(--foam-50)',
+                    borderRadius: '18px 18px 4px 18px',
+                    padding: '10px 15px',
+                    fontSize: 14.5,
+                    lineHeight: 1.45,
+                  }}
+                >
+                  {m.body}
+                </div>
+              )}
+            </Fragment>
           ),
         )}
       </div>
@@ -177,6 +202,21 @@ function ThreadView({ thread, petNames, onBack }: { thread: Thread; petNames: st
           gap: 10,
         }}
       >
+        <button
+          type="button"
+          aria-label="Add photo"
+          onClick={() => void attachPhoto()}
+          disabled={uploading}
+          style={{
+            width: 38, height: 38, borderRadius: 999, border: 0, cursor: 'pointer',
+            background: 'var(--surface-tint)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--lagoon-700)', flex: 'none', padding: 0,
+            opacity: uploading ? 0.5 : 1,
+          }}
+        >
+          <Icon name={uploading ? 'image' : 'plus'} size={18} />
+        </button>
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

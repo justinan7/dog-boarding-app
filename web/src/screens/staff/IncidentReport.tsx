@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon, type IconName } from '../../components/Icon'
 import { Section, Switch, Button } from '../../components/primitives'
 import { useCareTasks, useReservations, useCreateIncident } from '../../lib/queries'
+import { uploadMedia, mediaUrl, pickFile, type UploadedMedia } from '../../lib/upload'
 import { seedToday, rosterDogs, parseTimeText } from '../../lib/roster'
 import { fmtClock, fmtDate } from '../../lib/format'
 
@@ -223,8 +224,23 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
   const [description, setDescription] = useState('')
   const [actions, setActions] = useState<string[]>(['Separated the dogs'])
   const [notifyOwner, setNotifyOwner] = useState(true)
+  const [photos, setPhotos] = useState<UploadedMedia[]>([])
+  const [uploading, setUploading] = useState(false)
 
   const submitted = createIncident.isSuccess
+
+  const addPhoto = async () => {
+    if (uploading) return
+    const file = await pickFile('image/*')
+    if (!file) return
+    setUploading(true)
+    try {
+      const up = await uploadMedia(file, 'photo')
+      setPhotos((p) => [...p, up])
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const toggleDog = (id: string) =>
     setDogIds((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]))
@@ -242,6 +258,7 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
       petIds: dogIds,
       occurredAt,
       description: description.trim(),
+      photoObjectKeys: photos.map((p) => p.objectKey),
       actionsTaken: actions,
       notifyOwnerNow: notifyOwner,
       reservationId: roster.find((d) => d.petId === dogIds[0])?.reservation.id,
@@ -318,23 +335,34 @@ export function IncidentReport({ onBack }: { onBack: () => void }) {
       )}
 
       {/* Photos */}
-      <div style={{ display: 'flex', gap: 8 }}>
-        <div
-          style={{
-            width: 56, height: 56, borderRadius: 'var(--radius-md)', background: 'var(--seaglass-200)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--lagoon-300)',
-          }}
-        >
-          <Icon name="image" size={20} />
-        </div>
-        <div
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {photos.map((p) => (
+          <img
+            key={p.objectKey}
+            src={mediaUrl(p.thumbKey ?? p.objectKey)}
+            alt="Incident photo"
+            onClick={() => setPhotos((all) => all.filter((x) => x.objectKey !== p.objectKey))}
+            title="Tap to remove"
+            style={{
+              width: 56, height: 56, borderRadius: 'var(--radius-md)',
+              objectFit: 'cover', cursor: 'pointer', display: 'block',
+            }}
+          />
+        ))}
+        <button
+          type="button"
+          onClick={() => void addPhoto()}
+          disabled={uploading}
+          aria-label="Add photo"
           style={{
             width: 56, height: 56, borderRadius: 'var(--radius-md)', border: '1.5px dashed var(--border-strong)',
+            background: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--stone-400)',
+            opacity: uploading ? 0.5 : 1,
           }}
         >
-          <Icon name="plus" size={20} />
-        </div>
+          <Icon name={uploading ? 'image' : 'plus'} size={20} />
+        </button>
       </div>
 
       {/* Actions taken */}

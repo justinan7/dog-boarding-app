@@ -15,6 +15,7 @@ import { incidentsRouter } from './incidents'
 import { reportsRouter } from './reports'
 import { pushRouter } from './push'
 import { uploadsRouter } from './uploads'
+import { mediaRouter } from './media'
 import { env } from '../env'
 import type { AppEnv } from '../lib/hono-env'
 
@@ -39,6 +40,7 @@ v1.route('/incidents', incidentsRouter)
 v1.route('/reports', reportsRouter)
 v1.route('/push', pushRouter)
 v1.route('/uploads', uploadsRouter)
+v1.route('/media', mediaRouter)
 
 v1.get('/', (c) =>
   c.json({

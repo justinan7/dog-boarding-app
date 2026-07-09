@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon, type IconName } from '../../components/Icon'
 import { Button, Section } from '../../components/primitives'
 import { useCareTasks, usePetDetail, useReservations, useCreateReportCard } from '../../lib/queries'
+import { uploadMedia, mediaUrl, pickFile, type UploadedMedia } from '../../lib/upload'
 import { seedToday } from '../../lib/roster'
 import { fmtWeekday, fmtTimeCompact } from '../../lib/format'
 
@@ -69,6 +70,21 @@ export function ReportCardBuilder({ petId, onBack }: { petId: string | null; onB
   const [appetite, setAppetite] = useState('Ate everything')
   const [moment, setMoment] = useState('')
   const [saved, setSaved] = useState<'draft' | 'sent' | null>(null)
+  const [photos, setPhotos] = useState<UploadedMedia[]>([])
+  const [uploading, setUploading] = useState(false)
+
+  const addPhoto = async () => {
+    if (uploading) return
+    const file = await pickFile('image/*')
+    if (!file) return
+    setUploading(true)
+    try {
+      const up = await uploadMedia(file, 'photo')
+      setPhotos((p) => [...p, up])
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const pet = detail.data
   const today = seedToday(allTasks.data?.items)
@@ -93,6 +109,7 @@ export function ReportCardBuilder({ petId, onBack }: { petId: string | null; onB
           mood,
           appetite,
           bestMoment: moment.trim() || undefined,
+          photoKeys: photos.map((p) => p.objectKey),
         },
         send,
       },
@@ -130,24 +147,48 @@ export function ReportCardBuilder({ petId, onBack }: { petId: string | null; onB
       </div>
 
       {/* Photos */}
-      <Section label="Photos · uploads land with object storage">
+      <Section label={photos.length > 0 ? `Photos · ${photos.length} added` : 'Photos · tap + to add'}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-          <PhotoTile icon="sun" bg="var(--seaglass-200)" />
-          <PhotoTile icon="waves" bg="var(--seaglass-100)" />
-          <PhotoTile icon="bone" bg="var(--seaglass-200)" />
-          <div
+          {photos.map((p) => (
+            <div
+              key={p.objectKey}
+              onClick={() => setPhotos((all) => all.filter((x) => x.objectKey !== p.objectKey))}
+              title="Tap to remove"
+              style={{
+                aspectRatio: '1',
+                borderRadius: 'var(--radius-md)',
+                overflow: 'hidden',
+                cursor: 'pointer',
+              }}
+            >
+              <img
+                src={mediaUrl(p.thumbKey ?? p.objectKey)}
+                alt="Report card photo"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+          ))}
+          {photos.length === 0 && <PhotoTile icon="sun" bg="var(--seaglass-200)" />}
+          <button
+            type="button"
+            onClick={() => void addPhoto()}
+            disabled={uploading}
+            aria-label="Add photo"
             style={{
               aspectRatio: '1',
               borderRadius: 'var(--radius-md)',
               border: '1.5px dashed var(--border-strong)',
+              background: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: 'var(--stone-400)',
+              cursor: 'pointer',
+              opacity: uploading ? 0.5 : 1,
             }}
           >
-            <Icon name="plus" size={20} />
-          </div>
+            <Icon name={uploading ? 'image' : 'plus'} size={20} />
+          </button>
         </div>
       </Section>
 

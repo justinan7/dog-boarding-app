@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { Section, Card, Badge, Button, DogAvatar } from '../../components/primitives'
-import { usePets, usePetDetail } from '../../lib/queries'
+import { usePets, usePetDetail, useAddVaccinationRecord } from '../../lib/queries'
+import { uploadMedia, pickFile } from '../../lib/upload'
 import { fmtTime, parseDate } from '../../lib/format'
 
 function ScheduleRow({
@@ -51,6 +52,25 @@ export function PetProfile() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const pet = pets.find((p) => p.id === selectedId) ?? pets[0]
   const detail = usePetDetail(pet?.id ?? null)
+  const addVax = useAddVaccinationRecord()
+  const [vaxUploading, setVaxUploading] = useState(false)
+  const [vaxUploaded, setVaxUploaded] = useState(false)
+
+  const uploadVaxRecord = async () => {
+    if (!pet || vaxUploading) return
+    const file = await pickFile('image/*,application/pdf')
+    if (!file) return
+    setVaxUploading(true)
+    try {
+      const { objectKey } = await uploadMedia(file, 'document')
+      addVax.mutate(
+        { petId: pet.id, body: { type: 'uploaded record', documentObjectKey: objectKey } },
+        { onSuccess: () => setVaxUploaded(true) },
+      )
+    } finally {
+      setVaxUploading(false)
+    }
+  }
 
   if (!pet) {
     return (
@@ -167,8 +187,19 @@ export function PetProfile() {
             </div>
           )}
         </Card>
-        <Button variant="ghost" size="md" fullWidth icon="upload" disabled>
-          Upload vaccination record — coming with photo uploads
+        <Button
+          variant="ghost"
+          size="md"
+          fullWidth
+          icon={vaxUploaded ? 'check' : 'upload'}
+          disabled={vaxUploading || vaxUploaded}
+          onClick={() => void uploadVaxRecord()}
+        >
+          {vaxUploaded
+            ? 'Record uploaded — the team will review it'
+            : vaxUploading
+              ? 'Uploading…'
+              : 'Upload vaccination record'}
         </Button>
       </Section>
 

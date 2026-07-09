@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { useReportCards } from '../../lib/queries'
+import { mediaUrl } from '../../lib/upload'
 
 function PillIconCircle({ size, icon, iconSize }: { size: number; icon: 'x' | 'heart' | 'download'; iconSize: number }) {
   return (
@@ -138,10 +139,23 @@ export function ReportCardStory({ cardId, onClose }: { cardId: string | null; on
           </button>
         </div>
 
-        {/* Photo placeholder */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(247,245,238,0.4)' }}>
-          <Icon name="image" size={44} />
-        </div>
+        {/* Photo: the active segment's real photo, else placeholder art */}
+        {card?.photoObjectKeys?.[active] ? (
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img
+              src={mediaUrl(card.photoObjectKeys[active]!)}
+              alt={`${card.petName} photo ${active + 1}`}
+              style={{
+                maxWidth: '100%', maxHeight: '100%',
+                borderRadius: 'var(--radius-lg)', objectFit: 'contain',
+              }}
+            />
+          </div>
+        ) : (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(247,245,238,0.4)' }}>
+            <Icon name="image" size={44} />
+          </div>
+        )}
 
         {/* Mood chips */}
         <div style={{ display: 'flex', gap: 8 }}>

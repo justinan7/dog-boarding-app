@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { useThreads, useThreadMessages, useSendMessage, useReservations, type Message } from '../../lib/queries'
+import { uploadMedia, mediaUrl, pickFile } from '../../lib/upload'
 import { fmtDateRange, fmtStamp, fmtClock } from '../../lib/format'
 import { petLine } from '../../lib/stays'
 
@@ -23,6 +24,30 @@ function OwnBubble({ text }: { text: string }) {
   )
 }
 
+/** Inline photo attachments for a message bubble. */
+export function AttachmentImgs({ message, align }: { message: Message; align: 'flex-start' | 'flex-end' }) {
+  const atts = message.attachments ?? []
+  if (atts.length === 0) return null
+  return (
+    <>
+      {atts.map((a) => (
+        <img
+          key={a.id}
+          src={mediaUrl(a.objectKey)}
+          alt="Photo"
+          style={{
+            alignSelf: align,
+            maxWidth: '66%',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-subtle)',
+            display: 'block',
+          }}
+        />
+      ))}
+    </>
+  )
+}
+
 export function CustomerMessages({ onBack }: { onBack?: () => void }) {
   const threads = useThreads()
   const thread = threads.data?.items[0] ?? null
@@ -37,11 +62,25 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
 
   const messages: Message[] = messagesQ.data?.items ?? []
   const lastOwnRead = [...messages].reverse().find((m) => m.senderRole === 'customer' && m.readAt)
+  const [uploading, setUploading] = useState(false)
 
   const doSend = () => {
     const text = draft.trim()
     if (!text || !thread || send.isPending) return
-    send.mutate(text, { onSuccess: () => setDraft('') })
+    send.mutate({ body: text }, { onSuccess: () => setDraft('') })
+  }
+
+  const attachPhoto = async () => {
+    if (!thread || uploading) return
+    const file = await pickFile('image/*')
+    if (!file) return
+    setUploading(true)
+    try {
+      const { objectKey } = await uploadMedia(file, 'photo')
+      send.mutate({ attachmentKeys: [objectKey] })
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
@@ -108,7 +147,8 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
           if (m.senderRole === 'customer') {
             return (
               <Fragment key={m.id}>
-                <OwnBubble text={m.body ?? ''} />
+                <AttachmentImgs message={m} align="flex-end" />
+                {m.body && <OwnBubble text={m.body} />}
                 {lastOwnRead?.id === m.id && m.readAt && (
                   <div style={{ alignSelf: 'flex-end', fontSize: 11.5, color: 'var(--stone-400)' }}>
                     Read {fmtClock(m.readAt)}
@@ -118,22 +158,27 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
             )
           }
           return (
-            <div key={m.id} style={{ alignSelf: 'flex-start', maxWidth: '78%', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--stone-400)', paddingLeft: 6 }}>{m.senderDisplay}</span>
-              <div
-                style={{
-                  background: 'var(--surface-card)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '18px 18px 18px 4px',
-                  padding: '10px 15px',
-                  fontSize: 14.5,
-                  lineHeight: 1.45,
-                  boxShadow: 'var(--shadow-card)',
-                }}
-              >
-                {m.body}
-              </div>
-            </div>
+            <Fragment key={m.id}>
+              <AttachmentImgs message={m} align="flex-start" />
+              {m.body && (
+                <div style={{ alignSelf: 'flex-start', maxWidth: '78%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--stone-400)', paddingLeft: 6 }}>{m.senderDisplay}</span>
+                  <div
+                    style={{
+                      background: 'var(--surface-card)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '18px 18px 18px 4px',
+                      padding: '10px 15px',
+                      fontSize: 14.5,
+                      lineHeight: 1.45,
+                      boxShadow: 'var(--shadow-card)',
+                    }}
+                  >
+                    {m.body}
+                  </div>
+                </div>
+              )}
+            </Fragment>
           )
         })}
       </div>
@@ -151,15 +196,18 @@ export function CustomerMessages({ onBack }: { onBack?: () => void }) {
       >
         <button
           type="button"
-          aria-label="Add attachment"
+          aria-label="Add photo"
+          onClick={() => void attachPhoto()}
+          disabled={!thread || uploading}
           style={{
             width: 38, height: 38, borderRadius: 999, border: 0, cursor: 'pointer',
             background: 'var(--surface-tint)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--lagoon-700)', flex: 'none', padding: 0,
+            opacity: uploading ? 0.5 : 1,
           }}
         >
-          <Icon name="plus" size={18} />
+          <Icon name={uploading ? 'image' : 'plus'} size={18} />
         </button>
         <input
           value={draft}
