@@ -34,6 +34,10 @@ const schema = z.object({
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
   VAPID_SUBJECT: z.string().default('mailto:justinan7@gmail.com'),
+  // Centrifugo realtime sidecar. Disabled (silent no-op) when unset.
+  CENTRIFUGO_TOKEN_HMAC_SECRET_KEY: z.string().optional(),
+  CENTRIFUGO_HTTP_API_KEY: z.string().optional(),
+  CENTRIFUGO_HTTP_API_URL: z.string().default('http://127.0.0.1:8000/api'),
 })
 
 export type Env = z.infer<typeof schema>

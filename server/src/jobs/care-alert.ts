@@ -3,6 +3,7 @@ import { eq, and, lte, inArray } from 'drizzle-orm'
 import { getDb } from '../db/client'
 import { careTasks, shifts, shiftClaims, pets } from '../db/schema'
 import { pushToUsers, pushToStaff } from '../lib/push-sender'
+import { publishStaff as publishStaffRealtime } from '../lib/realtime'
 import { log } from '../lib/log'
 
 /** 'HH:MM' → '4:00 PM' (worker-side copy of the client formatter). */
@@ -70,6 +71,7 @@ export function registerCareAlertHandler(boss: PgBoss) {
     }
     if (assignee) await pushToUsers([assignee], payload)
     else await pushToStaff(payload)
+    void publishStaffRealtime({ kind: 'care-task', petId: task.petId })
     } // end for
   })
 }

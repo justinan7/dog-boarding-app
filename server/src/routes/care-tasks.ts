@@ -7,6 +7,7 @@ import { careTasks, careTaskEvents, users, pets, auditEntries } from '../db/sche
 import { AppError } from '../lib/errors'
 import { zonedWallTimeToUtc } from '../lib/time'
 import { isElevated } from './me'
+import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
 // Alias for the assignee join (the on-shift staffer resolved at fire time).
@@ -91,6 +92,7 @@ careTasksRouter.post('/', async (c) => {
     addedByAt: new Date(),
   }).returning()
 
+  void publishStaff({ kind: 'care-task', petId: body.petId })
   return c.json(task, 201)
 })
 

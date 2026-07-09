@@ -6,6 +6,7 @@ import { shifts, shiftClaims, users, auditEntries } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { requireElevation, requireRole } from '../middleware/guards'
 import { zonedWallTimeToUtc } from '../lib/time'
+import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
 export const shiftsRouter = new Hono<AppEnv>()
@@ -137,6 +138,7 @@ shiftsRouter.post('/:id/claim', requireRole('staff', 'manager'), async (c) => {
     // Update shift status
     await db.update(shifts).set({ status: 'claimed' }).where(eq(shifts.id, shiftId))
 
+    void publishStaff({ kind: 'shift' })
     return c.json({ claim }, 200)
   } catch (err: unknown) {
     // Unique constraint violation = someone claimed first

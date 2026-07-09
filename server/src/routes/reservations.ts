@@ -11,6 +11,7 @@ import { CAPACITY } from './capacity'
 import { requireElevation } from '../middleware/guards'
 import { zonedWallTimeToUtc } from '../lib/time'
 import { ownCustomerId } from '../lib/domain-user'
+import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
 export const reservationsRouter = new Hono<AppEnv>()
@@ -87,6 +88,7 @@ reservationsRouter.post('/', async (c) => {
     )
   }
 
+  void publishStaff({ kind: 'reservation', reservationId: reservation!.id })
   return c.json({ ...reservation, warnings }, 201)
 })
 

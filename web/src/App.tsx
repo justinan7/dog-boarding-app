@@ -39,6 +39,7 @@ import {
   type Role, type CustomerRoute, type StaffRoute, type ManagerRoute,
 } from './lib/nav'
 import { useAppConfig } from './lib/queries'
+import { useRealtime } from './lib/realtime'
 import { PushToggle } from './components/PushToggle'
 
 // The hi-fi content frame: 64px top clears the notch, 16px section rhythm.
@@ -305,6 +306,7 @@ function DemoRoleBar({ role, onChange }: { role: Role; onChange: (r: Role) => vo
 export default function App() {
   const { user, loading } = useAuth()
   const config = useAppConfig()
+  useRealtime() // live cache invalidation via Centrifugo (no-op when unconfigured)
   // Default role from the auth context; demo bar can override.
   const [role, setRole] = useState<Role>('customer')
 

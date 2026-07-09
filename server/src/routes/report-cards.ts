@@ -5,6 +5,7 @@ import { getDb } from '../db/client'
 import { reportCards, pets } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { ownCustomerId } from '../lib/domain-user'
+import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
 export const reportCardsRouter = new Hono<AppEnv>()
@@ -119,7 +120,8 @@ reportCardsRouter.post('/:id/send', async (c) => {
     .returning()
   if (!updated) throw new AppError('CONFLICT', 'Report card not found or already sent')
 
-  // TODO(B12): post the card into the customer's thread + push notification
+  // TODO(B12): post the card into the customer's thread
+  void publishStaff({ kind: 'report-card' })
   return c.json(updated)
 })
 

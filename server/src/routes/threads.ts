@@ -10,6 +10,7 @@ import { AppError } from '../lib/errors'
 import { requireElevation } from '../middleware/guards'
 import { ownCustomerId } from '../lib/domain-user'
 import { pushToUsers, pushToStaff } from '../lib/push-sender'
+import { publishStaff, publishUser } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
 export const threadsRouter = new Hono<AppEnv>()
@@ -175,6 +176,14 @@ threadsRouter.post('/:id/messages', async (c) => {
       ? sql`array_append(COALESCE(${threads.flags}, '{}'), 'unanswered')`
       : sql`array_remove(COALESCE(${threads.flags}, '{}'), 'unanswered')`,
   }).where(eq(threads.id, threadId))
+
+  // Realtime hints: the staff inbox always cares; the customer's own devices
+  // care when staff replies.
+  void publishStaff({ kind: 'message', threadId })
+  if (actor.role !== 'customer') {
+    const [tc] = await db.select().from(customers).where(eq(customers.id, thread.customerId)).limit(1)
+    if (tc?.userId) void publishUser(tc.userId, { kind: 'message', threadId })
+  }
 
   // Notify the other side (fire-and-forget; push is a no-op without VAPID).
   const preview = input.body?.slice(0, 90) ?? '📷 Photo'
