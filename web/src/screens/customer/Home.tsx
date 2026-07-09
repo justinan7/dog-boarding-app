@@ -1,7 +1,7 @@
 import { Icon } from '../../components/Icon'
 import { Wordmark, Badge, Button } from '../../components/primitives'
 import { useAuth } from '../../lib/auth-context'
-import { useReservations, useReportCards, useInvoice } from '../../lib/queries'
+import { useReservations, useReportCards, useInvoice, useWaivers, useSignWaiver } from '../../lib/queries'
 import { activeStays, STATUS_LABEL, statusTone, petLine } from '../../lib/stays'
 import { fmtDateRange, fmtWeekday, fmtTime, fmtStamp, nightsBetween, fmtDollars } from '../../lib/format'
 
@@ -53,6 +53,18 @@ export function CustomerHome({ go }: { go: (r: 'book' | 'report-card' | 'stay' |
   const balanceDue = invoice.data?.invoice ? invoice.data.invoice.balanceCents > 0 : false
 
   const latestCard = (cards.data?.items ?? []).find((c) => c.status === 'sent')
+
+  // Waiver: real e-sign when DocuSeal is live; "launches soon" otherwise.
+  const waivers = useWaivers()
+  const signWaiver = useSignWaiver()
+  const pendingWaiver = (waivers.data?.items ?? []).find((w) => w.status !== 'signed')
+  const waiverEnabled = waivers.data?.enabled ?? false
+  const openSigning = () => {
+    if (!pendingWaiver || signWaiver.isPending) return
+    signWaiver.mutate(pendingWaiver.templateId, {
+      onSuccess: ({ url }) => window.open(url, '_blank'),
+    })
+  }
 
   const subline = !stay
     ? 'No stays on the books yet.'
@@ -187,13 +199,24 @@ export function CustomerHome({ go }: { go: (r: 'book' | 'report-card' | 'stay' |
               </Button>
             </div>
           )}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-heading)' }}>Boarding waiver</span>
-              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>E-signature launches soon</span>
+          {pendingWaiver ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-heading)' }}>{pendingWaiver.name}</span>
+                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                  {waiverEnabled ? 'Two minutes, one signature' : 'E-signature launches soon'}
+                </span>
+              </div>
+              <Button variant="secondary" size="sm" disabled={!waiverEnabled || signWaiver.isPending} onClick={openSigning}>
+                {signWaiver.isPending ? 'Opening…' : 'Review & sign'}
+              </Button>
             </div>
-            <Button variant="secondary" size="sm" disabled>Review</Button>
-          </div>
+          ) : (waivers.data?.items.length ?? 0) > 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--text-body)' }}>
+              <Icon name="file-check" size={17} style={{ color: 'var(--green-success)' }} />
+              Boarding waiver signed
+            </div>
+          ) : null}
         </div>
       )}
 

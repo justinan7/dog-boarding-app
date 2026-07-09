@@ -38,6 +38,12 @@ const schema = z.object({
   CENTRIFUGO_TOKEN_HMAC_SECRET_KEY: z.string().optional(),
   CENTRIFUGO_HTTP_API_KEY: z.string().optional(),
   CENTRIFUGO_HTTP_API_URL: z.string().default('http://127.0.0.1:8000/api'),
+  // DocuSeal e-signature sidecar. Disabled when the API key is unset.
+  DOCUSEAL_URL: z.string().default('http://127.0.0.1:3002'),
+  DOCUSEAL_API_KEY: z.string().optional(),
+  // Public base for signing links customers open (defaults to sign.<domain>).
+  DOCUSEAL_PUBLIC_URL: z.string().optional(),
+  DOCUSEAL_WEBHOOK_SECRET: z.string().optional(),
 })
 
 export type Env = z.infer<typeof schema>

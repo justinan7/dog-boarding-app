@@ -192,7 +192,25 @@ export const useMyShifts = () =>
     queryFn: () => api.get<List<MyShift>>('/api/v1/shifts/mine'),
   })
 
+export interface WaiverItem {
+  templateId: string; name: string; version: number
+  status: 'signed' | 'missing' | 'outdated'; signedAt: string | null
+}
+export const useWaivers = () =>
+  useQuery({
+    queryKey: ['waivers'],
+    queryFn: () => api.get<{ enabled: boolean; items: WaiverItem[] }>('/api/v1/waivers/mine'),
+  })
+
 // ---- Mutations ----
+export function useSignWaiver() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (templateId: string) => api.post<{ url: string }>(`/api/v1/waivers/${templateId}/sign`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['waivers'] }),
+  })
+}
+
 export function useSendMessage(threadId: string | null) {
   const qc = useQueryClient()
   return useMutation({

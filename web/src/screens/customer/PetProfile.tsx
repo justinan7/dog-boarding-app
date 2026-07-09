@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { Section, Card, Badge, Button, DogAvatar } from '../../components/primitives'
-import { usePets, usePetDetail, useAddVaccinationRecord } from '../../lib/queries'
+import { usePets, usePetDetail, useAddVaccinationRecord, useWaivers, useSignWaiver } from '../../lib/queries'
 import { uploadMedia, pickFile } from '../../lib/upload'
 import { fmtTime, parseDate } from '../../lib/format'
 
@@ -204,21 +204,54 @@ export function PetProfile() {
       </Section>
 
       {/* Waiver */}
-      <div
-        style={{
-          background: 'var(--surface-tint)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '14px 16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--text-body)' }}>
-          <Icon name="file-check" size={17} style={{ color: 'var(--stone-400)' }} />
-          Boarding waiver · e-signature launches soon
-        </span>
-      </div>
+      <WaiverStrip />
     </>
+  )
+}
+
+function WaiverStrip() {
+  const waivers = useWaivers()
+  const signWaiver = useSignWaiver()
+  const first = waivers.data?.items[0]
+  const enabled = waivers.data?.enabled ?? false
+
+  const label = !first
+    ? 'Boarding waiver'
+    : first.status === 'signed'
+      ? `${first.name} · signed${first.signedAt ? ` ${parseDate(first.signedAt.slice(0, 10)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
+      : enabled
+        ? `${first.name} · needs your signature`
+        : `${first.name} · e-signature launches soon`
+
+  const signed = first?.status === 'signed'
+  const openSigning = () => {
+    if (!first || signed || !enabled || signWaiver.isPending) return
+    signWaiver.mutate(first.templateId, { onSuccess: ({ url }) => window.open(url, '_blank') })
+  }
+
+  return (
+    <div
+      style={{
+        background: 'var(--surface-tint)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '14px 16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--text-body)' }}>
+        <Icon name="file-check" size={17} style={{ color: signed ? 'var(--green-success)' : 'var(--stone-400)' }} />
+        {label}
+      </span>
+      {!signed && enabled && first && (
+        <span
+          onClick={openSigning}
+          style={{ fontSize: 13, fontWeight: 600, color: 'var(--lagoon-700)', cursor: 'pointer' }}
+        >
+          {signWaiver.isPending ? 'Opening…' : 'Sign'}
+        </span>
+      )}
+    </div>
   )
 }

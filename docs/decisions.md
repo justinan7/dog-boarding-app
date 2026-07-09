@@ -76,3 +76,26 @@ completely: **DocuSeal runs via `services.docuseal`** (native since 25.11; accep
 `services.postgresqlBackup` for nightly dumps, and the app builds with `buildNpmPackage` +
 **`importNpmLock`** (no `npmDepsHash` churn — lockfile changes deploy without hash edits).
 wal-g and the OCI-container DocuSeal remain documented fallbacks in `infra/`.
+
+### ADR-013 · Media flows THROUGH the API, not presigned direct-to-S3 — *2026-07-09, accepted*
+Uploads POST to `/api/v1/media`; sharp normalizes in-request (EXIF-rotate, ≤2048px JPEG + 512px
+thumb) and a storage driver puts bytes on local disk in dev or Garage (S3, loopback) in prod.
+Serving is `GET /api/v1/media/*` — auth-checked, immutable-cached. This supersedes the contract
+§5.1 presigned-PUT flow for now: at two-person-business volume the API proxying bytes is simpler,
+needs no public S3 vhost, no SigV4 presign, and no async processing job. The `/uploads` presign
+route remains as the future direct-to-S3 path if volume demands it.
+
+### ADR-014 · Realtime = server-side subscriptions, hint payloads — *2026-07-09, accepted*
+Centrifugo connection JWTs (minted by the API, HS256) carry the user's channels (`staff`,
+`user.<id>`) in the token — Centrifugo subscribes server-side, so no client-side subscribe
+surface and no channel-permission config. Publications are hints (`{kind, ids}`); clients
+invalidate the matching react-query caches and refetch over REST (reconcile-on-reconnect,
+contract §4). No message content rides the socket.
+
+### ADR-015 · Waiver e-sign: hosted DocuSeal pages + completion webhook — *2026-07-09, accepted*
+`POST /waivers/:templateId/sign` creates a DocuSeal submission (no email; the PWA opens the
+hosted signing URL at `sign.<domain>/s/<slug>`); `POST /webhooks/docuseal` (shared-secret query
+param) flips the `waiver_submissions` row to `signed` on `form.completed` and stores the payload
+as the certificate. Waiver templates link via `waiver_templates.docuseal_template_id` — created
+once in the DocuSeal UI by a manager. Dev default: DocuSeal unset → `/waivers/mine` says
+`enabled:false` and the PWA shows "launches soon".
