@@ -36,7 +36,7 @@
     acmeEmail = "justinan7@gmail.com"; # unused while TLS terminates upstream
 
     # Set after `tailscale up` (task A2): tailscale ip -4
-    tailscaleIp = null;
+    tailscaleIp = "100.84.51.69";
     tailnetHost = "zoomez.lion-manta.ts.net";
 
     ntfyUrl = "https://ntfy.4nunns.com/zoomez-alerts";
