@@ -4,6 +4,10 @@ An open-source, self-hostable web app for a small home-based **dog boarding busi
 owned in-app messaging with photo report cards, per-dog timed medication/feeding alerts, and
 Uber-style open-shift claiming for staff, all under management oversight.
 
+> **PRODUCTION: https://zoomez.4nunns.com is live** (demo world — sign UP as
+> `corey@zoomez.app` / `tyler@zoomez.app` / `sarah@example.com`, any 8+ char password).
+> Ops runbook: [`docs/PRODUCTION.md`](docs/PRODUCTION.md).
+
 > **Status: build phase — full demo runs end-to-end.** Architecture, license analysis, data model,
 > API contract, NixOS server design, and the hi-fi visual design ("Zoomez") are done. The **API
 > monolith is implemented** (Hono + Drizzle + Better Auth, 61 passing tests) and **all three PWA
