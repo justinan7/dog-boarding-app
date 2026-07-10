@@ -34,6 +34,10 @@ pkgs.buildNpmPackage {
         --add-flags "$out/lib/node_modules/zoomez-server/dist/$app.js" \
         --set-default MIGRATIONS_DIR "$out/lib/node_modules/zoomez-server/migrations"
     done
+    # Demo-world seeder (guarded: refuses when DEMO_MODE=false).
+    makeWrapper ${pkgs.nodejs_22}/bin/node $out/bin/zoomez-seed \
+      --add-flags "$out/lib/node_modules/zoomez-server/dist/db/seed.js" \
+      --set-default MIGRATIONS_DIR "$out/lib/node_modules/zoomez-server/migrations"
   '';
 
   meta.description = "Zoomez API monolith + worker (Hono + Drizzle + Better Auth)";

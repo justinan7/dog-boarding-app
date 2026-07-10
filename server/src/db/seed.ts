@@ -3,7 +3,7 @@ import { PgTable } from 'drizzle-orm/pg-core'
 import { fileURLToPath } from 'node:url'
 import { initDb, getDb } from './client'
 import { runMigrations } from './migrate'
-import { isProd } from '../env'
+import { env, isProd } from '../env'
 import { log } from '../lib/log'
 import {
   schema, organizations, users, customers, pets, careProfileItems, vaccinationRecords,
@@ -246,7 +246,10 @@ export async function seed(): Promise<void> {
 // Direct-run: tsx src/db/seed.ts  (dev only; guarded off in prod)
 const invokedDirectly = process.argv[1] === fileURLToPath(import.meta.url)
 if (invokedDirectly) {
-  if (isProd) throw new Error('refusing to seed in production')
+  // Demo-world phase: prod MAY seed while DEMO_MODE is on (it wipes
+  // everything). Once the business runs on real data, DEMO_MODE=false makes
+  // this refuse again.
+  if (isProd && !env.DEMO_MODE) throw new Error('refusing to seed in production (DEMO_MODE=false)')
   await initDb()
   await runMigrations()
   await seed()

@@ -4,7 +4,7 @@ import { defineConfig } from 'tsup'
 // wrapper in ../infra/modules/zoomez-app.nix. Deps stay external (installed in
 // node_modules at runtime, per buildNpmPackage).
 export default defineConfig({
-  entry: ['src/api.ts', 'src/worker.ts', 'src/migrate.ts'],
+  entry: ['src/api.ts', 'src/worker.ts', 'src/migrate.ts', 'src/db/seed.ts'],
   format: ['esm'],
   target: 'node22',
   outDir: 'dist',

@@ -43,7 +43,7 @@
 
     # Flipped to true once secrets/zoomez.yaml exists and the host age key is
     # in .sops.yaml (provisioning step A3).
-    secretsProvisioned = false;
+    secretsProvisioned = true;
 
     app = {
       enable = true;

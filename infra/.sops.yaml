@@ -4,10 +4,10 @@
 keys:
   # TODO(A3): admin key — generate once, private half → 1Password:
   #   age-keygen -o ~/.config/sops/age/keys.txt   (prints the public key)
-  - &admin age1REPLACE_WITH_ADMIN_PUBKEY
+  - &admin age1vetm7c4y535gx9wdyjvmw5jh2uxq709e7jelnfpfmf7p63k8cvtshmwv0g
   # TODO(A3): host key — after A1:
   #   ssh root@<host> 'nix run nixpkgs#ssh-to-age -- -i /etc/ssh/ssh_host_ed25519_key.pub'
-  - &zoomez age1REPLACE_WITH_HOST_PUBKEY
+  - &zoomez age1928eygxnckfdzpra5v37d4tltrgvapf23q5j664kjh90trhhhdks2lqu8c
 
 creation_rules:
   - path_regex: secrets/.*\.yaml$
