@@ -13,8 +13,13 @@ in
 
     virtualHosts = lib.mkMerge [
       {
+        # Homelab topology: TLS terminates at the RackNerd Caddy, which proxies
+        # over the tailnet to these plain-HTTP vhosts (the http:// prefix keeps
+        # this Caddy from trying ACME for names whose DNS points elsewhere).
+        # Moving to a public VPS later = drop the http:// prefixes.
+
         # The app: PWA static + API from the monolith; realtime split to Centrifugo.
-        "${z.domain}".extraConfig = ''
+        "http://${z.domain}".extraConfig = ''
           encode zstd gzip
           handle /connection/* {
             reverse_proxy 127.0.0.1:8000
@@ -25,19 +30,11 @@ in
         '';
 
         # DocuSeal hosted signing pages (customers deep-link here).
-        "sign.${z.domain}".extraConfig = ''
+        "http://sign.${z.domain}".extraConfig = ''
           reverse_proxy 127.0.0.1:3002
         '';
 
-        # Garage S3 — presigned PUT/GET straight from phones. Do NOT rewrite or
-        # canonicalize the URI here: any path/query mutation breaks the SigV4
-        # presigned signature. Access log discarded (presigned query strings).
-        "s3.${z.domain}" = {
-          extraConfig = ''
-            reverse_proxy 127.0.0.1:3900
-          '';
-          logFormat = "output discard";
-        };
+        # (No s3 vhost: media flows through the API per ADR-013.)
       }
 
       # Tailnet-only admin vhost (Uptime Kuma at the root — Kuma cannot live

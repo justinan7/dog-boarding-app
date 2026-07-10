@@ -15,7 +15,9 @@
   };
 
   # ---- 2. Offsite files → Backblaze B2 (S3-compatible) -----------------------
-  services.restic.backups.offsite = {
+  # DEFERRED (no-spend phase): offsite needs a B2/S3 account. Nightly local
+  # dumps still run above; revisit when the business goes live with real data.
+  services.restic.backups.offsite = lib.mkIf false {
     initialize = true;
     # TODO(J3/A10): real bucket + endpoint once the B2 account exists.
     repository = "s3:s3.us-west-002.backblazeb2.com/CHANGE-ME-zoomez-backups/restic";
@@ -59,7 +61,7 @@
   # base-backup timer — pattern preserved in infra/README.md.)
 
   # ---- Alerting: a silent backup failure must not stay silent ----------------
-  systemd.services."restic-backups-offsite".onFailure = [ "notify-failure@restic-backups-offsite.service" ];
+  # systemd.services."restic-backups-offsite".onFailure = [ "notify-failure@restic-backups-offsite.service" ]; # (with restic)
   # NOTE(A11): verify the postgresqlBackup unit name on the host
   # (`systemctl list-units 'postgresql*'`) and attach onFailure the same way.
 }

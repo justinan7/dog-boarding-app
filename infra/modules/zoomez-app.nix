@@ -35,7 +35,12 @@ let
     ];
     wants = [ "network-online.target" ];
     requires = [ "postgresql.service" ];
-    environment.NODE_ENV = "production";
+    environment = {
+      NODE_ENV = "production";
+      PUBLIC_DOMAIN = config.zoomez.domain;
+      # Demo world phase — flip to "false" when the business goes live.
+      DEMO_MODE = "true";
+    } // lib.optionalAttrs (cfg.webRoot != null) { WEB_DIST = "${cfg.webRoot}"; };
     onFailure = [ "notify-failure@zoomez-${name}.service" ];
     serviceConfig = {
       ExecStart = "${cfg.package}/bin/zoomez-${name}";

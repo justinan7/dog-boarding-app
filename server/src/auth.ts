@@ -29,6 +29,9 @@ export async function createAuth() {
   return betterAuth({
     basePath: '/api/auth',
     secret: env.BETTER_AUTH_SECRET,
+    // Public HTTPS origin — TLS terminates upstream (RackNerd Caddy), so the
+    // request reaching Node looks http; baseURL keeps cookies/URLs correct.
+    ...(isProd && env.PUBLIC_DOMAIN ? { baseURL: `https://${env.PUBLIC_DOMAIN}` } : {}),
     database,
 
     emailAndPassword: { enabled: true },

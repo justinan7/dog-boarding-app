@@ -56,6 +56,11 @@
           Set in task B14: zoomez.app.package = pkgs.callPackage ../../../server/package.nix { };
         '';
       };
+      webRoot = lib.mkOption {
+        type = lib.types.nullOr lib.types.package;
+        default = null;
+        description = "The built PWA (web/package.nix output) the api serves via WEB_DIST.";
+      };
     };
   };
 }

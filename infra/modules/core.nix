@@ -19,8 +19,9 @@
 
   # ---- Users / SSH ----------------------------------------------------------
   users.users.root.openssh.authorizedKeys.keys = [
-    # TODO(A1): Justin's SSH public key(s) — required before nixos-anywhere install.
-    # "ssh-ed25519 AAAA... justin@laptop"
+    # Deploy key (claude-jumpbox CT 133 — where rebuilds run from).
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFGQQi7TlO6MygZYzMHkPNyP9Rn2UpgcuMchBUIdktPt claude-jumpbox@ct133"
+    # TODO: Justin's personal key(s) here.
   ];
 
   services.openssh = {

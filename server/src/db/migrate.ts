@@ -2,11 +2,11 @@ import { join } from 'node:path'
 import { getHandle } from './client'
 import { log } from '../lib/log'
 
-// Resolved from the working directory, which is the package root for every way
-// migrations run: `npm test`, `npm run dev`, `npm run db:migrate`, and the prod
-// `node dist/migrate.js` deploy step (all invoked from server/). No __dirname
-// math — that breaks once tsup collapses src/db/ into dist/.
-const migrationsFolder = join(process.cwd(), 'migrations')
+// Resolved from the working directory (the package root for npm test/dev/
+// db:migrate), overridable via MIGRATIONS_DIR for the Nix-packaged prod
+// deploy, where the unit's cwd isn't the package. No __dirname math — that
+// breaks once tsup collapses src/db/ into dist/.
+const migrationsFolder = process.env.MIGRATIONS_DIR ?? join(process.cwd(), 'migrations')
 
 /** Apply all pending migrations to the current db, using the right migrator. */
 export async function runMigrations(): Promise<void> {
