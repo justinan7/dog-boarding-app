@@ -55,12 +55,14 @@ export async function seed(): Promise<void> {
 
   // --- Staff / management ---
   const staff = await db.insert(users).values([
+    // Real people first — their sign-ups (by email) get manager rights.
+    { orgId: org.id, role: 'manager', email: 'justin@4nunns.com', displayName: 'Justin' },
     { orgId: org.id, role: 'manager', email: 'corey@zoomez.app', displayName: 'Corey' },
     { orgId: org.id, role: 'manager', email: 'brette@zoomez.app', displayName: 'Brette' },
     { orgId: org.id, role: 'staff', email: 'tyler@zoomez.app', displayName: 'Tyler Torres' },
     { orgId: org.id, role: 'staff', email: 'maria@zoomez.app', displayName: 'Maria Reyes' },
   ]).returning()
-  const corey = staff[0]!, brette = staff[1]!, tyler = staff[2]!, maria = staff[3]!
+  const corey = staff[1]!, brette = staff[2]!, tyler = staff[3]!, maria = staff[4]!
 
   // --- Customers (+ their login users) ---
   async function customer(name: string, email: string) {
