@@ -1,8 +1,9 @@
 import { Sheet, Badge } from '../../components/primitives'
 import { Icon } from '../../components/Icon'
 import { useAuth } from '../../lib/auth-context'
+import { useAppConfig } from '../../lib/queries'
 
-type Role = 'staff' | 'manager'
+type Role = 'staff' | 'manager' | 'customer'
 
 function RoleCard({
   title,
@@ -82,6 +83,7 @@ export function AccountSheet({
   onSwitchRole: (r: Role) => void
 }) {
   const { user, signOut } = useAuth()
+  const config = useAppConfig()
   return (
     <Sheet open={open} onClose={onClose}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -118,6 +120,14 @@ export function AccountSheet({
           onClick={() => onSwitchRole('manager')}
           pin
         />
+        {config.data?.demoMode && (
+          <RoleCard
+            title="Customer"
+            subtitle="Demo · what dog owners see"
+            selected={false}
+            onClick={() => onSwitchRole('customer')}
+          />
+        )}
 
         <div className="z-divider" />
         <LinkRow icon="settings" label="Profile & settings" />

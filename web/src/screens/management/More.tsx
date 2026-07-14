@@ -1,6 +1,8 @@
 import { Icon, type IconName } from '../../components/Icon'
 import { Card, Button } from '../../components/primitives'
-import type { ManagerRoute } from '../../lib/nav'
+import { useAuth } from '../../lib/auth-context'
+import { useAppConfig } from '../../lib/queries'
+import type { ManagerRoute, Role } from '../../lib/nav'
 
 function MenuRow({
   icon, label, onClick, last,
@@ -28,23 +30,34 @@ function MenuRow({
 
 export function More({
   onNavigate,
-  onSwitchView,
+  viewAs,
 }: {
   onNavigate: (route: ManagerRoute) => void
-  onSwitchView?: () => void
+  viewAs?: (r: Role) => void
 }) {
+  const { user, signOut } = useAuth()
+  const config = useAppConfig()
   return (
     <>
       <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--text-heading)' }}>More</span>
+      <Card style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ width: 44, height: 44, borderRadius: 999, background: 'var(--seaglass-200)', color: 'var(--lagoon-500)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+          <Icon name="user-round" size={22} />
+        </span>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--text-heading)' }}>{user?.name ?? '—'}</span>
+          <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>{user?.email ?? ''}</span>
+        </div>
+      </Card>
       <Card style={{ padding: '4px 16px' }}>
         <MenuRow icon="clipboard-check" label="Live task board" onClick={() => onNavigate('taskboard')} />
         <MenuRow icon="file-check" label="Reports & audit log" onClick={() => onNavigate('reports')} />
-        <MenuRow icon="calendar-days" label="Staff schedule" />
-        <MenuRow icon="paw-print" label="Customers & pets" />
-        <MenuRow icon="eye" label="View as staff" onClick={onSwitchView} />
-        <MenuRow icon="settings" label="Settings" last />
+        <MenuRow icon="paw-print" label="Staff view" onClick={() => viewAs?.('staff')} last={!config.data?.demoMode} />
+        {config.data?.demoMode && (
+          <MenuRow icon="eye" label="Customer view (demo)" onClick={() => viewAs?.('customer')} last />
+        )}
       </Card>
-      <Button variant="secondary" size="md" icon="log-out" fullWidth>Sign out</Button>
+      <Button variant="secondary" size="md" icon="log-out" fullWidth onClick={() => void signOut()}>Sign out</Button>
     </>
   )
 }

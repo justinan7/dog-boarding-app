@@ -200,29 +200,15 @@ export function StaffToday({ go }: { go: (r: Route, petId?: string) => void }) {
                 {hero.state === 'overdue' ? 'Overdue' : `Due ${fmtTime(hero.scheduledLocalTime)}`}
               </span>
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <Button
-                variant="gold"
-                size="md"
-                style={{ flex: 1 }}
-                disabled={complete.isPending}
-                onClick={() => complete.mutate({ id: hero.id, body: { outcome: 'given' } })}
-              >
-                {complete.isPending ? 'Logging…' : 'Log it'}
-              </Button>
-              <Button
-                variant="secondary"
-                size="md"
-                style={{
-                  flex: 1,
-                  ['--accent-primary' as string]: 'var(--seaglass-200)',
-                  color: 'var(--seaglass-200)',
-                  borderColor: 'rgba(207,228,218,0.4)',
-                }}
-              >
-                Snooze
-              </Button>
-            </div>
+            <Button
+              variant="gold"
+              size="md"
+              fullWidth
+              disabled={complete.isPending}
+              onClick={() => complete.mutate({ id: hero.id, body: { outcome: 'given' } })}
+            >
+              {complete.isPending ? 'Logging…' : 'Log it'}
+            </Button>
           </div>
         </Section>
       )}

@@ -1,8 +1,9 @@
 # Production — https://zoomez.4nunns.com
 
 **Live since 2026-07-10.** NixOS VM `zoomez` (VM 146 on boa-pve, 4 vCPU / 8 GB / 64 GB),
-deployed from this repo's flake. Currently running the **demo world** (`DEMO_MODE=true`)
-so Corey & Brette can explore with fake data; flip to real when they're ready.
+deployed from this repo's flake. Currently running the **demo world** (`zoomez.app.demoMode`),
+which re-anchors its dates to "today" on every seed and reseeds itself nightly — logins
+survive reseeds. Flip to real data when Corey & Brette are ready (see below).
 
 ## Topology
 
@@ -49,8 +50,9 @@ systemctl restart zoomez-api zoomez-worker
 ## Going live with real data (when Corey & Brette are ready)
 
 1. `zoomez-seed` one last time never again — enter real customers/dogs instead.
-2. Set `DEMO_MODE = "false"` in `infra/modules/zoomez-app.nix`, redeploy — demo bar,
-   sign-up-as hints, and PIN hint disappear; the seeder refuses to run.
+2. Set `zoomez.app.demoMode = false;` in `infra/hosts/zoomez/default.nix`, redeploy —
+   demo hints and account-screen "view as" disappear, the seeder refuses to run, and
+   the nightly demo reseed timer is removed.
 3. Finish DocuSeal (below), then decide on Stripe (needs the business's account).
 4. Set up offsite backups (restic → B2/S3, ~$1/mo — the one paid thing worth doing).
 

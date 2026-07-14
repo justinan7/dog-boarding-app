@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { eq, and, desc, asc, sql } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import { z } from 'zod'
 import { getDb } from '../db/client'
 import {
@@ -27,14 +28,17 @@ threadsRouter.get('/', async (c) => {
   const db = getDb()
   const filter = c.req.query('filter')
 
+  const assignee = alias(users, 'assignee')
   let query = db
     .select({
       id: threads.id, customerId: threads.customerId, customerName: customers.name,
       reservationId: threads.reservationId, assignedStaffId: threads.assignedStaffId,
+      assignedStaffDisplay: assignee.displayName,
       flags: threads.flags, lastMessageAt: threads.lastMessageAt, slaDueAt: threads.slaDueAt,
     })
     .from(threads)
     .innerJoin(customers, eq(threads.customerId, customers.id))
+    .leftJoin(assignee, eq(threads.assignedStaffId, assignee.id))
     .$dynamic()
 
   // Customers only ever see their own threads (contract: "(C) own").

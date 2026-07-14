@@ -61,6 +61,15 @@
         default = null;
         description = "The built PWA (web/package.nix output) the api serves via WEB_DIST.";
       };
+      demoMode = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = ''
+          Demo-world phase: PWA shows demo hints/view-as, the seeder is allowed,
+          and the world reseeds nightly (re-anchoring to "today"). Flip to false
+          when the business goes live on real data.
+        '';
+      };
     };
   };
 }

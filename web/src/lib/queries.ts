@@ -19,7 +19,8 @@ export interface CareTask {
 }
 export interface Thread {
   id: string; customerId: string; customerName: string; reservationId?: string | null
-  assignedStaffId?: string | null; flags?: string[] | null; lastMessageAt?: string | null
+  assignedStaffId?: string | null; assignedStaffDisplay?: string | null
+  flags?: string[] | null; lastMessageAt?: string | null; slaDueAt?: string | null
   lastBody?: string | null; lastSenderRole?: string | null
 }
 export interface MessageAttachment { id: string; kind: string; objectKey: string }
@@ -220,6 +221,15 @@ export function useSendMessage(threadId: string | null) {
       qc.invalidateQueries({ queryKey: ['thread-messages', threadId] })
       qc.invalidateQueries({ queryKey: ['threads'] })
     },
+  })
+}
+
+export function useOversight() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ threadId, action }: { threadId: string; action: 'join' | 'take_over' | 'hand_back' }) =>
+      api.post(`/api/v1/threads/${threadId}/oversight`, { action }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['threads'] }),
   })
 }
 

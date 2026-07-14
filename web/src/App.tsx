@@ -38,7 +38,6 @@ import {
   customerTab, staffTab, managerTab,
   type Role, type CustomerRoute, type StaffRoute, type ManagerRoute,
 } from './lib/nav'
-import { useAppConfig } from './lib/queries'
 import { useRealtime } from './lib/realtime'
 import { PushToggle } from './components/PushToggle'
 
@@ -85,7 +84,7 @@ function FullWithTabs<R extends string>({
 }
 
 // ---------------------------------------------------------------------------
-function CustomerView() {
+function CustomerView({ viewAs }: { viewAs: (r: Role) => void }) {
   const [route, setRoute] = useState<CustomerRoute>('home')
   // Which stay / report card a detail screen is looking at (set on navigation).
   const [stayId, setStayId] = useState<string | null>(null)
@@ -111,7 +110,7 @@ function CustomerView() {
   switch (route) {
     case 'book': content = <BookStay />; break
     case 'pets': content = <PetProfile />; break
-    case 'account': content = <CustomerAccount />; break
+    case 'account': content = <CustomerAccount viewAs={viewAs} />; break
     case 'report-card': content = <ReportCardPostcard cardId={cardId} go={go} onBack={() => go('home')} />; break
     case 'stay': content = <StayDetail stayId={stayId} go={go} onBack={() => go('home')} />; break
     case 'pay': content = <Payment stayId={stayId} onBack={() => go('home')} />; break
@@ -147,7 +146,7 @@ function StaffMe({ onOpenAccount }: { onOpenAccount: () => void }) {
   )
 }
 
-function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
+function StaffView({ viewAs }: { viewAs: (r: Role) => void }) {
   const { refresh } = useAuth()
   const [route, setRoute] = useState<StaffRoute>('today')
   // Which dog the checklist / report-card builder is working on.
@@ -192,6 +191,7 @@ function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
         onSwitchRole={(r) => {
           setAccountOpen(false)
           if (r === 'manager') setPinOpen(true)
+          else if (r === 'customer') viewAs('customer')
         }}
       />
       <PinSheet
@@ -202,7 +202,7 @@ function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
           // Pull the fresh elevation state (managerElevatedUntil) before the
           // manager view mounts, so it doesn't re-prompt.
           void refresh()
-          onSwitchToManager()
+          viewAs('manager')
         }}
       />
     </>
@@ -210,7 +210,7 @@ function StaffView({ onSwitchToManager }: { onSwitchToManager: () => void }) {
 }
 
 // ---------------------------------------------------------------------------
-function ManagerView({ onSwitchToStaff }: { onSwitchToStaff: () => void }) {
+function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
   const [route, go] = useState<ManagerRoute>('dash')
   const { user, refresh } = useAuth()
 
@@ -251,7 +251,7 @@ function ManagerView({ onSwitchToStaff }: { onSwitchToStaff: () => void }) {
   switch (route) {
     case 'calendar': content = <Calendar />; break
     case 'photos': content = <Photos />; break
-    case 'more': content = <More onNavigate={go} onSwitchView={onSwitchToStaff} />; break
+    case 'more': content = <More onNavigate={go} viewAs={viewAs} />; break
     case 'taskboard': content = <TaskBoard />; break
     case 'reports': content = <Reports />; break
     default: content = <Dashboard />
@@ -267,47 +267,11 @@ function ManagerView({ onSwitchToStaff }: { onSwitchToStaff: () => void }) {
 }
 
 // ---------------------------------------------------------------------------
-/** Demo chrome (not app UI): jump between the three role views while there's
- *  no real login. The in-app path is the designed one — staff Me → account
- *  sheet → Manager (PIN 1234). */
-function DemoRoleBar({ role, onChange }: { role: Role; onChange: (r: Role) => void }) {
-  return (
-    <div
-      style={{
-        position: 'fixed', bottom: 10, left: '50%', transform: 'translateX(-50%)',
-        zIndex: 60, display: 'flex', alignItems: 'center', gap: 4,
-        background: 'rgba(12,43,42,0.82)', backdropFilter: 'blur(6px)',
-        borderRadius: 999, padding: '4px 6px',
-      }}
-    >
-      <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--seaglass-200)', padding: '0 6px' }}>
-        Demo · view as
-      </span>
-      {(['customer', 'staff', 'manager'] as Role[]).map((r) => (
-        <button
-          key={r}
-          type="button"
-          onClick={() => onChange(r)}
-          style={{
-            border: 0, cursor: 'pointer', borderRadius: 999, padding: '5px 12px',
-            fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
-            textTransform: 'capitalize',
-            background: role === r ? 'var(--foam-50)' : 'transparent',
-            color: role === r ? 'var(--lagoon-900)' : 'var(--foam-50)',
-          }}
-        >
-          {r}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 export default function App() {
   const { user, loading } = useAuth()
-  const config = useAppConfig()
   useRealtime() // live cache invalidation via Centrifugo (no-op when unconfigured)
-  // Default role from the auth context; demo bar can override.
+  // Default role from the auth context; the account-screen "view as" (demo
+  // mode) can override which view renders — the API enforces the real role.
   const [role, setRole] = useState<Role>('customer')
 
   // When the auth user loads, set the role from the server.
@@ -334,14 +298,10 @@ export default function App() {
   }
 
   return (
-    <>
-      <PhoneFrame>
-        {role === 'customer' && <CustomerView />}
-        {role === 'staff' && <StaffView onSwitchToManager={() => setRole('manager')} />}
-        {role === 'manager' && <ManagerView onSwitchToStaff={() => setRole('staff')} />}
-      </PhoneFrame>
-      {/* Demo chrome only while the server says we're in demo mode. */}
-      {config.data?.demoMode && <DemoRoleBar role={role} onChange={setRole} />}
-    </>
+    <PhoneFrame>
+      {role === 'customer' && <CustomerView viewAs={setRole} />}
+      {role === 'staff' && <StaffView viewAs={setRole} />}
+      {role === 'manager' && <ManagerView viewAs={setRole} />}
+    </PhoneFrame>
   )
 }

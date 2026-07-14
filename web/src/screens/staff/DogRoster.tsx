@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Icon } from '../../components/Icon'
-import { Badge, Button, Card } from '../../components/primitives'
+import { Badge, Card } from '../../components/primitives'
 import { useCareTasks, useReservations } from '../../lib/queries'
 import { seedToday, rosterDogs } from '../../lib/roster'
 import { fmtDateRange, fmtTimeCompact } from '../../lib/format'
@@ -58,7 +58,11 @@ export function DogRoster({ go }: { go: (r: 'checklist' | 'report-builder', petI
   const tasksQ = useCareTasks({})
   const reservationsQ = useReservations()
   const today = seedToday(tasksQ.data?.items)
-  const dogs = rosterDogs(reservationsQ.data?.items, tasksQ.data?.items, today)
+  const [search, setSearch] = useState('')
+  const allDogs = rosterDogs(reservationsQ.data?.items, tasksQ.data?.items, today)
+  const dogs = search.trim()
+    ? allDogs.filter((d) => d.name.toLowerCase().includes(search.trim().toLowerCase()))
+    : allDogs
 
   return (
     <>
@@ -93,28 +97,29 @@ export function DogRoster({ go }: { go: (r: 'checklist' | 'report-builder', petI
         </button>
       </div>
 
-      {/* Search + sort (visual only) */}
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-        <div
+      {/* Search (roster is already urgency-sorted) */}
+      <div
+        style={{
+          height: 48,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 9,
+          padding: '0 16px',
+          background: 'var(--surface-card)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-pill)',
+        }}
+      >
+        <Icon name="search" size={17} style={{ color: 'var(--stone-400)' }} />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search dogs"
           style={{
-            flex: 1,
-            height: 48,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 9,
-            padding: '0 16px',
-            background: 'var(--surface-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-pill)',
-            color: 'var(--text-muted)',
+            flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'none',
+            fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--text-body)',
           }}
-        >
-          <Icon name="search" size={17} style={{ color: 'var(--stone-400)' }} />
-          <span style={{ fontSize: 14 }}>Search dogs</span>
-        </div>
-        <Button variant="secondary" size="md" iconAfter="chevron-down" style={{ height: 48 }}>
-          Urgency
-        </Button>
+        />
       </div>
 
       {/* Roster */}

@@ -105,11 +105,12 @@ const cardStyle = {
   boxShadow: 'var(--shadow-card)',
 } as const
 
-// The demo world lives in July 2026 (the seed's sample month). A month pager
-// comes with the real rate card.
-const YEAR = 2026
-const MONTH = 7
-const MONTH_LABEL = 'July 2026'
+// The calendar shows the CURRENT month (the demo world anchors to today).
+// A month pager comes with the real rate card.
+const NOW = new Date()
+const YEAR = NOW.getFullYear()
+const MONTH = NOW.getMonth() + 1
+const MONTH_LABEL = NOW.toLocaleString('en-US', { month: 'long', year: 'numeric' })
 const NIGHTLY_CENTS = 5500 // placeholder rate — rate card is a management setting later
 
 const ymd = (day: number) => `${YEAR}-${String(MONTH).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -117,7 +118,8 @@ const ymd = (day: number) => `${YEAR}-${String(MONTH).padStart(2, '0')}-${String
 export function BookStay() {
   const petsQ = usePets()
   const addonsQ = useAddons()
-  const capacityQ = useCapacity(ymd(1), `${YEAR}-08-01`)
+  // Whole current month (from must be < to; spill into next month is fine).
+  const capacityQ = useCapacity(ymd(1), `${MONTH === 12 ? YEAR + 1 : YEAR}-${String(MONTH === 12 ? 1 : MONTH + 1).padStart(2, '0')}-01`)
   const create = useCreateReservation()
 
   const [selectedPets, setSelectedPets] = useState<Set<string>>(new Set())
@@ -183,7 +185,7 @@ export function BookStay() {
     .reduce((sum, a) => sum + a.priceCents * (a.per === 'day' ? Math.max(nights, 1) : 1), 0)
   const estimateCents = nights * NIGHTLY_CENTS * Math.max(selectedPets.size, 1) + addonCents
 
-  // July 2026 grid: the 1st is a Wednesday; pad from Sun Jun 28.
+  // Month grid, padded to the first weekday.
   const firstWeekday = new Date(YEAR, MONTH - 1, 1).getDay()
   const daysInMonth = new Date(YEAR, MONTH, 0).getDate()
 
@@ -212,12 +214,9 @@ export function BookStay() {
   return (
     <>
       {/* Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Icon name="chevron-left" size={22} style={{ color: 'var(--lagoon-700)' }} />
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--text-heading)' }}>
-          Book a stay
-        </span>
-      </div>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--text-heading)' }}>
+        Book a stay
+      </span>
 
       {/* Who's coming */}
       <Section label="Who's coming">

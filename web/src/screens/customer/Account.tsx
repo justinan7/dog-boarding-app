@@ -28,7 +28,9 @@ function Row({ icon, label, last, onClick }: { icon: IconName; label: string; la
   )
 }
 
-export function CustomerAccount() {
+import type { Role } from '../../lib/nav'
+
+export function CustomerAccount({ viewAs }: { viewAs?: (r: Role) => void }) {
   const { user, signOut } = useAuth()
   const config = useAppConfig()
   const [pushState, setPushState] = useState<'off' | 'on' | 'busy' | 'error'>('off')
@@ -71,8 +73,6 @@ export function CustomerAccount() {
       </Card>
 
       <Card style={{ padding: '4px 16px' }}>
-        <Row icon="user-round" label="Profile" />
-        <Row icon="credit-card" label="Payment methods" />
         <Row
           icon="bell"
           label={
@@ -88,6 +88,17 @@ export function CustomerAccount() {
         <div style={{ fontSize: 12.5, color: 'var(--biscuit-700)', background: 'var(--biscuit-200)', borderRadius: 'var(--radius-md)', padding: '10px 14px' }}>
           {pushError}
         </div>
+      )}
+
+      {/* Demo mode only: hop between the three role views to explore the app. */}
+      {config.data?.demoMode && viewAs && (
+        <>
+          <span className="z-eyebrow">Demo · view as</span>
+          <Card style={{ padding: '4px 16px' }}>
+            <Row icon="paw-print" label="Staff view" onClick={() => viewAs('staff')} />
+            <Row icon="eye" label="Manager view" last onClick={() => viewAs('manager')} />
+          </Card>
+        </>
       )}
     </>
   )

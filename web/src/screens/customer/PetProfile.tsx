@@ -109,7 +109,6 @@ export function PetProfile() {
             </button>
           ))}
         </div>
-        <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--lagoon-700)' }}>Edit</span>
       </div>
 
       {/* Pet identity */}
@@ -145,12 +144,7 @@ export function PetProfile() {
               No feeding or medication schedule yet.
             </div>
           )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 0' }}>
-            <Icon name="plus" size={16} style={{ color: 'var(--lagoon-700)' }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--lagoon-700)' }}>
-              Add feeding or medication
-            </span>
-          </div>
+
         </Card>
       </Section>
 

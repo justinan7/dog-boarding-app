@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../../components/Icon'
-import { useReportCards } from '../../lib/queries'
+import { useReportCards, useHeartReportCard } from '../../lib/queries'
 import { mediaUrl } from '../../lib/upload'
 
 function PillIconCircle({ size, icon, iconSize }: { size: number; icon: 'x' | 'heart' | 'download'; iconSize: number }) {
@@ -43,6 +43,8 @@ export function ReportCardStory({ cardId, onClose }: { cardId: string | null; on
   const cards = useReportCards()
   const card = (cards.data?.items ?? []).find((c) => c.id === cardId)
     ?? (cards.data?.items ?? []).find((c) => c.status === 'sent')
+
+  const heart = useHeartReportCard()
 
   // One segment per photo; placeholder art fills in until uploads land.
   const SEGMENTS = Math.max(card?.photoObjectKeys?.length ?? 0, 4)
@@ -179,9 +181,16 @@ export function ReportCardStory({ cardId, onClose }: { cardId: string | null; on
 
         {/* Footer actions */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-          <PillIconCircle size={44} icon="heart" iconSize={20} />
-          <span style={{ fontSize: 12.5, color: 'rgba(247,245,238,0.7)' }}>Tap sides to flip · swipe down to close</span>
-          <PillIconCircle size={44} icon="download" iconSize={20} />
+          <button
+            type="button"
+            aria-label="Heart this day"
+            disabled={!card || !!card.heartedAt || heart.isPending}
+            onClick={() => card && heart.mutate(card.id)}
+            style={{ border: 0, background: 'none', padding: 0, cursor: 'pointer', color: card?.heartedAt ? 'var(--accent-gold)' : 'inherit' }}
+          >
+            <PillIconCircle size={44} icon="heart" iconSize={20} />
+          </button>
+          <span style={{ fontSize: 12.5, color: 'rgba(247,245,238,0.7)' }}>Tap the sides to flip</span>
         </div>
       </div>
     </div>

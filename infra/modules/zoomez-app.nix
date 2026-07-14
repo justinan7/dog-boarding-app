@@ -38,8 +38,7 @@ let
     environment = {
       NODE_ENV = "production";
       PUBLIC_DOMAIN = config.zoomez.domain;
-      # Demo world phase — flip to "false" when the business goes live.
-      DEMO_MODE = "true";
+      DEMO_MODE = if cfg.demoMode then "true" else "false";
     } // lib.optionalAttrs (cfg.webRoot != null) { WEB_DIST = "${cfg.webRoot}"; };
     onFailure = [ "notify-failure@zoomez-${name}.service" ];
     serviceConfig = {
@@ -76,4 +75,24 @@ lib.mkIf (cfg.enable && cfg.package != null) {
   #      alert survives an api deploy/restart.
   systemd.services.zoomez-api = mkSvc "api";
   systemd.services.zoomez-worker = mkSvc "worker";
+
+  # Demo-world freshness: reseed nightly so the sample world always reads
+  # "today" (the seed anchors its dates to the current date and preserves the
+  # auth tables — nobody's login is touched). Gone when demoMode = false.
+  systemd.services.zoomez-demo-reseed = lib.mkIf cfg.demoMode {
+    description = "Zoomez demo-world nightly reseed";
+    after = [ "postgresql.service" ];
+    requires = [ "postgresql.service" ];
+    environment = { NODE_ENV = "production"; DEMO_MODE = "true"; };
+    serviceConfig = {
+      Type = "oneshot";
+      EnvironmentFile = "/run/secrets/zoomez-env";
+      ExecStart = "${cfg.package}/bin/zoomez-seed";
+    };
+  };
+  systemd.timers.zoomez-demo-reseed = lib.mkIf cfg.demoMode {
+    wantedBy = [ "timers.target" ];
+    # ~2am Pacific — nobody is exploring the demo then.
+    timerConfig = { OnCalendar = "*-*-* 09:30:00 UTC"; Persistent = true; };
+  };
 }

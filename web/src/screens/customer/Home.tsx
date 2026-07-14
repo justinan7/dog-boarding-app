@@ -232,7 +232,6 @@ export function CustomerHome({ go }: { go: (r: 'book' | 'report-card' | 'stay' |
             >
               Latest report card
             </span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--lagoon-700)' }}>All cards</span>
           </div>
           <div
             onClick={() => go('report-card', latestCard.id)}
