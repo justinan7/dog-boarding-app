@@ -48,7 +48,7 @@ me.get('/', async (c) => {
     const [cust] = await db.select().from(customers).where(eq(customers.userId, domainUser.id)).limit(1)
     customerId = cust?.id ?? null
   }
-  if (role === 'staff' || role === 'manager') {
+  if (role === 'staff' || role === 'manager' || role === 'admin') {
     staffId = domainUser?.id ?? null
   }
 
@@ -72,10 +72,10 @@ me.post('/elevate', async (c) => {
   const user = c.get('user')
   if (!user || !session) throw new AppError('UNAUTHORIZED', 'Not authenticated')
 
-  // Only staff/managers may attempt the manager PIN — a customer knowing the
-  // PIN must not be able to elevate into the management surface.
+  // Only staff/managers/admins may attempt the manager PIN — a customer
+  // knowing the PIN must not be able to elevate into the management surface.
   const du = c.get('domainUser')
-  if (!du || (du.role !== 'staff' && du.role !== 'manager')) {
+  if (!du || du.role === 'customer') {
     throw new AppError('FORBIDDEN', 'Only staff can elevate to manager')
   }
 

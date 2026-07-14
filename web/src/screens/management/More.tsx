@@ -52,6 +52,9 @@ export function More({
       <Card style={{ padding: '4px 16px' }}>
         <MenuRow icon="clipboard-check" label="Live task board" onClick={() => onNavigate('taskboard')} />
         <MenuRow icon="file-check" label="Reports & audit log" onClick={() => onNavigate('reports')} />
+        {user?.role === 'admin' && (
+          <MenuRow icon="user-round" label="Users & roles" onClick={() => onNavigate('users')} />
+        )}
         <MenuRow icon="paw-print" label="Staff view" onClick={() => viewAs?.('staff')} last={!config.data?.demoMode} />
         {config.data?.demoMode && (
           <MenuRow icon="eye" label="Customer view (demo)" onClick={() => viewAs?.('customer')} last />

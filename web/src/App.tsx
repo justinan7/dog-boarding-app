@@ -13,6 +13,7 @@ import { TaskBoard } from './screens/management/TaskBoard'
 import { Reports } from './screens/management/Reports'
 import { More } from './screens/management/More'
 import { Photos } from './screens/management/Photos'
+import { Users } from './screens/management/Users'
 // customer
 import { CustomerHome } from './screens/customer/Home'
 import { BookStay } from './screens/customer/Book'
@@ -218,7 +219,7 @@ function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
   // elevation. Prompt for the PIN once when a staff/manager lands here without
   // one. Customers can dismiss it — they get the view, not the powers.
   const elevated = !!user?.managerElevatedUntil && new Date(user.managerElevatedUntil) > new Date()
-  const canElevate = user?.role === 'staff' || user?.role === 'manager'
+  const canElevate = user?.role === 'staff' || user?.role === 'manager' || user?.role === 'admin'
   const [pinOpen, setPinOpen] = useState(false)
   const [prompted, setPrompted] = useState(false)
   useEffect(() => {
@@ -254,6 +255,7 @@ function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
     case 'more': content = <More onNavigate={go} viewAs={viewAs} />; break
     case 'taskboard': content = <TaskBoard />; break
     case 'reports': content = <Reports />; break
+    case 'users': content = <Users onBack={() => go('more')} />; break
     default: content = <Dashboard />
   }
   return (
@@ -274,9 +276,10 @@ export default function App() {
   // mode) can override which view renders — the API enforces the real role.
   const [role, setRole] = useState<Role>('customer')
 
-  // When the auth user loads, set the role from the server.
+  // When the auth user loads, set the view from the server role — the admin
+  // (system operator) lands on the manager view.
   useEffect(() => {
-    if (user) setRole(user.role as Role)
+    if (user) setRole(user.role === 'admin' ? 'manager' : user.role)
   }, [user])
 
   if (loading) {

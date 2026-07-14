@@ -6,7 +6,7 @@ import { log } from './log'
 export interface DomainUser {
   id: string
   orgId: string
-  role: 'customer' | 'staff' | 'manager'
+  role: 'customer' | 'staff' | 'manager' | 'admin'
   email: string
   displayName: string
 }

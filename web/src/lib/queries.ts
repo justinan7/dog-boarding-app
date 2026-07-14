@@ -203,7 +203,36 @@ export const useWaivers = () =>
     queryFn: () => api.get<{ enabled: boolean; items: WaiverItem[] }>('/api/v1/waivers/mine'),
   })
 
+export interface AdminUser {
+  id: string; email: string; displayName: string
+  role: 'customer' | 'staff' | 'manager' | 'admin'
+  createdAt: string; hasLogin: boolean
+}
+export const useAdminUsers = () =>
+  useQuery({
+    queryKey: ['admin-users'],
+    queryFn: () => api.get<{ items: AdminUser[] }>('/api/v1/admin/users'),
+  })
+
 // ---- Mutations ----
+export function useCreateAdminUser() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: { email: string; name: string; role: AdminUser['role'] }) =>
+      api.post('/api/v1/admin/users', body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
+  })
+}
+
+export function useChangeUserRole() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, role }: { id: string; role: AdminUser['role'] }) =>
+      api.patch(`/api/v1/admin/users/${id}`, { role }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
+  })
+}
+
 export function useSignWaiver() {
   const qc = useQueryClient()
   return useMutation({

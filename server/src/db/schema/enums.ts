@@ -4,7 +4,7 @@ import { pgEnum } from 'drizzle-orm/pg-core'
 // flag, audit action) stay as text. Values reconcile data-model.md with
 // api-contract.md.
 
-export const roleEnum = pgEnum('role', ['customer', 'staff', 'manager'])
+export const roleEnum = pgEnum('role', ['customer', 'staff', 'manager', 'admin'])
 export type Role = (typeof roleEnum.enumValues)[number]
 export const petSexEnum = pgEnum('pet_sex', ['male', 'female', 'unknown'])
 export const careKindEnum = pgEnum('care_kind', ['feeding', 'medication', 'task'])

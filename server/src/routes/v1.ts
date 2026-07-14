@@ -18,6 +18,7 @@ import { uploadsRouter } from './uploads'
 import { mediaRouter } from './media'
 import { realtimeRouter } from './realtime'
 import { waiversRouter, docusealWebhook } from './waivers'
+import { adminRouter } from './admin'
 import { env } from '../env'
 import type { AppEnv } from '../lib/hono-env'
 
@@ -50,6 +51,7 @@ v1.route('/media', mediaRouter)
 v1.route('/realtime', realtimeRouter)
 v1.route('/waivers', waiversRouter)
 v1.route('/webhooks/docuseal', docusealWebhook)
+v1.route('/admin', adminRouter)
 
 v1.get('/', (c) =>
   c.json({

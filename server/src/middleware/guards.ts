@@ -12,12 +12,15 @@ export const requireAuth = createMiddleware<AppEnv>(async (c, next) => {
   await next()
 })
 
-/** Reject requests whose domain role is not in the allowed set. */
+/** Reject requests whose domain role is not in the allowed set.
+ *  `admin` (the system operator) passes every role check. */
 export function requireRole(...allowed: Role[]) {
   return createMiddleware<AppEnv>(async (c, next) => {
     const du = c.get('domainUser')
     if (!du) throw new AppError('UNAUTHORIZED', 'Not authenticated')
-    if (!allowed.includes(du.role)) throw new AppError('FORBIDDEN', 'Insufficient role')
+    if (du.role !== 'admin' && !allowed.includes(du.role)) {
+      throw new AppError('FORBIDDEN', 'Insufficient role')
+    }
     await next()
   })
 }

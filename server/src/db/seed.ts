@@ -56,7 +56,7 @@ export async function seed(): Promise<void> {
   // --- Staff / management ---
   const staff = await db.insert(users).values([
     // Real people first — their sign-ups (by email) get manager rights.
-    { orgId: org.id, role: 'manager', email: 'justin@4nunns.com', displayName: 'Justin' },
+    { orgId: org.id, role: 'admin', email: 'justin@4nunns.com', displayName: 'Justin' },
     { orgId: org.id, role: 'manager', email: 'corey@zoomez.app', displayName: 'Corey' },
     { orgId: org.id, role: 'manager', email: 'brette@zoomez.app', displayName: 'Brette' },
     { orgId: org.id, role: 'staff', email: 'tyler@zoomez.app', displayName: 'Tyler Torres' },

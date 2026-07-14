@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { auth as authApi } from './api'
-import type { Role } from './nav'
+import type { UserRole } from './nav'
 
 interface User {
   id: string
-  role: Role
+  role: UserRole
   name: string
   email: string
   customerId: string | null
