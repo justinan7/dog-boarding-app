@@ -1,4 +1,7 @@
 import { Hono } from 'hono'
+import { eq } from 'drizzle-orm'
+import { getDb } from '../db/client'
+import { user as authUser } from '../db/schema/better-auth'
 import { health } from './health'
 import { me } from './me'
 import { customersRouter } from './customers'
@@ -23,6 +26,17 @@ import { env } from '../env'
 import type { AppEnv } from '../lib/hono-env'
 
 export const v1 = new Hono<AppEnv>()
+
+// Email-first login: tells the login screen whether to show "sign in" or
+// "create account" for a given email, so the user never has to know which.
+// Low-value info for this app (a small business), and the same email→role
+// mapping is already visible via sign-up behavior. Bounded + trimmed.
+v1.get('/auth/account-exists', async (c) => {
+  const email = (c.req.query('email') ?? '').toLowerCase().trim()
+  if (!email || email.length > 200 || !email.includes('@')) return c.json({ exists: false })
+  const [row] = await getDb().select({ id: authUser.id }).from(authUser).where(eq(authUser.email, email)).limit(1)
+  return c.json({ exists: !!row })
+})
 
 // Public client config (no auth — the login screen needs it before sign-in).
 // The VAPID public key is public by design (it goes into pushManager.subscribe).

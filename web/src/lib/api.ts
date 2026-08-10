@@ -68,6 +68,8 @@ export const api = {
 
 // Auth helpers (Better Auth endpoints)
 export const auth = {
+  accountExists: (email: string) =>
+    api.get<{ exists: boolean }>(`/api/v1/auth/account-exists?email=${encodeURIComponent(email)}`),
   signUp: (email: string, password: string, name: string) =>
     request<{ user: { id: string; name: string; email: string } }>(
       '/api/auth/sign-up/email',
