@@ -5,6 +5,8 @@ import { getDb } from '../db/client'
 import { reportCards, pets } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { ownCustomerId } from '../lib/domain-user'
+import { assertPetAccess } from '../lib/ownership'
+import { requireRole } from '../middleware/guards'
 import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
@@ -61,7 +63,7 @@ const createSchema = z.object({
   includeCareLog: z.boolean().optional(),
 })
 
-reportCardsRouter.post('/', async (c) => {
+reportCardsRouter.post('/', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const body = createSchema.parse(await c.req.json())
@@ -82,7 +84,7 @@ reportCardsRouter.post('/', async (c) => {
 })
 
 // PATCH /api/v1/report-cards/:id — update a draft
-reportCardsRouter.patch('/:id', async (c) => {
+reportCardsRouter.patch('/:id', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -109,7 +111,7 @@ reportCardsRouter.patch('/:id', async (c) => {
 })
 
 // POST /api/v1/report-cards/:id/send — mark as sent
-reportCardsRouter.post('/:id/send', async (c) => {
+reportCardsRouter.post('/:id/send', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -130,6 +132,12 @@ reportCardsRouter.post('/:id/heart', async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
+
+  // Only the dog's owner (or staff) hearts a card.
+  const [card] = await db.select({ petId: reportCards.petId }).from(reportCards)
+    .where(eq(reportCards.id, c.req.param('id'))).limit(1)
+  if (!card) throw new AppError('NOT_FOUND', 'Report card not found')
+  await assertPetAccess(c.get('domainUser'), card.petId)
 
   const [updated] = await db.update(reportCards)
     .set({ heartedAt: new Date() })

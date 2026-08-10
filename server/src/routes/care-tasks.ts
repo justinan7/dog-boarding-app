@@ -7,6 +7,7 @@ import { careTasks, careTaskEvents, users, pets, auditEntries } from '../db/sche
 import { AppError } from '../lib/errors'
 import { zonedWallTimeToUtc } from '../lib/time'
 import { isElevated } from './me'
+import { requireRole } from '../middleware/guards'
 import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
@@ -67,7 +68,7 @@ const addSchema = z.object({
   scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 })
 
-careTasksRouter.post('/', async (c) => {
+careTasksRouter.post('/', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -105,7 +106,7 @@ const completeSchema = z.object({
   managerOverride: z.boolean().optional(),
 })
 
-careTasksRouter.post('/:id/complete', async (c) => {
+careTasksRouter.post('/:id/complete', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()

@@ -7,6 +7,8 @@ import {
 } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { ownCustomerId } from '../lib/domain-user'
+import { assertPetAccess, isStaff } from '../lib/ownership'
+import { requireRole } from '../middleware/guards'
 import type { AppEnv } from '../lib/hono-env'
 
 export const petsRouter = new Hono<AppEnv>()
@@ -57,6 +59,13 @@ petsRouter.post('/', async (c) => {
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const body = createPetSchema.parse(await c.req.json())
   const db = getDb()
+
+  // Customers may only add dogs to their OWN record.
+  const du = c.get('domainUser')
+  if (!isStaff(du)) {
+    const own = await ownCustomerId(du!)
+    if (!own || body.customerId !== own) throw new AppError('FORBIDDEN', 'You can only add your own dogs')
+  }
   const [pet] = await db.insert(pets).values(body).returning()
   return c.json(pet, 201)
 })
@@ -75,6 +84,7 @@ const patchPetSchema = z.object({
 petsRouter.patch('/:id', async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
+  await assertPetAccess(c.get('domainUser'), c.req.param('id'))
   const body = patchPetSchema.parse(await c.req.json())
   const db = getDb()
   const [updated] = await db.update(pets).set({ ...body, updatedAt: new Date() }).where(eq(pets.id, c.req.param('id'))).returning()
@@ -88,6 +98,7 @@ petsRouter.get('/:id', async (c) => {
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
   const petId = c.req.param('id')
+  await assertPetAccess(c.get('domainUser'), petId)
 
   const [pet] = await db.select().from(pets).where(eq(pets.id, petId)).limit(1)
   if (!pet) throw new AppError('NOT_FOUND', 'Pet not found')
@@ -117,7 +128,7 @@ const careItemSchema = z.object({
   instructions: z.string().optional(),
 })
 
-petsRouter.put('/:id/care-profile', async (c) => {
+petsRouter.put('/:id/care-profile', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const items = z.array(careItemSchema).parse(await c.req.json())
@@ -144,6 +155,7 @@ const vaxSchema = z.object({
 petsRouter.post('/:id/vaccinations', async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
+  await assertPetAccess(c.get('domainUser'), c.req.param('id'))
   const body = vaxSchema.parse(await c.req.json())
   const db = getDb()
   const [vax] = await db.insert(vaccinationRecords).values({
@@ -154,7 +166,7 @@ petsRouter.post('/:id/vaccinations', async (c) => {
 })
 
 // DELETE /api/v1/vaccinations/:id
-petsRouter.delete('/vaccinations/:id', async (c) => {
+petsRouter.delete('/vaccinations/:id', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -164,7 +176,7 @@ petsRouter.delete('/vaccinations/:id', async (c) => {
 })
 
 // PUT /api/v1/pets/:id/safety-flags — full replace
-petsRouter.put('/:id/safety-flags', async (c) => {
+petsRouter.put('/:id/safety-flags', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const { flags } = z.object({ flags: z.array(z.string()) }).parse(await c.req.json())
@@ -181,7 +193,7 @@ petsRouter.put('/:id/safety-flags', async (c) => {
 })
 
 // POST /api/v1/pets/:id/do-not-pair
-petsRouter.post('/:id/do-not-pair', async (c) => {
+petsRouter.post('/:id/do-not-pair', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const { otherPetId } = z.object({ otherPetId: z.string().uuid() }).parse(await c.req.json())
@@ -196,7 +208,7 @@ petsRouter.post('/:id/do-not-pair', async (c) => {
 })
 
 // DELETE /api/v1/pets/:id/do-not-pair/:otherPetId
-petsRouter.delete('/:id/do-not-pair/:otherPetId', async (c) => {
+petsRouter.delete('/:id/do-not-pair/:otherPetId', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const petId = c.req.param('id')

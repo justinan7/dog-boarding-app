@@ -10,6 +10,7 @@ import {
 import { AppError } from '../lib/errors'
 import { requireElevation } from '../middleware/guards'
 import { ownCustomerId } from '../lib/domain-user'
+import { assertThreadAccess } from '../lib/ownership'
 import { pushToUsers, pushToStaff } from '../lib/push-sender'
 import { publishStaff, publishUser } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
@@ -73,6 +74,7 @@ threadsRouter.get('/:id/messages', async (c) => {
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
   const threadId = c.req.param('id')
+  await assertThreadAccess(c.get('domainUser'), threadId)
   const limit = Math.min(Number(c.req.query('limit') ?? 50), 100)
   const cursor = c.req.query('cursor')
 
@@ -131,6 +133,7 @@ threadsRouter.post('/:id/messages', async (c) => {
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
   const threadId = c.req.param('id')
+  await assertThreadAccess(c.get('domainUser'), threadId)
   const input = sendSchema.parse(await c.req.json())
 
   const [thread] = await db.select().from(threads).where(eq(threads.id, threadId)).limit(1)
@@ -212,6 +215,7 @@ threadsRouter.post('/:id/read', async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
+  await assertThreadAccess(c.get('domainUser'), c.req.param('id'))
   const { lastMessageId } = readSchema.parse(await c.req.json())
 
   // Mark all messages up to lastMessageId as read for this user

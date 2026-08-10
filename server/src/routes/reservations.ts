@@ -11,6 +11,8 @@ import { CAPACITY } from './capacity'
 import { requireElevation } from '../middleware/guards'
 import { zonedWallTimeToUtc } from '../lib/time'
 import { ownCustomerId } from '../lib/domain-user'
+import { assertReservationAccess } from '../lib/ownership'
+import { requireRole } from '../middleware/guards'
 import { publishStaff } from '../lib/realtime'
 import type { AppEnv } from '../lib/hono-env'
 
@@ -145,6 +147,7 @@ reservationsRouter.get('/:id', async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
+  await assertReservationAccess(c.get('domainUser'), c.req.param('id'))
   const [res] = await db.select().from(reservations).where(eq(reservations.id, c.req.param('id'))).limit(1)
   if (!res) throw new AppError('NOT_FOUND', 'Reservation not found')
   return c.json(res)
@@ -283,7 +286,7 @@ const checkInSchema = z.object({
   belongings: z.array(z.object({ label: z.string(), qty: z.number().int().positive() })).optional(),
 })
 
-reservationsRouter.post('/:id/check-in', async (c) => {
+reservationsRouter.post('/:id/check-in', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const body = checkInSchema.parse(await c.req.json())
@@ -317,7 +320,7 @@ reservationsRouter.post('/:id/check-in', async (c) => {
 })
 
 // POST /api/v1/reservations/:id/check-out
-reservationsRouter.post('/:id/check-out', async (c) => {
+reservationsRouter.post('/:id/check-out', requireRole('staff', 'manager'), async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
@@ -342,6 +345,7 @@ reservationsRouter.post('/:id/check-out', async (c) => {
 reservationsRouter.post('/:id/cancel', async (c) => {
   const user = c.get('user')
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
+  await assertReservationAccess(c.get('domainUser'), c.req.param('id'))
   const db = getDb()
 
   const [res] = await db.select().from(reservations).where(eq(reservations.id, c.req.param('id'))).limit(1)

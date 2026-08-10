@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '../db/client'
 import { pushSubscriptions, users } from '../db/schema'
@@ -40,8 +40,13 @@ pushRouter.delete('/subscriptions/:id', async (c) => {
   if (!user) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const db = getDb()
 
+  const du = c.get('domainUser')
+  if (!du) throw new AppError('UNAUTHORIZED', 'Not authenticated')
   const [deleted] = await db.delete(pushSubscriptions)
-    .where(eq(pushSubscriptions.id, c.req.param('id')))
+    .where(and(
+      eq(pushSubscriptions.id, c.req.param('id')),
+      eq(pushSubscriptions.userId, du.id), // yours only
+    ))
     .returning()
   if (!deleted) throw new AppError('NOT_FOUND', 'Subscription not found')
   return c.json(deleted)

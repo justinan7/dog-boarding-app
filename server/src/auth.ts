@@ -36,6 +36,15 @@ export async function createAuth() {
 
     emailAndPassword: { enabled: true },
 
+    // Brute-force protection: Better Auth's built-in limiter (sign-in/sign-up
+    // get stricter per-endpoint rules automatically). Prod only — the test
+    // suites hammer the auth endpoints by design.
+    rateLimit: {
+      enabled: isProd,
+      window: 60,
+      max: 60,
+    },
+
     session: {
       expiresIn: 60 * 60 * 24 * 7,
       cookieCache: { enabled: true, maxAge: 60 * 5 },

@@ -4,9 +4,13 @@ import { z } from 'zod'
 import { getDb } from '../db/client'
 import { customers, users } from '../db/schema'
 import { AppError } from '../lib/errors'
+import { requireRole } from '../middleware/guards'
 import type { AppEnv } from '../lib/hono-env'
 
 export const customersRouter = new Hono<AppEnv>()
+
+// Customer PII (names/emails/phones) is staff-surface only.
+customersRouter.use('*', requireRole('staff', 'manager'))
 
 // GET /api/v1/customers?q=&cursor=&limit= — (S) search; paginated.
 customersRouter.get('/', async (c) => {

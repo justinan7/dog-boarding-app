@@ -5,9 +5,13 @@ import { getDb } from '../db/client'
 import { incidentReports, users, auditEntries } from '../db/schema'
 import { AppError } from '../lib/errors'
 import { pushToManagers } from '../lib/push-sender'
+import { requireRole } from '../middleware/guards'
 import type { AppEnv } from '../lib/hono-env'
 
 export const incidentsRouter = new Hono<AppEnv>()
+
+// Incident reports are internal records — staff surface only.
+incidentsRouter.use('*', requireRole('staff', 'manager'))
 
 // POST /api/v1/incidents — (S) file an incident
 const createSchema = z.object({
