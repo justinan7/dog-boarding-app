@@ -10,14 +10,17 @@ interface User {
   customerId: string | null
   staffId: string | null
   managerElevatedUntil: string | null
+  twoFactorEnabled?: boolean
 }
 
 interface AuthState {
   user: User | null
   loading: boolean
   error: string | null
-  signIn: (email: string, password: string) => Promise<void>
+  /** Resolves to true when a TOTP challenge is required (caller shows the code step). */
+  signIn: (email: string, password: string) => Promise<boolean>
   signUp: (email: string, password: string, name: string) => Promise<void>
+  verifyTwoFactor: (code: string) => Promise<void>
   signOut: () => Promise<void>
   refresh: () => Promise<void>
 }
@@ -43,13 +46,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refresh().finally(() => setLoading(false))
   }, [refresh])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<boolean> => {
     setError(null)
     try {
-      await authApi.signIn(email, password)
+      const res = await authApi.signIn(email, password)
+      if (res?.twoFactorRedirect) return true // caller collects the TOTP code
       await refresh()
+      return false
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sign in failed')
+      throw e
+    }
+  }
+
+  const verifyTwoFactor = async (code: string) => {
+    setError(null)
+    try {
+      await authApi.verifyTotp(code)
+      await refresh()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Invalid code')
       throw e
     }
   }
@@ -72,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, signIn, signUp, signOut, refresh }}>
+    <AuthContext.Provider value={{ user, loading, error, signIn, signUp, verifyTwoFactor, signOut, refresh }}>
       {children}
     </AuthContext.Provider>
   )

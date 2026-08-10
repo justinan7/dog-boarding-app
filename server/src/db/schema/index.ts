@@ -21,6 +21,7 @@ export {
   session as baSession,
   account as baAccount,
   verification as baVerification,
+  twoFactor as baTwoFactor,
 } from './better-auth'
 
 import * as identity from './identity'

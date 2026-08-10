@@ -1,10 +1,13 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { bearer, magicLink } from 'better-auth/plugins'
+import { bearer, magicLink, twoFactor } from 'better-auth/plugins'
 import { getHandle } from './db/client'
 import * as betterAuthSchema from './db/schema/better-auth'
 import { env, isProd } from './env'
-import { log } from './lib/log'
+import { sendPasswordReset, sendMagicLink } from './lib/email'
+
+// Public origin the app is reached at (for links in emails).
+const appUrl = () => env.APP_URL ?? (env.PUBLIC_DOMAIN ? `https://${env.PUBLIC_DOMAIN}` : 'http://localhost:5173')
 
 // Better Auth owns user/session/account/verification tables. Our domain tables
 // are managed by Drizzle. Both coexist in one Postgres (ADR-002/009).
@@ -34,7 +37,15 @@ export async function createAuth() {
     ...(isProd && env.PUBLIC_DOMAIN ? { baseURL: `https://${env.PUBLIC_DOMAIN}` } : {}),
     database,
 
-    emailAndPassword: { enabled: true },
+    emailAndPassword: {
+      enabled: true,
+      resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
+      // The link points at the PWA (not the API): /?reset=<token>. The SPA
+      // renders the new-password form and calls POST /reset-password.
+      sendResetPassword: async ({ user, token }) => {
+        await sendPasswordReset(user.email, `${appUrl()}/?reset=${token}`)
+      },
+    },
 
     // Brute-force protection: Better Auth's built-in limiter (sign-in/sign-up
     // get stricter per-endpoint rules automatically). Prod only — the test
@@ -52,11 +63,14 @@ export async function createAuth() {
 
     plugins: [
       bearer({ requireSignature: true }),
+      // TOTP two-factor (authenticator apps). Enrollment is offered to
+      // manager/admin accounts; the manager PIN still gates sensitive actions.
+      twoFactor({ issuer: 'Zoomez' }),
       magicLink({
         expiresIn: 300,
         storeToken: 'hashed',
         sendMagicLink: async ({ email, url: linkUrl }) => {
-          log.info({ email, url: linkUrl }, 'magic link generated (email sender not yet wired)')
+          await sendMagicLink(email, linkUrl)
         },
       }),
     ],

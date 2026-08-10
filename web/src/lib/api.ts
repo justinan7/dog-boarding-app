@@ -76,15 +76,29 @@ export const auth = {
       { method: 'POST', body: JSON.stringify({ email, password, name }) },
     ),
   signIn: (email: string, password: string) =>
-    request<{ user: { id: string; name: string; email: string } }>(
+    request<{ user?: { id: string; name: string; email: string }; twoFactorRedirect?: boolean }>(
       '/api/auth/sign-in/email',
       { method: 'POST', body: JSON.stringify({ email, password }) },
     ),
   signOut: () => request<void>('/api/auth/sign-out', { method: 'POST' }),
+
+  // Password reset (email link → PWA /?reset=<token>).
+  requestPasswordReset: (email: string) =>
+    request<void>('/api/auth/request-password-reset', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (token: string, newPassword: string) =>
+    request<void>('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, newPassword }) }),
+
+  // TOTP two-factor.
+  verifyTotp: (code: string) =>
+    request<{ token?: string }>('/api/auth/two-factor/verify-totp', { method: 'POST', body: JSON.stringify({ code }) }),
+  twoFactorEnable: (password: string) =>
+    request<{ totpURI: string; backupCodes: string[] }>('/api/auth/two-factor/enable', { method: 'POST', body: JSON.stringify({ password }) }),
+  twoFactorDisable: (password: string) =>
+    request<void>('/api/auth/two-factor/disable', { method: 'POST', body: JSON.stringify({ password }) }),
   getMe: () => api.get<{
     id: string; role: string; name: string; email: string
     customerId: string | null; staffId: string | null
-    managerElevatedUntil: string | null
+    managerElevatedUntil: string | null; twoFactorEnabled: boolean
   }>('/api/v1/me'),
   elevate: (pin: string) => api.post<void>('/api/v1/me/elevate', { pin }),
   deElevate: () => api.post<void>('/api/v1/me/de-elevate'),

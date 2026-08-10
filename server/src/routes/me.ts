@@ -62,6 +62,7 @@ me.get('/', async (c) => {
     customerId,
     staffId,
     managerElevatedUntil: elevated?.toISOString() ?? null,
+    twoFactorEnabled: (user as { twoFactorEnabled?: boolean }).twoFactorEnabled ?? false,
   })
 })
 

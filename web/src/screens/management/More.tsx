@@ -31,9 +31,13 @@ function MenuRow({
 export function More({
   onNavigate,
   viewAs,
+  onSetupTwoFactor,
+  twoFactorEnabled,
 }: {
   onNavigate: (route: ManagerRoute) => void
   viewAs?: (r: Role) => void
+  onSetupTwoFactor?: () => void
+  twoFactorEnabled?: boolean
 }) {
   const { user, signOut } = useAuth()
   const config = useAppConfig()
@@ -57,8 +61,14 @@ export function More({
         )}
         <MenuRow icon="paw-print" label="Staff view" onClick={() => viewAs?.('staff')} last={!config.data?.demoMode} />
         {config.data?.demoMode && (
-          <MenuRow icon="eye" label="Customer view (demo)" onClick={() => viewAs?.('customer')} last />
+          <MenuRow icon="eye" label="Customer view (demo)" onClick={() => viewAs?.('customer')} />
         )}
+        <MenuRow
+          icon="lock"
+          label={twoFactorEnabled ? 'Two-factor · on' : 'Two-factor authentication'}
+          onClick={onSetupTwoFactor}
+          last
+        />
       </Card>
       <Button variant="secondary" size="md" icon="log-out" fullWidth onClick={() => void signOut()}>Sign out</Button>
     </>

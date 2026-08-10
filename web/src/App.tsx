@@ -3,6 +3,9 @@ import { PhoneFrame } from './components/PhoneFrame'
 import { TabBar } from './components/TabBar'
 import { PinSheet } from './components/PinSheet'
 import { Login } from './screens/Login'
+import { ResetPassword } from './screens/ResetPassword'
+import { InstallReminder } from './components/InstallReminder'
+import { TwoFactorSetup } from './components/TwoFactorSetup'
 import { useAuth } from './lib/auth-context'
 import { Wordmark, Card, Button } from './components/primitives'
 // management
@@ -214,6 +217,36 @@ function StaffView({ viewAs }: { viewAs: (r: Role) => void }) {
 function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
   const [route, go] = useState<ManagerRoute>('dash')
   const { user, refresh } = useAuth()
+  const [twoFactorOpen, setTwoFactorOpen] = useState(false)
+  const [nudgeDismissed, setNudgeDismissed] = useState(false)
+
+  // Persistent nudge: a real manager/admin without 2FA is prompted to add it
+  // (dismissible per session; returns next launch until enabled).
+  const needs2FA = (user?.role === 'manager' || user?.role === 'admin') && user?.twoFactorEnabled === false
+  const nudge = needs2FA && !nudgeDismissed && route !== 'inbox' ? (
+    <div
+      style={{
+        position: 'fixed', left: 10, right: 10, top: 10, zIndex: 65, maxWidth: 380, margin: '0 auto',
+        background: 'var(--biscuit-200)', color: 'var(--biscuit-700)',
+        borderRadius: 'var(--radius-md)', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10,
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
+      <Icon name="lock" size={17} style={{ flex: 'none' }} />
+      <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600 }}>Secure this manager account with 2FA</span>
+      <button type="button" onClick={() => setTwoFactorOpen(true)}
+        style={{ border: 0, cursor: 'pointer', borderRadius: 999, background: 'var(--biscuit-700)', color: 'var(--foam-50)', padding: '5px 12px', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 700 }}>
+        Set up
+      </button>
+      <button type="button" onClick={() => setNudgeDismissed(true)} aria-label="Later"
+        style={{ border: 0, background: 'none', cursor: 'pointer', color: 'var(--biscuit-700)', display: 'flex', padding: 2 }}>
+        <Icon name="x" size={15} />
+      </button>
+    </div>
+  ) : null
+
+  const twoFactorSheet = <TwoFactorSetup open={twoFactorOpen} onClose={() => setTwoFactorOpen(false)} />
+
 
   // The M🔒 endpoints (approvals, reports, oversight) need a live server-side
   // elevation. Prompt for the PIN once when a staff/manager lands here without
@@ -244,6 +277,7 @@ function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
           <Inbox onBack={() => go('dash')} />
         </FullWithTabs>
         {pinSheet}
+        {twoFactorSheet}
       </>
     )
   }
@@ -252,7 +286,7 @@ function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
   switch (route) {
     case 'calendar': content = <Calendar />; break
     case 'photos': content = <Photos />; break
-    case 'more': content = <More onNavigate={go} viewAs={viewAs} />; break
+    case 'more': content = <More onNavigate={go} viewAs={viewAs} onSetupTwoFactor={() => setTwoFactorOpen(true)} twoFactorEnabled={user?.twoFactorEnabled} />; break
     case 'taskboard': content = <TaskBoard />; break
     case 'reports': content = <Reports />; break
     case 'users': content = <Users onBack={() => go('more')} />; break
@@ -260,10 +294,12 @@ function ManagerView({ viewAs }: { viewAs: (r: Role) => void }) {
   }
   return (
     <>
+      {nudge}
       <TabScreen tabs={MANAGER_TABS} active={managerTab(route)} onNavigate={go}>
         {content}
       </TabScreen>
       {pinSheet}
+      {twoFactorSheet}
     </>
   )
 }
@@ -276,11 +312,28 @@ export default function App() {
   // mode) can override which view renders — the API enforces the real role.
   const [role, setRole] = useState<Role>('customer')
 
+  // Password-reset landing: the emailed link opens the PWA at /?reset=<token>.
+  const [resetToken, setResetToken] = useState<string | null>(
+    () => new URLSearchParams(window.location.search).get('reset'),
+  )
+  const clearResetToken = () => {
+    setResetToken(null)
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+
   // When the auth user loads, set the view from the server role — the admin
   // (system operator) lands on the manager view.
   useEffect(() => {
     if (user) setRole(user.role === 'admin' ? 'manager' : user.role)
   }, [user])
+
+  if (resetToken) {
+    return (
+      <PhoneFrame>
+        <ResetPassword token={resetToken} onDone={clearResetToken} />
+      </PhoneFrame>
+    )
+  }
 
   if (loading) {
     return (
@@ -301,10 +354,13 @@ export default function App() {
   }
 
   return (
-    <PhoneFrame>
-      {role === 'customer' && <CustomerView viewAs={setRole} />}
-      {role === 'staff' && <StaffView viewAs={setRole} />}
-      {role === 'manager' && <ManagerView viewAs={setRole} />}
-    </PhoneFrame>
+    <>
+      <PhoneFrame>
+        {role === 'customer' && <CustomerView viewAs={setRole} />}
+        {role === 'staff' && <StaffView viewAs={setRole} />}
+        {role === 'manager' && <ManagerView viewAs={setRole} />}
+      </PhoneFrame>
+      <InstallReminder />
+    </>
   )
 }

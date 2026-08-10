@@ -38,6 +38,15 @@ const schema = z.object({
   CENTRIFUGO_TOKEN_HMAC_SECRET_KEY: z.string().optional(),
   CENTRIFUGO_HTTP_API_KEY: z.string().optional(),
   CENTRIFUGO_HTTP_API_URL: z.string().default('http://127.0.0.1:8000/api'),
+  // Transactional email (password reset, magic links). 'log' works with zero
+  // infra (link goes to the server log); 'resend' uses the business's Resend
+  // account on the go-live VPS (independent of the homelab).
+  EMAIL_DRIVER: z.enum(['log', 'resend']).default('log'),
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default('Zoomez <noreply@zoomez.4nunns.com>'),
+  // Public origin the app is reached at, for building links in emails. Falls
+  // back to https://PUBLIC_DOMAIN, then localhost.
+  APP_URL: z.string().optional(),
   // DocuSeal e-signature sidecar. Disabled when the API key is unset.
   DOCUSEAL_URL: z.string().default('http://127.0.0.1:3002'),
   DOCUSEAL_API_KEY: z.string().optional(),

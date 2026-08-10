@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, boolean, timestamp, integer } from 'drizzle-orm/pg-core'
 
 // Better Auth's core tables — defined as Drizzle schemas so the drizzleAdapter
 // can find them. Column names and types match Better Auth v1.6.x expectations.
@@ -13,8 +13,21 @@ export const user = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
+  // twoFactor plugin: whether TOTP 2FA is active for this account.
+  twoFactorEnabled: boolean('two_factor_enabled').default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
+})
+
+// twoFactor plugin table — TOTP secret + hashed backup codes per user.
+export const twoFactor = pgTable('two_factor', {
+  id: text('id').primaryKey(),
+  secret: text('secret').notNull(),
+  backupCodes: text('backup_codes').notNull(),
+  userId: text('user_id').notNull().references(() => user.id),
+  verified: boolean('verified').default(true),
+  failedVerificationCount: integer('failed_verification_count').default(0),
+  lockedUntil: timestamp('locked_until', { withTimezone: true }),
 })
 
 export const session = pgTable('session', {
