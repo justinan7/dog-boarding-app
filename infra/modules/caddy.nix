@@ -52,9 +52,15 @@ in
     ];
   };
 
-  # Binding to the Tailscale IP races tailscaled at boot — order after it.
+  # Binding to the Tailscale IP races tailscaled at boot. After= only waits for the daemon to start, not for
+  # its address to exist. The upstream module already restarts on failure, but with no RestartSec its 10
+  # allowed starts per 4 h were spent in about a second, all before the address existed: on 2026-10-09 it
+  # gave up ("cannot assign requested address") and the public site stayed down for 25 days. Space the
+  # retries 5 s apart and never give up.
   systemd.services.caddy = lib.mkIf (z.tailscaleIp != null) {
     after = [ "tailscaled.service" ];
     wants = [ "tailscaled.service" ];
+    startLimitIntervalSec = lib.mkForce 0;
+    serviceConfig.RestartSec = lib.mkForce "5s";
   };
 }
