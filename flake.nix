@@ -5,6 +5,12 @@
     # NixOS 26.05 "Yarara" — current stable. Bump deliberately (infra/README).
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
+    # DocuSeal stays on 2.5.3 (2.x line) until its 2 -> 3 database migration is planned and approved
+    # (docs/plans/2026-11-04-zoomez-docuseal-3.md in the HomeLab repo). nixos-26.05 now ships DocuSeal 3.x,
+    # so the package alone comes from this fixed rev; the module and everything else follow nixos-26.05.
+    # Deliberately pinned by rev, not a branch: nixos_update.py leaves it alone.
+    nixpkgs-docuseal.url = "github:NixOS/nixpkgs/0ad6f47ea4fe188f4bc8f0380f93ae8523337c6c";
+
     disko.url = "github:nix-community/disko/latest";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -12,7 +18,7 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, disko, sops-nix }:
+  outputs = { self, nixpkgs, nixpkgs-docuseal, disko, sops-nix }:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in {
@@ -22,6 +28,7 @@
           disko.nixosModules.disko
           sops-nix.nixosModules.sops
           ./infra/hosts/zoomez
+          { services.docuseal.package = nixpkgs-docuseal.legacyPackages.x86_64-linux.docuseal; }
         ];
       };
 
